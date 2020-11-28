@@ -1,0 +1,11 @@
+Package: BNPvegan
+Type: Package
+Title: Bayesian Norparametric Methods for Ecology
+Version: 0.1.0
+Author: Alessandro Zito
+Maintainer: person("Alessandro", "Zito", email = "alessandro.zito@duke.edu")
+Description: Introduce Bayesian Nonparametric methods for ecological application, 
+    including species sampling models.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
