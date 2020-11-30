@@ -8,7 +8,7 @@
 #' @return a list (?)
 #' @export
 #'
-#' @examples Return some example here
+#' @examples # Return some example here
 BNPfit = function(species_counts, model, n_resamples = 500L){
 
   ################################################
