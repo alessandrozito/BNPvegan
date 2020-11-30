@@ -1,6 +1,6 @@
 Package: BNPvegan
 Type: Package
-Title: Bayesian Norparametric Methods for Ecology
+Title: Bayesian Nonparametric Methods for Ecology
 Version: 0.1.0
 Author: Alessandro Zito
 Description: Bayesian Nonparametric methods for ecological application, 
