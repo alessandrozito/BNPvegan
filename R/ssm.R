@@ -1,45 +1,24 @@
 #' Find the Empirical Bayes estimates of Bayesian Nonparametric Species Sampling model
 #'
 #'
-#' @param species_counts Vector of integer counts of the observed clusters (species)
-#' @param model Model to fit. Available models are "Dirichlet", "Pitman-Yor", "LL2" and "LL3".
-#' @param n_resamples Number of resamples of the original sequence. Needed for Non-exchangeable models only. Default = 500
-#'
+#' @param freq A \code{K}-dimensional vector of frequencies
+#' @param model Model to fit. Available models are "DP" (Dirichlet Process) and "PY" (Pitman-Yor process)
+#' #'
 #' @return a list (?)
 #' @export
-#'
-#' @examples
-#' # Return some example here
-BNPfit <- function(species_counts, model, n_resamples = 500L) {
+ssm <- function(freq, model){
 
-  ################################################
-  # Part 1 - Exchangeable models
-  ################################################
-  #---------------------- Dirichlet process
   if (model == "Dirichlet") {
-    out <- nlminb(
-      start = 1,
-      objective = function(param) -EPPF_Dirichlet(counts = species_counts, alpha = param),
-      lower = 0,
-      upper = Inf
-    )
-    pars <- out$par
-    loglik <- -out$objective
-    return(list(
-      "model" = "Dirichlet",
-      "species_counts" = species_counts,
-      "exchangeability" = TRUE,
-      "parameters" = c("alpha" = pars),
-      "loglik" = loglik,
-      "Out_of_bound" = NULL,
-      "n_resamples" = 1
-    ))
+    fit <-
+    out <- list(freq = freq, param = fit$par, loglik = - fit$objective)
+    class(out) <- c("ssm","DP")
+    return(out)
+  }
 
-    #---------------------- Pitman-Yor process
-  } else if (model == "Pitman-Yor") {
+  if (model == "Pitman-Yor") {
     out <- nlminb(
       start = c(1, 0.5),
-      objective = function(param) -EPPF_PitmanYor(counts = species_counts, alpha = param[1], sigma = param[2]),
+      objective = function(param) - EPPF_PitmanYor(freq = freq, alpha = param[1], sigma = param[2]),
       lower = c(-Inf, 1e-16),
       upper = c(Inf, 1 - 1e-10)
     )
@@ -60,6 +39,22 @@ BNPfit <- function(species_counts, model, n_resamples = 500L) {
 
   #---------------------- To do: 1-parameter Gnedin process
 
+
+}
+
+
+
+#' Find the Empirical Bayes estimates of Bayesian Nonparametric Species Sampling model
+#'
+#'
+#' @param species_counts Vector of integer counts of the observed clusters (species)
+#' @param model Model to fit. Available models are "Dirichlet", "Pitman-Yor", "LL2" and "LL3".
+#' @param n_resamples Number of resamples of the original sequence. Needed for Non-exchangeable models only. Default = 500
+#'
+#' @return a list (?)
+#' @export
+#'
+BNPfit <- function(species_counts, model, n_resamples = 500L) {
 
   ################################################
   # Part 2 - Non-Exchangeable models
