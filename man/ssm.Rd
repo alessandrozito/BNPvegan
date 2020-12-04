@@ -2,7 +2,7 @@
 % Please edit documentation in R/ssm.R
 \name{ssm}
 \alias{ssm}
-\title{Find the Empirical Bayes estimates of Bayesian Nonparametric Species Sampling model}
+\title{Fit a species sampling model}
 \usage{
 ssm(frequencies, model)
 }
@@ -16,5 +16,5 @@ ssm(frequencies, model)
 An object of class "ssm"
 }
 \description{
-Find the Empirical Bayes estimates of Bayesian Nonparametric Species Sampling model
+Fit a species sampling model
 }

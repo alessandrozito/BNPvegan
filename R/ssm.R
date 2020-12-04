@@ -1,4 +1,4 @@
-#' Find the Empirical Bayes estimates of Bayesian Nonparametric Species Sampling model
+#' Fit a species sampling model
 #'
 #'
 #' @param frequencies A \code{K}-dimensional vector of frequencies
@@ -7,19 +7,18 @@
 #' @return An object of class "ssm"
 #'
 #' @export
-ssm <- function(frequencies, model){
-
+ssm <- function(frequencies, model) {
   if (model == "DP") {
     fit <- max_EPPF_DP(frequencies)
-    out <- list(frequencies = frequencies, param = fit$par, loglik = - fit$objective)
-    class(out) <- c("ssm","DP")
+    out <- list(frequencies = frequencies, param = fit$par, loglik = -fit$objective)
+    class(out) <- c("ssm", "DP")
     return(out)
   }
 
   if (model == "PY") {
     fit <- max_EPPF_PY(frequencies)
-    out <- list(frequencies = frequencies, param = fit$par, loglik = - fit$objective)
-    class(out) <- c("ssm","PY")
+    out <- list(frequencies = frequencies, param = fit$par, loglik = -fit$objective)
+    class(out) <- c("ssm", "PY")
     return(out)
   }
 }
@@ -38,7 +37,7 @@ ssm <- function(frequencies, model){
 #'
 #' @export
 #'
-predict.DP <- function(object, newdata=NULL, ...) {
+predict.DP <- function(object, newdata = NULL, ...) {
   n <- length(object$frequencies)
   expected_cl_py(1:n, sigma = 0, alpha = object$param)
 }
@@ -56,9 +55,7 @@ predict.DP <- function(object, newdata=NULL, ...) {
 #'
 #' @export
 #'
-predict.PY <- function(object, newdata=NULL, ...) {
+predict.PY <- function(object, newdata = NULL, ...) {
   n <- length(object$frequencies)
   expected_cl_py(1:n, sigma = object$param[2], alpha = object$param[1])
 }
-
-
