@@ -6,35 +6,22 @@
 
 using namespace Rcpp;
 
-// EPPF_Dirichlet
-double EPPF_Dirichlet(IntegerVector counts, double alpha);
-RcppExport SEXP _BNPvegan_EPPF_Dirichlet(SEXP countsSEXP, SEXP alphaSEXP) {
+// cluster_py_C
+double cluster_py_C(int n, double sigma, double theta);
+RcppExport SEXP _BNPvegan_cluster_py_C(SEXP nSEXP, SEXP sigmaSEXP, SEXP thetaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type counts(countsSEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    rcpp_result_gen = Rcpp::wrap(EPPF_Dirichlet(counts, alpha));
-    return rcpp_result_gen;
-END_RCPP
-}
-// EPPF_PitmanYor
-double EPPF_PitmanYor(IntegerVector counts, double alpha, double sigma);
-RcppExport SEXP _BNPvegan_EPPF_PitmanYor(SEXP countsSEXP, SEXP alphaSEXP, SEXP sigmaSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type counts(countsSEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
-    rcpp_result_gen = Rcpp::wrap(EPPF_PitmanYor(counts, alpha, sigma));
+    Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
+    rcpp_result_gen = Rcpp::wrap(cluster_py_C(n, sigma, theta));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BNPvegan_EPPF_Dirichlet", (DL_FUNC) &_BNPvegan_EPPF_Dirichlet, 2},
-    {"_BNPvegan_EPPF_PitmanYor", (DL_FUNC) &_BNPvegan_EPPF_PitmanYor, 3},
+    {"_BNPvegan_cluster_py_C", (DL_FUNC) &_BNPvegan_cluster_py_C, 3},
     {NULL, NULL, 0}
 };
 

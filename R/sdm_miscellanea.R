@@ -6,7 +6,8 @@
 #' @export
 #'
 #' @examples
-#' extract_discoveries(c("sp1", "sp1", "sp3", "sp4"))
+#' Species <-  c("SpeciesA", "SpeciesB", "SpeciesB", "SpeciesC")
+#' extract_discoveries(Species)
 extract_discoveries <- function(sequence) {
   species_appeared <- NULL
   m <- length(sequence)
