@@ -15,7 +15,3 @@ A sequence of binary variables
 \description{
 Obtain the sequence of new discoveries form
 }
-\examples{
-Species <-  c("SpeciesA", "SpeciesB", "SpeciesB", "SpeciesC")
-extract_discoveries(Species)
-}
