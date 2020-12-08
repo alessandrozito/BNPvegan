@@ -94,7 +94,8 @@ summary.DP <- function(object, ...) {
 #' @export
 #'
 summary.PY <- function(object, ...) {
-  tab <- cbind(Richness   = length(object$frequencies),
+  tab <- cbind(Abundance   = sum(object$frequencies),
+               Richness   = length(object$frequencies),
                Simpson_Emp = Simpson(object$frequencies),
                Shannon_Emp = Shannon(object$frequencies),
                Rare_Emp = mean(object$frequencies == 1),
