@@ -85,19 +85,19 @@ summary.sdm <- function(object, plot = TRUE, ...){
   asymp_tab <-rbind(summary(EK[EK<Inf]), (summary(EK[EK<Inf])-richness)/richness)
   rownames(asymp_tab) <- c("Asymptotic Richness", '% increase')
 
-  # Print output
-  #cat("Model:",
-  #    "\t Three-parameter log-logistic (LL3)",
-  #    "\nQuantities:",
-  #    paste0("\t Abundance: ", abundance),
-  #    paste0("\t Richness: ", richness),
-  #    paste0("\t Number of divergent accumulation curves: ", n_div, " out of ", object$n_resamples, " sampled [", round(100*n_div/object$n_resamples,2),'%]'),
-  #    "\nEst. Richness for non-divergent accumulation curves:",
-  #    knitr::kable(round(asymp_tab,2)),
-  #    "\nParameters:",
-  #    knitr::kable(pars_tab),
-  #    sep= "\n" )
-  #if(plot){p}
+  #Print output
+  cat("Model:",
+      "\t Three-parameter log-logistic (LL3)",
+      "\nQuantities:",
+      paste0("\t Abundance: ", abundance),
+      paste0("\t Richness: ", richness),
+      paste0("\t Number of divergent accumulation curves: ", n_div, " out of ", object$n_resamples, " sampled [", round(100*n_div/object$n_resamples,2),'%]'),
+      "\nEst. Richness for non-divergent accumulation curves:",
+      knitr::kable(round(asymp_tab,2)),
+      "\nParameters:",
+      knitr::kable(pars_tab),
+      sep= "\n" )
+  if(plot){p}
 
   return(invisible(list(Abundance = abundance,
               Richness = richness,
@@ -109,18 +109,18 @@ summary.sdm <- function(object, plot = TRUE, ...){
               param_summary = pars_tab)))
 }
 
-print.summary.sdm <- function(x, ...){
-  cat("Model:",
-      "\t Three-parameter log-logistic (LL3)",
-      "\nQuantities:",
-      paste0("\t Abundance: ", x$Abundance),
-      paste0("\t Richness: ", x$Richness),
-      paste0("\t Number of divergent accumulation curves: ", x$n_div, " out of ", x$n_resamples, " sampled [", round(100*x$n_div/x$n_resamples,2),'%]'),
-      "\nEst. Richness for non-divergent accumulation curves:",
-      knitr::kable(round(x$Asymp_richness_summary,2)),
-      "\nParameters:",
-      knitr::kable(x$param_summary),
-      sep= "\n" )
-  invisible(x)
-}
+#print.summary.sdm <- function(x, ...){
+#  cat("Model:",
+#      "\t Three-parameter log-logistic (LL3)",
+#      "\nQuantities:",
+#      paste0("\t Abundance: ", x$Abundance),
+#     paste0("\t Richness: ", x$Richness),
+#     paste0("\t Number of divergent accumulation curves: ", x$n_div, " out of ", x$n_resamples, " sampled [", round(100*x$n_div/x$n_resamples,2),'%]'),
+#     "\nEst. Richness for non-divergent accumulation curves:",
+#     knitr::kable(round(x$Asymp_richness_summary,2)),
+#     "\nParameters:",
+#     knitr::kable(x$param_summary),
+#     sep= "\n" )
+# invisible(x)
+#}
 

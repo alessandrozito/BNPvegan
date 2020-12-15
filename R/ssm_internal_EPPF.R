@@ -1,3 +1,11 @@
+#'@import stats
+#'@importFrom Rcpp evalCpp sourceCpp
+#'@importFrom vegan diversity
+#'@useDynLib BNPvegan
+#'
+
+
+
 logEPPF_PY <- function(alpha, sigma, frequencies) {
   if (any(sigma < 0, alpha <= -sigma + 1e-04)) {
     return(-Inf)

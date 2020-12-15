@@ -2,7 +2,7 @@ Package: BNPvegan
 Type: Package
 Title: Bayesian Nonparametric Methods for Ecology
 Version: 0.1.0
-Author: Alessandro Zito
+Author: Alessandro Zito, Tommaso Rigon
 Maintainer: Alessandro Zito <alessandro.zito@duke.edu>
 Description: Bayesian Nonparametric methods for ecological application, 
     including species sampling models.
@@ -10,7 +10,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
-Imports: fastglm, Rcpp (>= 1.0.5), RcppArmadillo(>= 0.10.1.2.0), ggplot2
+Imports: vegan (>= 2.5.0), Rcpp (>= 1.0.5), RcppArmadillo(>= 0.10.1.2.0), ggplot2, reshape2
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
