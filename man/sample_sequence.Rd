@@ -15,6 +15,3 @@ vector
 \description{
 Build a random sequence of observed species form a vector of counts
 }
-\examples{
-sample_sequence(c(1, 2, 45, 7))
-}

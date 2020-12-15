@@ -1,64 +1,44 @@
-#' Fit the two parameter log-logistic as in Zito et al. (2020)
-#'
-#' @param discoveries Sequence of discoveries indicators
-#'
-#' @return Parameters of the log logistic distribution
-#' @export
-#'
-#' @examples
-#' fit_LL2(c(1, 0, 1, 1, 0, 1, 0, 0, 0))
-fit_LL2 <- function(discoveries) {
-
-  # Step 1 - introduce useful quantities
-  N <- length(discoveries)
-  X <- as.matrix(cbind(1, log(1:(N - 1))))
-
-  # Step 2 - Fit the logistic regression via fastglm
-  glmfit <- fastglm::fastglmPure(y = discoveries[-1], x = X, family = binomial("logit"), method = 3)
-  pars <- c("alpha" = exp(glmfit$coefficients[1]), "sigma" = 1 + glmfit$coefficients[2])
-
-  # Step 3 - Check if the parameters are in bound
-  if (pars[2] >= 1) {
-    # Need to re-estimate the model using the one parameter log-logistic. This is equivalent to the Dirichlet process
-    glmfit <- fastglm::fastglmPure(y = discoveries[-1], x = as.matrix(X[, 1]), family = binomial("logit"), method = 3, offset = -X[, 2])
-    pars <- c("alpha" = exp(glmfit$coefficients[1]), "sigma" = 0)
-    Out_of_bound <- TRUE
-  } else {
-    Out_of_bound <- FALSE
-  }
-  # Return the values needed
-  return(list("discoveries" = discoveries, "parameters" = pars, "Out_of_bound" = Out_of_bound))
+logLik_LL3 <- function(d, beta_0, beta_1, beta_2) {
+  # Compute the log-likelihood for a sample from the posterior
+  beta <- c(beta_0, beta_1, beta_2)
+  d <- d[-1] # Remove the first discovery
+  n <- length(d)
+  X <- cbind(1, log(1:n), c(1:n))
+  eta <- c(X %*% beta) # odds
+  loglik <- sum(d * eta - log(1 + exp(eta)))
+  return(-loglik)
 }
 
-
-#' Fit the three parameter log-logistic as in Zito et al. (2020)
-#'
-#' @param discoveries Sequence of discovery indicators
-#'
-#' @return A list, including the parameters
-#' @export
-#'
-#' @examples
-#' fit_LL3(c(1, 0, 1, 1, 0, 1, 0, 0, 0))
-fit_LL3 <- function(discoveries) {
-
-  # Step 1 - introduce useful quantities
-  N <- length(discoveries)
-  X <- as.matrix(cbind(1, log(1:(N - 1)), c(1:(N - 1)))) # Predictors are 1,log(n),n
-
-  # Step 2 - Fit the logistic regression via fastglm
-  glmfit <- fastglm::fastglmPure(y = discoveries[-1], x = X, family = binomial("logit"), method = 3)
-  pars <- c("alpha" = exp(glmfit$coefficients[1]), "sigma" = 1 + glmfit$coefficients[2], "phi" = exp(glmfit$coefficients[3]))
-
-  # Step 4 - Check if the parameters are in bound
-  if (pars[3] > 1 | pars[2] >= 1) {
-    # Need to re-estimate the model using the two parameter log-logistic.
-    out <- fit_LL2(discoveries)
-    out$parameters <- c(out$parameters, "phi" = 1)
-    out$Out_of_bound <- TRUE
-
-    return(out)
-  } else {
-    return(list("discoveries" = discoveries, "parameters" = pars, "Out_of_bound" = FALSE))
-  }
+max_logLik_LL3 <- function(d){
+  start <- c(1, 0, -1)
+  out <- nlminb(start = start,
+                objective = function(par) logLik_LL3(d, beta_0 = par[1], beta_1 = par[2], par[3]),
+                upper = c(Inf, 1e-16, 0)
+  )
+  return(out)
 }
+
+prob_LL3 <- function(n, alpha, sigma, phi){
+  return(alpha*phi^n/(alpha*phi^n + n^(1-sigma)))
+}
+
+expected_Kinf <- function(alpha, sigma, phi){
+  if(phi==1){
+    if(sigma >= 0){
+      E_KInf <- Inf
+    } else {
+      E_KInf <- ceiling(alpha^(1/(1-sigma))*pi /((1-sigma)*sin(pi/(1-sigma))))
+    }
+  } else {
+    E_KInf <- ceiling(integrate(f = prob_LL3, alpha = alpha, sigma = sigma, phi = phi, lower = 0, upper = Inf)$value)
+  }
+  return(E_KInf)
+}
+#alpha = 1.0966351
+#sigma= 0.4399772
+#phi= 0.9999923
+
+
+
+
+
