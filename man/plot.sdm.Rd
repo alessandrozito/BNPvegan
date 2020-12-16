@@ -4,12 +4,12 @@
 \alias{plot.sdm}
 \title{Compute rarefaction curves}
 \usage{
-\method{plot}{sdm}(object, newdata = NULL, ...)
+\method{plot}{sdm}(object, n_points = 100, ...)
 }
 \arguments{
 \item{object}{An object of class \code{\link[sdm]{sdm}}.}
 
-\item{newdata}{a new dataset}
+\item{n_points}{Number of points to plot in the accumulation curve}
 
 \item{...}{other parameters}
 }

@@ -77,7 +77,8 @@ summary.sdm <- function(object, plot = TRUE, ...){
   asymp_tab <-rbind(summary(EK[EK<Inf]), (summary(EK[EK<Inf])-richness)/richness)
   rownames(asymp_tab) <- c("Asymptotic Richness", '% increase')
 
-  if(plot == TRUE){
+  #if(plot == TRUE){
+  if(FALSE){
     param_plot <- ggplot2::ggplot(data = tidyr::gather(data.frame(object$param)))+
       ggplot2::geom_histogram(ggplot2::aes(x=value),alpha=0.45, bins = 30,color = "black")+
       ggplot2::theme_bw()+
@@ -105,8 +106,8 @@ summary.sdm <- function(object, plot = TRUE, ...){
      "\nParameters:",
      knitr::kable(pars_tab, "simple"),
      sep= "\n" )
-  print(param_plot)
-  print(richness_plot)
+  #print(param_plot)
+  #print(richness_plot)
 
   # Output
   out <-list(Abundance = abundance,
@@ -139,8 +140,6 @@ print.summary.sdm <- function(x, ...){
       "\nParameters:",
       knitr::kable(x$param_summary, "simple"),
       sep= "\n" )
-  #print(x$param_plot)
-  #print(x$Asymp_richness_plot)
   invisible(x)
 }
 
@@ -148,11 +147,11 @@ print.summary.sdm <- function(x, ...){
 #' Compute rarefaction curves
 #'
 #' @param object An object of class \code{\link[sdm]{sdm}}.
-#' @param newdata a new dataset
+#' @param n_points Number of points to plot in the accumulation curve
 #' @param ... other parameters
 
 #' @export
-plot.sdm <- function(object, newdata = NULL, ...){
+plot.sdm <- function(object, n_points = 100, ...){
   # Step 1 - compute the average accumulation curve by averaging across re-samples
   N <- sum(object$frequencies)
   K_mat <- matrix(0, nrow = object$n_resamples, ncol = N)
@@ -166,14 +165,15 @@ plot.sdm <- function(object, newdata = NULL, ...){
   avg_rarefaction <- rowMeans(apply(object$param, 1, function(p) expected_rarefaction(N = N, alpha = p[1], sigma = p[2], phi = p[3])))
   df <- data.frame("n" = c(1:N), "accum"= avg_accumulation, "rar" = avg_rarefaction)
 
-  if(nrow(df)>100){
-    # Plot one every 100 points
-    df <- df[seq(1, nrow(df), 100),]
+  if(nrow(df)>n_points){
+    seqX <- 1:nrow(df)
+    seqY <-split(seqX, sort(seqX%%n_points))
+    df <- df[unlist(lapply(seqY, function(a) tail(a,1))),]
   }
 
   ggplot2::ggplot(df)+
     ggplot2::geom_point(ggplot2::aes(x = n, y = accum), shape = 1)+
-    ggplot2::geom_line(ggplot2::aes(x = n, y = rar), color = "red")+
+    ggplot2::geom_line(ggplot2::aes(x = n, y = rar), color = "red", size = 0.9)+
     ggplot2::theme_bw()+
     ggplot2::facet_wrap(~"Average rarefaction")+
     ggplot2::ylab("Number of species")
