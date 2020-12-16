@@ -38,6 +38,11 @@ expected_Kinf <- function(alpha, sigma, phi){
 #sigma= 0.4399772
 #phi= 0.9999923
 
+expected_rarefaction <- function(N, alpha, sigma, phi){
+  n <- c(1:N)-1
+  cumsum(prob_LL3(n, alpha, sigma, phi))
+}
+
 
 
 
