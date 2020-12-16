@@ -76,7 +76,6 @@ summary.sdm <- function(object, plot = TRUE, ...) {
 
   # Compute asymptotic richness
   EK <- apply(object$param, 1, FUN = function(p) expected_Kinf(alpha = p[1], sigma = p[2], phi = p[3]))
-<<<<<<< HEAD
   asymp_tab <-rbind(summary(EK[EK<Inf]), (summary(EK[EK<Inf])-richness)/richness)
   rownames(asymp_tab) <- c("Asymptotic Richness", '% increase')
 
@@ -86,16 +85,6 @@ summary.sdm <- function(object, plot = TRUE, ...) {
       ggplot2::geom_histogram(ggplot2::aes(x=value),alpha=0.45, bins = 30,color = "black")+
       ggplot2::theme_bw()+
       ggplot2::facet_wrap(~key, scales = "free")+
-=======
-  asymp_tab <- rbind(summary(EK[EK < Inf]), (summary(EK[EK < Inf]) - richness) / richness)
-  rownames(asymp_tab) <- c("Asymptotic Richness", "% increase")
-
-  if (plot == TRUE) {
-    param_plot <- ggplot2::ggplot(data = tidyr::gather(data.frame(object$param))) +
-      ggplot2::geom_histogram(ggplot2::aes(x = value), alpha = 0.45, bins = 30, color = "black") +
-      ggplot2::theme_bw() +
-      ggplot2::facet_wrap(~key, scales = "free") +
->>>>>>> af63ad0f9797a119fcf0ff9295ebd410d13f1eee
       ggplot2::xlab("")
     richness_plot <- ggplot2::ggplot(data.frame("Asy_richness" = EK[EK < Inf])) +
       ggplot2::geom_histogram(ggplot2::aes(x = Asy_richness), alpha = 0.45, bins = 30, color = "black") +
@@ -109,7 +98,6 @@ summary.sdm <- function(object, plot = TRUE, ...) {
   }
   # Print the summary
   cat("Model:",
-<<<<<<< HEAD
       "\t Three-parameter log-logistic (LL3)",
       "\nQuantities:",
       paste0("\t Abundance: ", abundance),
@@ -122,21 +110,7 @@ summary.sdm <- function(object, plot = TRUE, ...) {
      sep= "\n" )
   #print(param_plot)
   #print(richness_plot)
-=======
-    "\t Three-parameter log-logistic (LL3)",
-    "\nQuantities:",
-    paste0("\t Abundance: ", abundance),
-    paste0("\t Richness: ", richness),
-    paste0("\t Number of divergent accumulation curves: ", n_div, " out of ", object$n_resamples, " sampled [", round(100 * n_div / object$n_resamples, 2), "%]"),
-    "\nEst. Richness for non-divergent accumulation curves:",
-    knitr::kable(round(asymp_tab, 2), "simple"),
-    "\nParameters:",
-    knitr::kable(pars_tab, "simple"),
-    sep = "\n"
-  )
-  print(param_plot)
-  print(richness_plot)
->>>>>>> af63ad0f9797a119fcf0ff9295ebd410d13f1eee
+
 
   # Output
   out <- list(
@@ -161,7 +135,6 @@ summary.sdm <- function(object, plot = TRUE, ...) {
 #' @export
 print.summary.sdm <- function(x, ...) {
   cat("Model:",
-<<<<<<< HEAD
       "\t Three-parameter log-logistic (LL3)",
       "\nQuantities:",
       paste0("\t Abundance: ", x$Abundance),
@@ -172,21 +145,6 @@ print.summary.sdm <- function(x, ...) {
       "\nParameters:",
       knitr::kable(x$param_summary, "simple"),
       sep= "\n" )
-=======
-    "\t Three-parameter log-logistic (LL3)",
-    "\nQuantities:",
-    paste0("\t Abundance: ", x$Abundance),
-    paste0("\t Richness: ", x$Richness),
-    paste0("\t Number of divergent accumulation curves: ", x$n_div, " out of ", x$n_resamples, " sampled [", round(100 * x$n_div / x$n_resamples, 2), "%]"),
-    "\nEst. Richness for non-divergent accumulation curves:",
-    knitr::kable(round(x$Asymp_richness_summary, 2), "simple"),
-    "\nParameters:",
-    knitr::kable(x$param_summary, "simple"),
-    sep = "\n"
-  )
-  # print(x$param_plot)
-  # print(x$Asymp_richness_plot)
->>>>>>> af63ad0f9797a119fcf0ff9295ebd410d13f1eee
   invisible(x)
 }
 
@@ -198,11 +156,7 @@ print.summary.sdm <- function(x, ...) {
 #' @param ... other parameters
 
 #' @export
-<<<<<<< HEAD
 plot.sdm <- function(object, n_points = 100, ...){
-=======
-plot.sdm <- function(object, newdata = NULL, ...) {
->>>>>>> af63ad0f9797a119fcf0ff9295ebd410d13f1eee
   # Step 1 - compute the average accumulation curve by averaging across re-samples
   N <- sum(object$frequencies)
   K_mat <- matrix(0, nrow = object$n_resamples, ncol = N)
@@ -216,7 +170,6 @@ plot.sdm <- function(object, newdata = NULL, ...) {
   avg_rarefaction <- rowMeans(apply(object$param, 1, function(p) expected_rarefaction(N = N, alpha = p[1], sigma = p[2], phi = p[3])))
   df <- data.frame("n" = c(1:N), "accum" = avg_accumulation, "rar" = avg_rarefaction)
 
-<<<<<<< HEAD
   if(nrow(df)>n_points){
     seqX <- 1:nrow(df)
     seqY <-split(seqX, sort(seqX%%n_points))
@@ -228,17 +181,5 @@ plot.sdm <- function(object, newdata = NULL, ...) {
     ggplot2::geom_line(ggplot2::aes(x = n, y = rar), color = "red", size = 0.9)+
     ggplot2::theme_bw()+
     ggplot2::facet_wrap(~"Average rarefaction")+
-=======
-  if (nrow(df) > 100) {
-    # Plot one every 100 points
-    df <- df[seq(1, nrow(df), 100), ]
-  }
-
-  ggplot2::ggplot(df) +
-    ggplot2::geom_point(ggplot2::aes(x = n, y = accum), shape = 1) +
-    ggplot2::geom_line(ggplot2::aes(x = n, y = rar), color = "red") +
-    ggplot2::theme_bw() +
-    ggplot2::facet_wrap(~"Average rarefaction") +
->>>>>>> af63ad0f9797a119fcf0ff9295ebd410d13f1eee
     ggplot2::ylab("Number of species")
 }

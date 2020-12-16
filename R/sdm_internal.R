@@ -34,9 +34,7 @@ expected_Kinf <- function(alpha, sigma, phi){
   }
   return(E_KInf)
 }
-#alpha = 1.0966351
-#sigma= 0.4399772
-#phi= 0.9999923
+
 
 expected_rarefaction <- function(N, alpha, sigma, phi){
   n <- c(1:N)-1
