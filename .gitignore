@@ -2,3 +2,10 @@
 .Rhistory
 .RData
 .Ruserdata
+*.csv
+EXTRA/.DS_Store
+EXTRA/Fungal_analysis.R
+EXTRA/Raw_data/dnadata.R
+EXTRA/Raw_data/import_data.R
+EXTRA/Raw_data/protu2name.txt
+EXTRA/Raw_data/samplenames.txt
