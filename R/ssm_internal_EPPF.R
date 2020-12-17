@@ -1,7 +1,6 @@
 #'@import stats
 #'@importFrom Rcpp evalCpp sourceCpp
 #'@importFrom vegan diversity
-#'@useDynLib BNPvegan
 #'
 
 
