@@ -114,6 +114,18 @@ summary.sdm <- function(object, plot = TRUE, ...) {
   #return(invisible(out))
 }
 
+#' Predict sdm
+#'
+#' @param object object of class \code{\link[sdm]{sdm}}
+#' @param ... additional values
+#' @export
+predict.sdm <- function(object, ...){
+  n <- length(object$discoveries) - 1
+  N <- c(0:n)
+  pred <- cumsum(prob_LL3(n = N, alpha = object$par[1], sigma = object$par[2], phi = object$par[3]))
+  return(pred)
+}
+
 #' Print method for the summary
 #'
 #' @param x object of class \code{\link[summary.sdm]{summary.sdm}}
