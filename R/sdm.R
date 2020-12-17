@@ -7,14 +7,18 @@
 #' @details This function.
 #' @export
 #'
-sdm <- function(frequencies, n_resamples = 500L, verbose = TRUE) {
+sdm <- function(frequencies, n_resamples = 1000L, verbose = TRUE) {
 
   # Initialize an empty matrix for the parameters
-  param <- matrix(NA, nrow = n_resamples, ncol = 3)
-  colnames(param) <- c("alpha", "sigma", "phi")
+  param <- matrix(NA, nrow = n_resamples, ncol = 4)
+  colnames(param) <- c("alpha", "sigma", "phi", "loglik")
   # List to store the position of the discoveries in the list
   discoveries_indexes <- matrix(NA, nrow = n_resamples, ncol = length(frequencies))
   verbose_step <- round(n_resamples / 10)
+
+  # Initialize the matrix of predictors
+  n<- sum(frequencies)-1
+  X<-cbind(1, log(1:n), c(1:n))
 
   for (i in 1:n_resamples) {
     # Obtain the discovery sequence
@@ -23,8 +27,14 @@ sdm <- function(frequencies, n_resamples = 500L, verbose = TRUE) {
     discoveries_indexes[i, ] <- which(d == 1)
 
     # Fit the three-parameter log-logistic
-    fit <- max_logLik_LL3(d)
-    param[i, ] <- c(exp(fit$par[1]), 1 + fit$par[2], exp(fit$par[3]))
+    fit <- logit_regression(y = d[-1], X = X)
+    loglik <- max(fit$Convergence[,2])
+    if(fit$par[2]>0 | fit$par[3]>0){
+      fit <- max_logLik_LL3(d=d[-1], X=X)
+      loglik <- -fit$objective
+    }
+    param[i, ] <- c(exp(fit$par[1]), 1 + fit$par[2], exp(fit$par[3]), loglik)
+
 
     # Monitor output
     if (verbose) {
@@ -33,12 +43,28 @@ sdm <- function(frequencies, n_resamples = 500L, verbose = TRUE) {
       }
     }
   }
+
+  # Choose the accumulation curve with the highest loglikelihood
+  selected_curve <- which.max(param[,4])
+  d <- rep(0, sum(frequencies))
+  d[discoveries_indexes[selected_curve,]] <- 1
+  par = param[selected_curve, -4]
+
+  # Compute E(Kinf) and var(Kinf)
+  Asymp_moments = moments_Kinf(alpha = par[1], sigma = par[2], phi = par[3])
+
+  # List to store the re-sampling output
+  resampling_output <- list(param = param, discoveries_indexes= discoveries_indexes, selected_curve = selected_curve)
+
+  # Return the output
   out <- list(
     frequencies = frequencies,
     n_resamples = n_resamples,
-    discoveries_indexes = discoveries_indexes,
-    param = param,
-    loglik = -fit$objective
+    resampling_output = resampling_output,
+    discoveries = d,
+    par = par,
+    loglik = param[selected_curve,4],
+    Asymp_moments = Asymp_moments
   )
   class(out) <- "sdm"
   return(out)
@@ -57,75 +83,35 @@ summary.sdm <- function(object, plot = TRUE, ...) {
   # Sample abundance and richness
   abundance <- sum(object$frequencies)
   richness <- length(object$frequencies)
-
-  # Count the number of divergent accumulation curves
-  n_div <- sum(object$param[, 2] > 0 & object$param[, 3] == 1)
-
-  # Summary of the parameters
-  pars_tab <- matrix(NA, nrow = 3, ncol = 6)
-  colnames(pars_tab) <- c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max.")
-  rownames(pars_tab) <- c("alpha", "sigma", "phi")
-  pars_tab[1, -4] <- unname(quantile(object$param[, 1]))
-  pars_tab[2, -4] <- unname(quantile(object$param[, 2]))
-  pars_tab[3, -4] <- unname(quantile(object$param[, 3]))
-  pars_tab[1, 4] <- mean(object$param[, 1])
-  pars_tab[2, 4] <- mean(object$param[, 2])
-  pars_tab[3, 4] <- mean(object$param[, 3])
-
-
-
-  # Compute asymptotic richness
-  EK <- apply(object$param, 1, FUN = function(p) expected_Kinf(alpha = p[1], sigma = p[2], phi = p[3]))
-  asymp_tab <-rbind(summary(EK[EK<Inf]), (summary(EK[EK<Inf])-richness)/richness)
-  rownames(asymp_tab) <- c("Asymptotic Richness", '% increase')
-
-  #if(plot == TRUE){
-  if(FALSE){
-    param_plot <- ggplot2::ggplot(data = tidyr::gather(data.frame(object$param)))+
-      ggplot2::geom_histogram(ggplot2::aes(x=value),alpha=0.45, bins = 30,color = "black")+
-      ggplot2::theme_bw()+
-      ggplot2::facet_wrap(~key, scales = "free")+
-      ggplot2::xlab("")
-    richness_plot <- ggplot2::ggplot(data.frame("Asy_richness" = EK[EK < Inf])) +
-      ggplot2::geom_histogram(ggplot2::aes(x = Asy_richness), alpha = 0.45, bins = 30, color = "black") +
-      ggplot2::theme_bw() +
-      ggplot2::facet_wrap(~"Asymptotic Richness") +
-      ggplot2::xlab("N. species") +
-      ggplot2::geom_segment(x = richness, xend = richness, y = 0, yend = Inf, color = "red", linetype = "dashed")
-  } else {
-    param_plot <- NULL
-    richness_plot <- NULL
-  }
+  asy_rich <- unname(round(object$Asymp_moments,2))
+  # Summary
   # Print the summary
   cat("Model:",
       "\t Three-parameter log-logistic (LL3)",
+      paste0("\t Number of resamples: ", object$n_resamples),
       "\nQuantities:",
       paste0("\t Abundance: ", abundance),
-       paste0("\t Richness: ", richness),
-     paste0("\t Number of divergent accumulation curves: ", n_div, " out of ", object$n_resamples, " sampled [", round(100*n_div/object$n_resamples,2),'%]'),
-     "\nEst. Richness for non-divergent accumulation curves:",
-     knitr::kable(round(asymp_tab,2), "simple"),
-     "\nParameters:",
-     knitr::kable(pars_tab, "simple"),
+      paste0("\t Richness: ", richness),
+      paste0("\t Expected species at infinity: ", asy_rich[1]),
+      paste0("\t Standard deviation at infinity: ", asy_rich[2]),
+      "\nParameters:",
+      paste0("\t ",knitr::kable(t(c(object$par, object$loglik)), "simple")),
      sep= "\n" )
-  #print(param_plot)
-  #print(richness_plot)
-
 
   # Output
-  out <- list(
-    Abundance = abundance,
-    Richness = richness,
-    n_resamples = object$n_resamples,
-    n_div = n_div,
-    Asymp_richness = EK,
-    Asymp_richness_summary = asymp_tab,
-    Asymp_richness_plot = richness_plot,
-    param_plot = param_plot,
-    param_summary = pars_tab
-  )
-  class(out) <- union("summary", class(object))
-  return(invisible(out))
+  #out <- list(
+  #  Abundance = abundance,
+  #  Richness = richness,
+  #  n_resamples = object$n_resamples,
+  #  n_div = n_div,
+  #  Asymp_richness = EK,
+  #  Asymp_richness_summary = asymp_tab,
+  #  Asymp_richness_plot = richness_plot,
+  #  param_plot = param_plot,
+  #  param_summary = pars_tab
+  #)
+  #class(out) <- union("summary", class(object))
+  #return(invisible(out))
 }
 
 #' Print method for the summary
@@ -183,3 +169,4 @@ plot.sdm <- function(object, n_points = 100, ...){
     ggplot2::facet_wrap(~"Average rarefaction")+
     ggplot2::ylab("Number of species")
 }
+
