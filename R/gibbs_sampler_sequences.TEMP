@@ -76,7 +76,7 @@ Gibbs_sequences <- function(frequencies, R){
 }
 
 
-LL3out <- rLL3(20000, alpha = 50, sigma = 0.5, phi = 0.99975)
+LL3out <- LL3(20000, alpha = 50, sigma = 0.5, phi = 0.99975)
 
 R = 2000
 out_gibbs <- Gibbs_sequences(frequencies = LL3out$frequencies, R = R)

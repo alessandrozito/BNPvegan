@@ -94,12 +94,19 @@ summary.DP <- function(object, ...) {
 #' @export
 #'
 summary.PY <- function(object, ...) {
-  tab <- cbind(Abundance   = sum(object$frequencies),
-               Richness   = length(object$frequencies),
-               Simpson_Emp = Simpson(object$frequencies),
-               Shannon_Emp = Shannon(object$frequencies),
-               Rare_Emp = mean(object$frequencies == 1),
-               Simpson_MB  = (1 - object$param[2]) / (object$param[1] + 1))
+
+  Poch2 <- function(x) x*(x+1)
+
+  alpha <- object$param[1]
+  sigma <- object$param[2]
+  freq  <- object$frequencies
+
+  tab <- cbind(Abundance   = sum(freq),
+               Richness   = length(freq),
+               alpha = alpha,
+               sigma = sigma,
+               Coverage = (n - sigma*K) / (alpha + n),
+               Gini  = 1 - 1/Poch2(alpha + n)*((1 - sigma)*(alpha + K*sigma) + sum(Poch2(freq - sigma))))
   tab
 }
 
