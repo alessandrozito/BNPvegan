@@ -3,6 +3,7 @@
 #' @param sequence A sequence of species in order of appearence
 #'
 #' @return A sequence of binary variables
+#' @export
 extract_discoveries <- function(sequence) {
   as.numeric(!duplicated(sequence))
 }
@@ -12,6 +13,7 @@ extract_discoveries <- function(sequence) {
 #' @param frequencies Vector of counts of the species observed
 #'
 #' @return vector
+#' @export
 sample_sequence <- function(frequencies) {
 
   # Extract the crude sequence

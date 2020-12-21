@@ -100,12 +100,15 @@ summary.PY <- function(object, ...) {
   alpha <- object$param[1]
   sigma <- object$param[2]
   freq  <- object$frequencies
+  n     <- sum(freq)
+  K     <- length(freq)
 
-  tab <- cbind(Abundance   = sum(freq),
-               Richness   = length(freq),
+  tab <- cbind(Abundance   = n,
+               Richness   = K,
                alpha = alpha,
                sigma = sigma,
                Coverage = (n - sigma*K) / (alpha + n),
+               Future_species = round(extrapolate_cl_py(m = n, n = n, K = K, sigma = sigma, alpha = alpha)),
                Gini  = 1 - 1/Poch2(alpha + n)*((1 - sigma)*(alpha + K*sigma) + sum(Poch2(freq - sigma))))
   tab
 }
