@@ -14,7 +14,7 @@ sdm <- function(frequencies, n_resamples = 1000L, verbose = TRUE) {
   colnames(param) <- c("alpha", "sigma", "phi", "loglik")
   # List to store the position of the discoveries in the list
   discoveries_indexes <- matrix(NA, nrow = n_resamples, ncol = length(frequencies))
-  if(n_resamples <= 10){
+  if (n_resamples <= 10) {
     verbose <- FALSE
   }
   verbose_step <- round(n_resamples / 10)
