@@ -113,6 +113,7 @@ summary.PY <- function(object, ...) {
   tab
 }
 
+#' Plot for the Pitman-Yor model
 #' @param object An object of class \code{\link[ssm]{ssm}}.
 #' @param ... Further arguments passed to or from other methods.
 #'

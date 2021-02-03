@@ -11,7 +11,7 @@
 
 \item{n_points}{Number of points to plot in the accumulation curve}
 
-\item{...}{other parameters}
+\item{...}{additional parameters}
 }
 \description{
 Compute rarefaction curves

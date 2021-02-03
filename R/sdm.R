@@ -2,16 +2,28 @@
 #'
 #' @param frequencies Counts of the species
 #' @param n_resamples number of accumulation curves to generate
-#' @param verbose Whether to monitor the function or not
+#' @param model model to fit. Options are "LL3" and "Weibull"
+#' @param verbose Whether to monitor the state of the simulation or not
 #'
 #' @details This function.
 #' @export
 #'
-sdm <- function(frequencies, n_resamples = 1000L, verbose = TRUE) {
+sdm <- function(frequencies, n_resamples = 1000L, model = "LL3", verbose = TRUE) {
+  # Step 0 - filter out the frequencies equal to 0
+  frequencies <- frequencies[frequencies>0]
 
   # Initialize an empty matrix for the parameters
-  param <- matrix(NA, nrow = n_resamples, ncol = 4)
-  colnames(param) <- c("alpha", "sigma", "phi", "loglik")
+  if (model == "LL3") {
+    param <- matrix(NA, nrow = n_resamples, ncol = 4)
+    colnames(param) <- c("alpha", "sigma", "phi", "loglik")
+    # Initialize the matrix of predictors
+    n <- sum(frequencies) - 1
+    X <- cbind(1, log(1:n), c(1:n))
+  } else if (model == "Weibull") {
+    param <- matrix(NA, nrow = n_resamples, ncol = 3)
+    colnames(param) <- c("phi", "lambda", "loglik")
+  }
+
   # List to store the position of the discoveries in the list
   discoveries_indexes <- matrix(NA, nrow = n_resamples, ncol = length(frequencies))
   if (n_resamples <= 10) {
@@ -19,25 +31,45 @@ sdm <- function(frequencies, n_resamples = 1000L, verbose = TRUE) {
   }
   verbose_step <- round(n_resamples / 10)
 
-  # Initialize the matrix of predictors
-  n <- sum(frequencies) - 1
-  X <- cbind(1, log(1:n), c(1:n))
-
   for (i in 1:n_resamples) {
     # Obtain the discovery sequence
     seqD <- sample_sequence(frequencies)
     d <- extract_discoveries(seqD)
     discoveries_indexes[i, ] <- which(d == 1)
 
-    # Fit the three-parameter log-logistic
-    fit <- logit_regression(y = d[-1], X = X)
-    loglik <- max(fit$Convergence[, 2])
-    if (fit$par[2] > 0 | fit$par[3] > 0) {
-      fit <- max_logLik_LL3(d = d[-1], X = X)
-      loglik <- -fit$objective
-    }
-    param[i, ] <- c(exp(fit$par[1]), 1 + fit$par[2], exp(fit$par[3]), loglik)
+    use_constrained_max <- FALSE
 
+    if (model == "LL3") {
+      # Fit the three-parameter log-logistic
+
+      if (use_constrained_max == TRUE) {
+        fit <- try(logit_regression(y = d[-1], X = X), silent = TRUE)
+        if (inherits(fit, "try-error")) {
+          use_constrained_max <- FALSE
+          fit <- max_logLik_LL3(d = d[-1], X = X)
+          loglik <- -fit$objective
+        } else {
+          loglik <- max(fit$Convergence[, 2])
+          if (fit$par[2] > 0 | fit$par[3] > 0) {
+            fit <- max_logLik_LL3(d = d[-1], X = X)
+            loglik <- -fit$objective
+          }
+        }
+      } else {
+        fit <- max_logLik_LL3(d = d[-1], X = X)
+        loglik <- -fit$objective
+      }
+
+      param[i, ] <- c(exp(fit$par[1]), 1 + fit$par[2], exp(fit$par[3]), loglik)
+    } else if (model == "Weibull") {
+      # Fit the Weibull model
+      fit <- max_logLik_Weibull(d = d)
+      loglik <- -fit$objective
+      param[i, ] <- c(fit$par[1], fit$par[2], loglik)
+    } else {
+      cat(paste("No method exists for specified model:", model))
+      return(NA)
+    }
 
     # Monitor output
     if (verbose) {
@@ -48,25 +80,33 @@ sdm <- function(frequencies, n_resamples = 1000L, verbose = TRUE) {
   }
 
   # Choose the accumulation curve with the highest loglikelihood
-  selected_curve <- which.max(param[, 4])
+  if (model == "LL3") {
+    selected_curve <- which.max(param[, 4])
+    par <- param[selected_curve, -4]
+    loglik <- param[selected_curve, 4]
+  } else if (model == "Weibull") {
+    selected_curve <- which.max(param[, 3])
+    par <- param[selected_curve, -3]
+    loglik <- param[selected_curve, 3]
+  }
   d <- rep(0, sum(frequencies))
   d[discoveries_indexes[selected_curve, ]] <- 1
-  par <- param[selected_curve, -4]
 
   # Compute E(Kinf) and var(Kinf)
-  Asymp_moments <- moments_Kinf(alpha = par[1], sigma = par[2], phi = par[3])
+  Asymp_moments <- moments_Kinf(par, n = length(d), k = sum(d), model = model)
 
   # List to store the re-sampling output
   resampling_output <- list(param = param, discoveries_indexes = discoveries_indexes, selected_curve = selected_curve)
 
   # Return the output
   out <- list(
+    model = model,
     frequencies = frequencies,
     n_resamples = n_resamples,
     resampling_output = resampling_output,
     discoveries = d,
     par = par,
-    loglik = param[selected_curve, 4],
+    loglik = loglik,
     Asymp_moments = Asymp_moments
   )
   class(out) <- "sdm"
@@ -81,26 +121,32 @@ sdm <- function(frequencies, n_resamples = 1000L, verbose = TRUE) {
 #'
 #' @details A function to summarize the three parameter log-logistic output
 #' @export
-summary.sdm <- function(object, plot = TRUE, ...) {
+summary.sdm <- function(object, ...) {
 
   # Sample abundance and richness
   abundance <- sum(object$frequencies)
   richness <- length(object$frequencies)
   asy_rich <- unname(round(object$Asymp_moments, 2))
-  # Summary
-  # Print the summary
-  cat("Model:",
-    "\t Three-parameter log-logistic (LL3)",
-    paste0("\t Number of resamples: ", object$n_resamples),
-    "\nQuantities:",
-    paste0("\t Abundance: ", abundance),
-    paste0("\t Richness: ", richness),
-    paste0("\t Expected species at infinity: ", asy_rich[1]),
-    paste0("\t Standard deviation at infinity: ", asy_rich[2]),
-    "\nParameters:",
-    paste0("\t ", knitr::kable(t(c(object$par, object$loglik)), "simple")),
-    sep = "\n"
-  )
+  if (object$model == "LL3") {
+    mod_print <- "\t Three-parameter log-logistic (LL3)"
+  } else if (object$model == "Weibull") {
+    mod_print <- "\t Weibull"
+  }
+  mod_str <-
+    # Summary
+    # Print the summary
+    cat("Model:",
+      mod_print,
+      paste0("\t Number of resamples: ", object$n_resamples),
+      "\nQuantities:",
+      paste0("\t Abundance: ", abundance),
+      paste0("\t Richness: ", richness),
+      paste0("\t Expected species at infinity: ", asy_rich[1]),
+      paste0("\t Standard deviation at infinity: ", asy_rich[2]),
+      "\nParameters:",
+      paste0("\t ", knitr::kable(t(c(object$par, object$loglik)), "simple")),
+      sep = "\n"
+    )
 
   # Output
   # out <- list(
@@ -121,34 +167,25 @@ summary.sdm <- function(object, plot = TRUE, ...) {
 #' Predict sdm
 #'
 #' @param object object of class \code{\link[sdm]{sdm}}
+#' @param newdata Indexes to predict
 #' @param ... additional values
 #' @export
-predict.sdm <- function(object, ...) {
-  n <- length(object$discoveries) - 1
-  N <- c(0:n)
-  pred <- cumsum(prob_LL3(n = N, alpha = object$par[1], sigma = object$par[2], phi = object$par[3]))
-  return(pred)
-}
+predict.sdm <- function(object, newdata = NULL, ...) {
+  if(is.null(newdata)){
+    n <- c(1:length(object$discoveries)) - 1
+    index_to_store = newdata = n + 1
+  } else {
+    n <- c(1:max(newdata)) - 1
+    index_to_store = newdata
+  }
 
-#' Print method for the summary
-#'
-#' @param x object of class \code{\link[summary.sdm]{summary.sdm}}
-#' @param ... other parameters
-#' @export
-print.summary.sdm <- function(x, ...) {
-  cat("Model:",
-    "\t Three-parameter log-logistic (LL3)",
-    "\nQuantities:",
-    paste0("\t Abundance: ", x$Abundance),
-    paste0("\t Richness: ", x$Richness),
-    paste0("\t Number of divergent accumulation curves: ", x$n_div, " out of ", x$n_resamples, " sampled [", round(100 * x$n_div / x$n_resamples, 2), "%]"),
-    "\nEst. Richness for non-divergent accumulation curves:",
-    knitr::kable(round(x$Asymp_richness_summary, 2), "simple"),
-    "\nParameters:",
-    knitr::kable(x$param_summary, "simple"),
-    sep = "\n"
-  )
-  invisible(x)
+  if(object$model=="LL3"){
+    pred <- cumsum(prob_LL3(n = n, alpha = object$par[1], sigma = object$par[2], phi = object$par[3]))
+  } else if (object$model == "Weibull"){
+    pred <- cumsum(prob_Weibull(n = n, phi = object$par[1], lambda = object$par[2]))
+  }
+
+  return(unname(pred)[index_to_store])
 }
 
 
@@ -156,22 +193,18 @@ print.summary.sdm <- function(x, ...) {
 #'
 #' @param object An object of class \code{\link[sdm]{sdm}}.
 #' @param n_points Number of points to plot in the accumulation curve
-#' @param ... other parameters
+#' @param ... additional parameters
 
 #' @export
 plot.sdm <- function(object, n_points = 100, ...) {
-  # Step 1 - compute the average accumulation curve by averaging across re-samples
-  N <- sum(object$frequencies)
-  K_mat <- matrix(0, nrow = object$n_resamples, ncol = N)
-  for (i in 1:object$n_resamples) {
-    K_mat[i, object$discoveries_indexes[i, ]] <- 1
-    K_mat[i, ] <- cumsum(K_mat[i, ])
-  }
-  avg_accumulation <- colMeans(K_mat)
+  # Step 1 - Plot the accumulation curve with the highest likelihood
+  accum <- cumsum(object$discoveries)
 
-  # Step 2 - compute the average rarefaction curve
-  avg_rarefaction <- rowMeans(apply(object$param, 1, function(p) expected_rarefaction(N = N, alpha = p[1], sigma = p[2], phi = p[3])))
-  df <- data.frame("n" = c(1:N), "accum" = avg_accumulation, "rar" = avg_rarefaction)
+  # Plot the rarefaction by predicting
+  rar <- predict(object)
+
+  # Step 3 - compute the average rarefaction curve
+  df <- data.frame("n" = c(1:length(accum)), "accum" = accum, "rar" = rar)
 
   if (nrow(df) > n_points) {
     seqX <- 1:nrow(df)
@@ -183,6 +216,39 @@ plot.sdm <- function(object, n_points = 100, ...) {
     ggplot2::geom_point(ggplot2::aes(x = n, y = accum), shape = 1) +
     ggplot2::geom_line(ggplot2::aes(x = n, y = rar), color = "red", size = 0.9) +
     ggplot2::theme_bw() +
-    ggplot2::facet_wrap(~"Average rarefaction") +
-    ggplot2::ylab("Number of species")
+    ggplot2::facet_wrap(~"Rarefaction curve") +
+    ggplot2::ylab(expression(K[n]))
+}
+
+#' Extract the coefficients of the sdm output
+#'
+#' @param object an object of class \code{\link[sdm]{sdm}}.
+#' @param ... additional parameters
+#'
+#' @export
+#'
+coef.sdm <- function(object, ...){
+  return(object$par)
+}
+
+#' Extract the loglikelihood of the sdm output
+#'
+#' @param object an object of class \code{\link[sdm]{sdm}}.
+#' @param ... additional parameters
+#'
+#' @export
+#'
+logLik.sdm <- function(object, ...){
+  return(object$loglik)
+}
+
+#' Extract the species richness estimates of the sdm output
+#'
+#' @param object an object of class \code{\link[sdm]{sdm}}.
+#' @param ... additional parameters
+#'
+#' @export
+#'
+asymptotic_richness<- function(object, ...){
+  return(object$Asymp_moments)
 }

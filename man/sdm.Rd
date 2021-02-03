@@ -4,14 +4,16 @@
 \alias{sdm}
 \title{Fit the sequential discovery model of Zito et al. (2020+)}
 \usage{
-sdm(frequencies, n_resamples = 1000L, verbose = TRUE)
+sdm(frequencies, n_resamples = 1000L, model = "LL3", verbose = TRUE)
 }
 \arguments{
 \item{frequencies}{Counts of the species}
 
 \item{n_resamples}{number of accumulation curves to generate}
 
-\item{verbose}{Whether to monitor the function or not}
+\item{model}{model to fit. Options are "LL3" and "Weibull"}
+
+\item{verbose}{Whether to monitor the state of the simulation or not}
 }
 \description{
 Fit the sequential discovery model of Zito et al. (2020+)

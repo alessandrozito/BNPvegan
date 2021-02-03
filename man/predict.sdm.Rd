@@ -4,10 +4,12 @@
 \alias{predict.sdm}
 \title{Predict sdm}
 \usage{
-\method{predict}{sdm}(object, ...)
+\method{predict}{sdm}(object, newdata = NULL, ...)
 }
 \arguments{
 \item{object}{object of class \code{\link[sdm]{sdm}}}
+
+\item{newdata}{Indexes to predict}
 
 \item{...}{additional values}
 }

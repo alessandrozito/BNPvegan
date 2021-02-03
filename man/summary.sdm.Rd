@@ -4,7 +4,7 @@
 \alias{summary.sdm}
 \title{Summary for a species discovery model}
 \usage{
-\method{summary}{sdm}(object, plot = TRUE, ...)
+\method{summary}{sdm}(object, ...)
 }
 \arguments{
 \item{object}{An object of class \code{\link[sdm]{sdm}}.}
