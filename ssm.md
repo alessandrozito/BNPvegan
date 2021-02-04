@@ -61,11 +61,13 @@ The first quantity we may want to compute is the **sample coverage**. The tradit
 coverage(frequencies) # 0.9975295
 ```
 
-If the `coverage` function is applied to a `ssm` object, one get the **model based** coverage estimate. In this case, the two values are fairly similar
+If the `coverage` function is applied to a `ssm` object, one get the **model based** coverage estimate. In the `Lepidoptera` dataset, the two values are fairly similar:
 
 ```r
 coverage(fit_DP) # 0.9966645
 ```
+
+The main advantage of model based estimates is the possibility of asses the associated **uncertainty**. 
 
 
 ## Bio-diversity

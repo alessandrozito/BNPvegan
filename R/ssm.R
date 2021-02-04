@@ -79,16 +79,16 @@ summary.DP <- function(object, ...) {
     Additional_species = round(extrapolate_cl_py(m = n, n = n, K = K, sigma = 0, alpha = alpha)) - K,
     Gini = 1 - 1 / Poch2(alpha + n) * (alpha + sum(Poch2(freq)))
   )
-    cat("Model: Dirichlet Process",
-        paste0("\t Abundance: ", out[1]),
-        paste0("\t Richness: ", out[2]),
-        paste0("\t alpha: ", round(out[3],4)),
-        paste0("\t Estimated sample coverage: ", round(out[4],4)),
-        paste0("\t Expected species after additional ",  n, " samples: ", out[2] + out[5]),
-        paste0("\t New expected species after additional ",  n, " samples: ", out[5]),
-        paste0("\t Posterior Gini diversity: ",  round(out[6],4)),
-        sep = "\n"
-    )
+  cat("Model: Dirichlet Process",
+    paste0("\t Abundance: ", out[1]),
+    paste0("\t Richness: ", out[2]),
+    paste0("\t alpha: ", round(out[3], 4)),
+    paste0("\t Estimated sample coverage: ", round(out[4], 4)),
+    paste0("\t Expected species after additional ", n, " samples: ", out[2] + out[5]),
+    paste0("\t New expected species after additional ", n, " samples: ", out[5]),
+    paste0("\t Posterior Gini diversity: ", round(out[6], 4)),
+    sep = "\n"
+  )
   invisible(out)
 }
 
@@ -115,18 +115,59 @@ summary.PY <- function(object, ...) {
   )
 
   cat("Model: Dirichlet Process",
-      paste0("\t Abundance: ", out[1]),
-      paste0("\t Richness: ", out[2]),
-      paste0("\t alpha: ", round(c(out[3]),4)),
-      paste0("\t sigma: ", round(c(out[4]),4)),
-      paste0("\t Estimated sample coverage: ", round(out[5],4)),
-      paste0("\t Expected species after additional ",  n, " samples: ", out[2] + out[6]),
-      paste0("\t New expected species after additional ",  n, " samples: ", out[6]),
-      paste0("\t Posterior Gini diversity: ",  round(out[7],4)),
-      sep = "\n"
+    paste0("\t Abundance: ", out[1]),
+    paste0("\t Richness: ", out[2]),
+    paste0("\t alpha: ", round(c(out[3]), 4)),
+    paste0("\t sigma: ", round(c(out[4]), 4)),
+    paste0("\t Estimated sample coverage: ", round(out[5], 4)),
+    paste0("\t Expected species after additional ", n, " samples: ", out[2] + out[6]),
+    paste0("\t New expected species after additional ", n, " samples: ", out[6]),
+    paste0("\t Posterior Gini diversity: ", round(out[7], 4)),
+    sep = "\n"
   )
   invisible(out)
 }
+
+
+#' Plot for the DP model
+#' @param object An object of class \code{\link[ssm]{ssm}}.
+#' @param ... Further arguments passed to or from other methods.
+#'
+#' @details The method...
+#'
+#' @export
+#'
+plot.DP <- function(object, type, ...) {
+  n <- sum(object$frequencies)
+  alpha <- object$param[1]
+
+  if (type == "freq") {
+    M_l <- as.numeric(table(factor(object$frequencies, levels = 1:n)))
+    # P_l <- M_l / sum(M_l)
+
+    idx <- 1:(which.min(M_l) - 1) # which(P_l > 0)
+
+    data_plot <- data.frame(Size = idx, M_l = M_l[idx], Theoretical = expected_m_py(idx, n = n, sigma = 0, alpha = alpha))
+    p <- ggplot(data = data_plot, aes(x = Size, y = M_l)) +
+      geom_point() +
+      geom_line(aes(y = Theoretical), color = "blue", linetype = "dashed") +
+      scale_y_log10() +
+      scale_x_log10() +
+      theme_bw() +
+      xlab("l") +
+      ylab(expression(M[l]))
+    return(p)
+  } else if (type == "coverage") {
+    p <- ggplot() +
+      xlim(qbeta(0.01, n), qbeta(0.99, alpha)) +
+      geom_function(fun = function(x) dbeta(x, n, alpha)) +
+      theme_bw() +
+      xlab("Sample coverage") +
+      ylab("Density")
+    return(p)
+  }
+}
+
 
 #' Plot for the Pitman-Yor model
 #' @param object An object of class \code{\link[ssm]{ssm}}.
@@ -136,7 +177,7 @@ summary.PY <- function(object, ...) {
 #'
 #' @export
 #'
-plot.PY <- function(object, ...) {
+plot.PY <- function(object, type, ...) {
   n <- sum(object$frequencies)
   alpha <- object$param[1]
   sigma <- object$param[2]
