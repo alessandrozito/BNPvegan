@@ -1,5 +1,10 @@
 #' @export
-coverage <- function(frequencies){
+coverage <- function (x, ...) {
+  UseMethod("coverage", x)
+}
+
+#' @export
+coverage.numeric <- function(frequencies){
   n <- sum(frequencies)
   m1 <- sum(frequencies == 1)
   1 - m1 / n
