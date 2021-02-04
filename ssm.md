@@ -54,21 +54,21 @@ Most of the relevant quantities can be obtained using the `summary` function. Ho
 ```r
 summary(fit_DP)
 
-Model:
-	 Dirichlet process
-
-Quantities:
-	 Abundance: 12548
-	 Richness: 240
-	 Estimated sample coverage: 0.9967
-	 Expected species after additional 12548 samples: 269
-	 New expected species after additional 12548 samples: 29
-	 Posterior Gini diversity: 0.975
-
-Parameters:
-	 |    alpha|  loglik|
-	 |--------:|-------:|
-	 | 41.99451| -105253|
+# Model:
+# 	 Dirichlet process
+# 
+# Quantities:
+# 	 Abundance: 12548
+# 	 Richness: 240
+# 	 Estimated sample coverage: 0.9967
+# 	 Expected species after additional 12548 samples: 269
+# 	 New expected species after additional 12548 samples: 29
+# 	 Posterior Gini diversity: 0.975
+# 
+# Parameters:
+# 	 |    alpha|  loglik|
+# 	 |--------:|-------:|
+# 	 | 41.99451| -105253|
 ```
 
 ## Estimating the sample coverage
@@ -78,7 +78,7 @@ The first quantity we may want to compute is the **sample coverage**. The tradit
 ```r
 coverage(frequencies)
 
-[1] 0.9975295
+# [1] 0.9975295
 ```
 
 If the `coverage` function is applied to a `ssm` object, one get the **model based** coverage estimate. In the `Lepidoptera` dataset, the two values are fairly similar:
@@ -86,7 +86,7 @@ If the `coverage` function is applied to a `ssm` object, one get the **model bas
 ```r
 coverage(fit_DP)
 
-[1] 0.9966645
+# [1] 0.9966645
 ```
 
 The main advantage of model based estimates is the possibility of asses the associated **uncertainty**. 
@@ -100,13 +100,13 @@ plot(fit_DP, type = "coverage")
 ```r
 Gini(frequencies)
 
-[1] 0.9749111
+# [1] 0.9749111
 ```
 
 ```r
 Gini(fit_DP)
 
-[1] 0.9750008
+# [1] 0.9750008
 ```
 
 ## Estimating the rarefaction
