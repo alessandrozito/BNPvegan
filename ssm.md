@@ -1,4 +1,4 @@
-## Species sampling models (`ssm` class)
+# Species sampling models (`ssm` class)
 
 Species sampling models are a Bayesian nonparametric tools that have a large variety of applications in ecology. For a general overview, one can refer to:
 
@@ -9,12 +9,25 @@ Species sampling models are a Bayesian nonparametric tools that have a large var
 As a working example, we make use of the frequencies available in the `data("Lepidoptera")` dataset. The sampling scheme currently availabe are the Dirichlet process `DP` and the Pitman-Yor process `PY`.
 
 ```r 
-# Load the library into memory
+# Load the both the vegan and BNP vegan libraries into memory
+library(vegan) 
 library(BNPvegan)
 data("Lepidoptera")
 ```
 
-The `Lepidoptera` dataset contains a vector of frequencies, denoting the number of times a given species has been observed. Hence
+The `Lepidoptera` dataset contains a vector of frequencies, denoting the number of times a given species has been observed. We first compute some preliminary quantities: the frequencies $n_1,\dots,n_k$ and the frequencies of frequencies $m_1,\dots,m_n$, that are obtained through the `freq_of_freq` command.
 
+```r 
+frequencies <- as.numeric(Lepidoptera) # Frequencies of each species
+m    <- freq_of_freq(frequencies, ) # Frequencies of frequencies
+```
 
+In order to plot the frequencies of frequencies, you can use the 
 
+## Estimating the sample coverage
+
+## Bio-diversity
+
+## Estimating the rarefaction
+
+## Extrapolation of the curve
