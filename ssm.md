@@ -116,19 +116,21 @@ rar_DP <- rarefaction(fit_DP) # Store the values of the rarefaction curve
 plot(fit_DP, type = "rarefaction")
 ```
 
+![alt text](images/ssm_DP_rarefaction.pdf)
+
 ## Extrapolation of the curve
 
 ```r
-predict(fit_DP, 0:10)
+predict(fit_DP, 0:10) # Predict the next 10 terms
 
 # [1] 240.0000 240.0033 240.0067 240.0100 240.0133 240.0167 240.0200 240.0233
 # [9] 240.0267 240.0300 240.0333
 
-predict(fit_DP, n)
+predict(fit_DP, n) # Prediction at the m = n term
 
 # [1] 269.0391
 
-predict(fit_DP, n) - K
+predict(fit_DP, n) - K # New expected species
 
 # [1] 29.03911
 ```
