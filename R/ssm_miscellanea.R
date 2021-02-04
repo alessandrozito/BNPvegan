@@ -1,7 +1,7 @@
 expected_cl_py <- function(n, sigma, alpha) {
   n <- as.integer(n)
   if (sigma == 0) {
-    out <- alpha * sum(1 / (alpha - 1 + 1:n))
+    out <- alpha * (digamma(alpha + n) - digamma(alpha))
   } else {
     out <- 1 / sigma * exp(lgamma(alpha + sigma + n) - lgamma(alpha + sigma) - lgamma(alpha + n) + lgamma(alpha + 1)) - alpha / sigma
   }

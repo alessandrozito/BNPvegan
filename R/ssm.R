@@ -25,6 +25,27 @@ ssm <- function(frequencies, model) {
 }
 
 
+#' @export
+rarefaction <- function(x, ...) {
+  UseMethod("rarefaction", x)
+}
+
+
+#' @export
+#'
+rarefaction.DP <- function(object, ...) {
+  n <- sum(object$frequencies)
+  expected_cl_py(1:n, sigma = 0, alpha = object$param)
+}
+
+#' @export
+#'
+rarefaction.PY <- function(object, ...) {
+  n <- sum(object$frequencies)
+  expected_cl_py(1:n, sigma = object$param[2], alpha = object$param[1])
+}
+
+
 #' Predict method for the DP model
 #'
 #'
@@ -69,7 +90,7 @@ summary.DP <- function(object, ...) {
   n <- sum(freq)
   K <- length(freq)
   Expected <- round(extrapolate_cl_py(m = n, n = n, K = K, sigma = 0, alpha = alpha)) - K
-  Gini <- diversity(object)
+  Gini <- Gini(object)
 
   out <- t(c(alpha, object$loglik))
   colnames(out) <- c("alpha", "loglik")
@@ -155,6 +176,14 @@ plot.DP <- function(object, type = "freq", ...) {
       xlab("Sample coverage") +
       ylab("Density")
     return(p)
+  } else if (type == "rarefaction") {
+    data_plot <- data.frame(n = 1:n, rar = rarefaction(object))
+    p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
+      geom_line() +
+      theme_bw() +
+      xlab("n") +
+      ylab("Rarefaction")
+    return(p)
   }
 }
 
@@ -193,6 +222,14 @@ plot.PY <- function(object, type = "freq", ...) {
       theme_bw() +
       xlab("Sample coverage") +
       ylab("Density")
+    return(p)
+  } else if (type == "rarefaction") {
+    data_plot <- data.frame(n = 1:n, rar = rarefaction(object))
+    p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
+      geom_line() +
+      theme_bw() +
+      xlab("n") +
+      ylab("Rarefaction")
     return(p)
   }
 }
