@@ -10,3 +10,18 @@ The `BNPvegan` package can be installed by running the following commands:
 
 devtools::install_github("alessandrozito/BNPvegan")
 ```
+
+
+## Species sampling models (`ssm` class)
+
+
+```r 
+# Add here relevant commands
+```
+
+## Sequential discoveries models (`sdm` class) 
+
+
+```r 
+# Add here relevant commands
+```
