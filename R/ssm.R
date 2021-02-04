@@ -75,15 +75,15 @@ summary.DP <- function(object, ...) {
     Abundance = n,
     Richness = K,
     alpha = alpha,
-    Coverage = n  / (alpha + n),
-    Additional_species = round(extrapolate_cl_py(m = n, n = n, K = K, sigma = 0, alpha = alpha)) - K,
+    Coverage = coverage(object),
+    Additional_species = extrapolate_cl_py(m = n, n = n, K = K, sigma = 0, alpha = alpha) - K,
     Gini = 1 - 1 / Poch2(alpha + n) * (alpha + sum(Poch2(freq)))
   )
     cat("Model: Dirichlet Process",
         paste0("\t Abundance: ", out[1]),
         paste0("\t Richness: ", out[2]),
         paste0("\t alpha: ", round(out[3],4)),
-        paste0("\t Sample coverage: ", round(out[4],4)),
+        paste0("\t Estimated sample coverage: ", round(out[4],4)),
         paste0("\t Expected species after additional ",  n, " samples: ", out[2] + out[5]),
         paste0("\t New expected species after additional ",  n, " samples: ", out[5]),
         paste0("\t Posterior Gini diversity: ",  round(out[6],4)),
@@ -109,7 +109,7 @@ summary.PY <- function(object, ...) {
     Richness = K,
     alpha = alpha,
     sigma = sigma,
-    Coverage = (n - sigma * K) / (alpha + n),
+    Coverage = coverage(object),
     Future_species = round(extrapolate_cl_py(m = n, n = n, K = K, sigma = sigma, alpha = alpha)) - K,
     Gini = 1 - 1 / Poch2(alpha + n) * ((1 - sigma) * (alpha + K * sigma) + sum(Poch2(freq - sigma)))
   )
@@ -119,7 +119,7 @@ summary.PY <- function(object, ...) {
       paste0("\t Richness: ", out[2]),
       paste0("\t alpha: ", round(c(out[3]),4)),
       paste0("\t sigma: ", round(c(out[4]),4)),
-      paste0("\t Sample coverage: ", round(out[5],4)),
+      paste0("\t Estimated sample coverage: ", round(out[5],4)),
       paste0("\t Expected species after additional ",  n, " samples: ", out[2] + out[6]),
       paste0("\t New expected species after additional ",  n, " samples: ", out[6]),
       paste0("\t Posterior Gini diversity: ",  round(out[7],4)),

@@ -36,10 +36,9 @@ In order to estimate, say, a `DP` model you can use the following **R** commands
 
 ```r
 fit_DP <- ssm(frequencies, "DP") # An object of class ssm
-alpha_hat <- fit_DP$param # Maximum likelihood estimate of the parameter
 ```
 
-This obtains the maximum likelihood estimate for the parameter od the `DP`. In this case we have that `alpha_hat = 41.99451`. Most of the relevant quantities can be obtained using the `summary` function. 
+This obtains the maximum likelihood estimate for the parameter od the `DP`. In this case we have that `alpha_hat = 41.99451`. Most of the relevant quantities can be obtained using the `summary` function. However, note that these values can be 
 
 ```r
 summary(fit_DP)
@@ -48,12 +47,11 @@ Model: Dirichlet Process
 	 Abundance: 12548
 	 Richness: 240
 	 alpha: 41.9945
-	 Sample coverage: 0.9967
+	 Estimated sample coverage: 0.9967
 	 Expected species after additional 12548 samples: 269
 	 New expected species after additional 12548 samples: 29
 	 Posterior Gini diversity: 0.975
 ```
-
 
 ## Estimating the sample coverage
 
