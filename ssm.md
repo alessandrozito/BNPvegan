@@ -43,14 +43,21 @@ This obtains the maximum likelihood estimate for the parameter od the `DP`. In t
 ```r
 summary(fit_DP)
 
-Model: Dirichlet Process
+Model:
+	 Dirichlet process
+
+Quantities:
 	 Abundance: 12548
 	 Richness: 240
-	 alpha: 41.9945
 	 Estimated sample coverage: 0.9967
 	 Expected species after additional 12548 samples: 269
 	 New expected species after additional 12548 samples: 29
 	 Posterior Gini diversity: 0.975
+
+Parameters:
+	 |    alpha|  loglik|
+	 |--------:|-------:|
+	 | 41.99451| -105253|
 ```
 
 ## Estimating the sample coverage

@@ -70,26 +70,25 @@ summary.DP <- function(object, ...) {
   freq <- object$frequencies
   n <- sum(freq)
   K <- length(freq)
+  Expected <- round(extrapolate_cl_py(m = n, n = n, K = K, sigma = 0, alpha = alpha)) - K
+  Gini <- 1 - 1 / Poch2(alpha + n) * (alpha + sum(Poch2(freq)))
 
-  out <- cbind(
-    Abundance = n,
-    Richness = K,
-    alpha = alpha,
-    Coverage = coverage(object),
-    Additional_species = round(extrapolate_cl_py(m = n, n = n, K = K, sigma = 0, alpha = alpha)) - K,
-    Gini = 1 - 1 / Poch2(alpha + n) * (alpha + sum(Poch2(freq)))
-  )
-  cat("Model: Dirichlet Process",
-    paste0("\t Abundance: ", out[1]),
-    paste0("\t Richness: ", out[2]),
-    paste0("\t alpha: ", round(out[3], 4)),
-    paste0("\t Estimated sample coverage: ", round(out[4], 4)),
-    paste0("\t Expected species after additional ", n, " samples: ", out[2] + out[5]),
-    paste0("\t New expected species after additional ", n, " samples: ", out[5]),
-    paste0("\t Posterior Gini diversity: ", round(out[6], 4)),
+  out <- t(c(alpha, object$loglik))
+  colnames(out) <- c("alpha", "loglik")
+
+  cat("Model:",
+    "\t Dirichlet process",
+    "\nQuantities:",
+    paste0("\t Abundance: ", n),
+    paste0("\t Richness: ", K),
+    paste0("\t Estimated sample coverage: ", round(coverage(object), 4)),
+    paste0("\t Expected species after additional ", n, " samples: ", Expected + K),
+    paste0("\t New expected species after additional ", n, " samples: ", Expected),
+    paste0("\t Posterior Gini diversity: ", round(Gini, 4)),
+    "\nParameters:",
+    paste0("\t ", knitr::kable(out)),
     sep = "\n"
   )
-  invisible(out)
 }
 
 
@@ -103,29 +102,25 @@ summary.PY <- function(object, ...) {
   freq <- object$frequencies
   n <- sum(freq)
   K <- length(freq)
+  Expected <- round(extrapolate_cl_py(m = n, n = n, K = K, sigma = sigma, alpha = alpha)) - K
+  Gini <- 1 - 1 / Poch2(alpha + n) * ((1 - sigma) * (alpha + K * sigma) + sum(Poch2(freq - sigma)))
 
-  out <- cbind(
-    Abundance = n,
-    Richness = K,
-    alpha = alpha,
-    sigma = sigma,
-    Coverage = coverage(object),
-    Future_species = round(extrapolate_cl_py(m = n, n = n, K = K, sigma = sigma, alpha = alpha)) - K,
-    Gini = 1 - 1 / Poch2(alpha + n) * ((1 - sigma) * (alpha + K * sigma) + sum(Poch2(freq - sigma)))
-  )
+  out <- t(c(alpha, sigma, object$loglik))
+  colnames(out) <- c("alpha", "sigma", "loglik")
 
-  cat("Model: Dirichlet Process",
-    paste0("\t Abundance: ", out[1]),
-    paste0("\t Richness: ", out[2]),
-    paste0("\t alpha: ", round(c(out[3]), 4)),
-    paste0("\t sigma: ", round(c(out[4]), 4)),
-    paste0("\t Estimated sample coverage: ", round(out[5], 4)),
-    paste0("\t Expected species after additional ", n, " samples: ", out[2] + out[6]),
-    paste0("\t New expected species after additional ", n, " samples: ", out[6]),
-    paste0("\t Posterior Gini diversity: ", round(out[7], 4)),
-    sep = "\n"
+  cat("Model:",
+      "\t Pitman-Yor process",
+      "\nQuantities:",
+      paste0("\t Abundance: ", n),
+      paste0("\t Richness: ", K),
+      paste0("\t Estimated sample coverage: ", round(coverage(object), 4)),
+      paste0("\t Expected species after additional ", n, " samples: ", Expected + K),
+      paste0("\t New expected species after additional ", n, " samples: ", Expected),
+      paste0("\t Posterior Gini diversity: ", round(Gini, 4)),
+      "\nParameters:",
+      paste0("\t ", knitr::kable(out)),
+      sep = "\n"
   )
-  invisible(out)
 }
 
 

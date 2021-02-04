@@ -32,7 +32,7 @@ extrapolate_cl_py <- function(m, K, n, sigma, alpha) {
   if (sigma < 1e-10) {
     out <- alpha * (digamma(alpha + n + m) - digamma(alpha)) - alpha * (digamma(alpha + n) - digamma(alpha)) + K
   } else {
-    out <- (K + alpha / sigma) * (exp(lgamma(alpha + n + sigma + m) - lgamma(alpha + n + sigma) - lgamma(alpha + n + m) + lgamma(alpha + n)) - 1)
+    out <- (K + alpha / sigma) * (exp(lgamma(alpha + n + sigma + m) - lgamma(alpha + n + sigma) - lgamma(alpha + n + m) + lgamma(alpha + n)) - 1) + K
   }
 
   return(out)
