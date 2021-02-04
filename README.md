@@ -1,6 +1,8 @@
-# The `BNPvegan` R package - :warning: Under development
+# The `BNPvegan` R package - :warning: under development
 
 This **R** package is an implementation of various Bayesian nonparametric models for the analysis of ecological data. The package consists of two main methods: **species sampling models** (`ssm`) and  **species discovery models** (`sdm`).
+
+
 
 The `BNPvegan` package can be installed by running the following commands:
 
@@ -29,6 +31,11 @@ data("Lepidoptera")
 
 ## Sequential discoveries models (`sdm` class) 
 
+Sequential discovery models are a Bayesian method to construct, fit and predict the accumulation curves arising from the frequencies with which species are observed. For a theoretical description, see:
+
+ * Zito, A., Rigon, T., Ovaskainen, O. and Dunson, D. B. (2020+): [Bayesian nonparametric modelling of sequential discoveries](https://arxiv.org/abs/2011.06629)
+ 
+ The models ava
 
 ```r 
 # Add here relevant commands
