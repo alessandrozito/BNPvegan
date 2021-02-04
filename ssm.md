@@ -87,12 +87,20 @@ plot(fit_DP, type = "coverage")
 ## Bio-diversity
 
 ```r
-diversity(frequencies)
+Gini(frequencies)
 
-          Gini Normalized Gini  Entropy Normalized entropy
-[1,] 0.9749111       0.9789903 4.288713          0.7825205
+[1] 0.9749111
+```
+
+```r
+Gini(fit_DP)
+
+[1] 0.9750008
 ```
 
 ## Estimating the rarefaction
+
+
+
 
 ## Extrapolation of the curve

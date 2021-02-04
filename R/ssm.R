@@ -64,14 +64,12 @@ predict.PY <- function(object, newdata = NULL, ...) {
 #' @export
 #'
 summary.DP <- function(object, ...) {
-  Poch2 <- function(x) x * (x + 1)
-
   alpha <- object$param[1]
   freq <- object$frequencies
   n <- sum(freq)
   K <- length(freq)
   Expected <- round(extrapolate_cl_py(m = n, n = n, K = K, sigma = 0, alpha = alpha)) - K
-  Gini <- 1 - 1 / Poch2(alpha + n) * (alpha + sum(Poch2(freq)))
+  Gini <- diversity(object)
 
   out <- t(c(alpha, object$loglik))
   colnames(out) <- c("alpha", "loglik")
@@ -95,7 +93,6 @@ summary.DP <- function(object, ...) {
 #' @export
 #'
 summary.PY <- function(object, ...) {
-  Poch2 <- function(x) x * (x + 1)
 
   alpha <- object$param[1]
   sigma <- object$param[2]
@@ -103,7 +100,7 @@ summary.PY <- function(object, ...) {
   n <- sum(freq)
   K <- length(freq)
   Expected <- round(extrapolate_cl_py(m = n, n = n, K = K, sigma = sigma, alpha = alpha)) - K
-  Gini <- 1 - 1 / Poch2(alpha + n) * ((1 - sigma) * (alpha + K * sigma) + sum(Poch2(freq - sigma)))
+  Gini <- Gini(object)
 
   out <- t(c(alpha, sigma, object$loglik))
   colnames(out) <- c("alpha", "sigma", "loglik")
