@@ -68,9 +68,12 @@ rarefaction.PY <- function(object, ...) {
 #'
 #' @export
 #'
-predict.DP <- function(object, newdata = NULL, ...) {
-  n <- sum(object$frequencies)
-  expected_cl_py(1:n, sigma = 0, alpha = object$param)
+predict.DP <- function(object, m, ...) {
+  alpha <- object$param[1]
+  freq <- object$frequencies
+  n <- sum(freq)
+  K <- length(freq)
+  Expected <- extrapolate_cl_py(m = m, n = n, K = K, sigma = 0, alpha = alpha)
 }
 
 #' Predict method for the PY model
@@ -101,7 +104,7 @@ summary.DP <- function(object, ...) {
   Expected <- round(extrapolate_cl_py(m = n, n = n, K = K, sigma = 0, alpha = alpha)) - K
   Gini <- Gini(object)
 
-  out <- t(c(alpha, object$loglik))
+  out <- t(c(alpha, object$logLik))
   colnames(out) <- c("alpha", "loglik")
 
   cat("Model:",
@@ -131,7 +134,7 @@ summary.PY <- function(object, ...) {
   Expected <- round(extrapolate_cl_py(m = n, n = n, K = K, sigma = sigma, alpha = alpha)) - K
   Gini <- Gini(object)
 
-  out <- t(c(alpha, sigma, object$loglik))
+  out <- t(c(alpha, sigma, object$logLik))
   colnames(out) <- c("alpha", "sigma", "loglik")
 
   cat("Model:",
