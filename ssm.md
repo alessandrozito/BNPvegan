@@ -116,7 +116,7 @@ rar_DP <- rarefaction(fit_DP) # Store the values of the rarefaction curve
 plot(fit_DP, type = "rarefaction")
 ```
 
-![](images/ssm_DP_rar.pdf)
+![](images/ssm_DP_rar.png)
 
 ## Extrapolation of the curve
 
