@@ -21,7 +21,7 @@ The `Lepidoptera` dataset contains a **vector of frequencies**, denoting the num
 frequencies <- as.numeric(Lepidoptera) # Frequencies of each species
 
 # Other quantities
-n <- sum(frequencies) # Sample size
+n <- sum(frequencies) # Sample size, i.e. the abundance
 K <- length(frequencies) # Number of distinct species, i.e. the richness. 
 M <- as.numeric(table(factor(frequencies, levels = 1:n))) # Frequency of frequencies
 ```

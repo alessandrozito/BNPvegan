@@ -38,8 +38,7 @@ unique_ratio <- function(frequencies) {
 #'
 #' @export
 #'
-
-diversities <- function(dataset) {
+diversity <- function(dataset) {
   if (is.null(dim(dataset))) dataset <- matrix(dataset, nrow = 1)
   tab <- matrix(0, nrow(dataset), 6)
   rownames(tab) <- rownames(dataset)
