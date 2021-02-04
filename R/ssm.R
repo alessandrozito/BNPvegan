@@ -84,7 +84,8 @@ summary.DP <- function(object, ...) {
         paste0("\t Richness: ", out[2]),
         paste0("\t alpha: ", round(out[3],4)),
         paste0("\t Sample coverage: ", round(out[4],4)),
-        paste0("\t Expected species after additional ",  n, " samples: ", out[5]),
+        paste0("\t Expected species after additional ",  n, " samples: ", out[2] + out[5]),
+        paste0("\t New expected species after additional ",  n, " samples: ", out[5]),
         paste0("\t Posterior Gini diversity: ",  round(out[6],4)),
         sep = "\n"
     )
@@ -119,7 +120,8 @@ summary.PY <- function(object, ...) {
       paste0("\t alpha: ", round(c(out[3]),4)),
       paste0("\t sigma: ", round(c(out[4]),4)),
       paste0("\t Sample coverage: ", round(out[5],4)),
-      paste0("\t Expected species after additional ",  n, " samples: ", out[6]),
+      paste0("\t Expected species after additional ",  n, " samples: ", out[2] + out[6]),
+      paste0("\t New expected species after additional ",  n, " samples: ", out[6]),
       paste0("\t Posterior Gini diversity: ",  round(out[7],4)),
       sep = "\n"
   )

@@ -47,9 +47,10 @@ summary(fit_DP)
 Model: Dirichlet Process
 	 Abundance: 12548
 	 Richness: 240
-	 Parameter: 41.9945
+	 alpha: 41.9945
 	 Sample coverage: 0.9967
-	 Expected species after additional 12548 samples: 29
+	 Expected species after additional 12548 samples: 269
+	 New expected species after additional 12548 samples: 29
 	 Posterior Gini diversity: 0.975
 ```
 
