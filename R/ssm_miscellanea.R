@@ -72,6 +72,6 @@ freq_of_freq <- function(dataset, rel = FALSE, plot = FALSE) {
       ylab("Frequency of frequencies")
     return(p)
   }
-  tab
+  c(tab)
 }
 

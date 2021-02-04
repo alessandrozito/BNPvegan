@@ -15,11 +15,11 @@ library(BNPvegan)
 data("Lepidoptera")
 ```
 
-The `Lepidoptera` dataset contains a vector of frequencies, denoting the number of times a given species has been observed. We first compute some preliminary quantities: the frequencies $n_1,\dots,n_k$ and the frequencies of frequencies $m_1,\dots,m_n$, that are obtained through the `freq_of_freq` command.
+The `Lepidoptera` dataset contains a vector of frequencies, denoting the number of times a given species has been observed. We first compute some preliminary quantities: the frequencies and the frequencies of frequencies, that are obtained through the `freq_of_freq` command.
 
 ```r 
 frequencies <- as.numeric(Lepidoptera) # Frequencies of each species
-m    <- freq_of_freq(frequencies, ) # Frequencies of frequencies
+m <- freq_of_freq(frequencies, ) # Frequencies of frequencies
 ```
 
 In order to plot the frequencies of frequencies, you can use the 
