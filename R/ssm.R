@@ -11,19 +11,28 @@ ssm <- function(frequencies, model) {
   frequencies <- frequencies[frequencies > 0]
   if (model == "DP") {
     fit <- max_EPPF_DP(frequencies)
-    out <- list(frequencies = frequencies, param = fit$par, loglik = -fit$objective)
+    out <- list(frequencies = frequencies, param = fit$par, logLik = -fit$objective)
     class(out) <- c("ssm", "DP")
     return(out)
   }
 
   if (model == "PY") {
     fit <- max_EPPF_PY(frequencies)
-    out <- list(frequencies = frequencies, param = fit$par, loglik = -fit$objective)
+    out <- list(frequencies = frequencies, param = fit$par, logLik = -fit$objective)
     class(out) <- c("ssm", "PY")
     return(out)
   }
 }
 
+#' @export
+coef.ssm <- function(object, ...){
+  object$param
+}
+
+#' @export
+logLik.ssm <- function(object, ...){
+  object$logLik
+}
 
 #' @export
 rarefaction <- function(x, ...) {
@@ -150,7 +159,7 @@ summary.PY <- function(object, ...) {
 #'
 #' @export
 #'
-plot.DP <- function(object, type = "freq", ...) {
+plot.DP <- function(object, type = "rarefaction", ...) {
   n <- sum(object$frequencies)
   alpha <- object$param[1]
 
@@ -196,7 +205,7 @@ plot.DP <- function(object, type = "freq", ...) {
 #'
 #' @export
 #'
-plot.PY <- function(object, type = "freq", ...) {
+plot.PY <- function(object, type = "rarefaction", ...) {
   n <- sum(object$frequencies)
   alpha <- object$param[1]
   sigma <- object$param[2]

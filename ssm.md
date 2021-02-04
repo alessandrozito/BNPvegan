@@ -42,7 +42,14 @@ fit_DP <- ssm(frequencies, "DP") # An object of class ssm using the DP model
 fit_PY <- ssm(frequencies, "PY") # An object of class ssm using the PY model
 ```
 
-This obtains the maximum likelihood estimate for the parameter od the `DP`. In this case we have that `alpha_hat = 41.99451`. Most of the relevant quantities can be obtained using the `summary` function. However, note that these values can be 
+This obtains the maximum likelihood estimate for the parameter od the `DP`. In this case we have that `alpha_hat = 41.99451`. We can access these values using
+
+```r
+coef(fit_DP) # Extract the parameters
+logLik(fit_DP) # Extract the value of the log-likelihood
+```
+
+Most of the relevant quantities can be obtained using the `summary` function. However, note that these values can be 
 
 ```r
 summary(fit_DP)
@@ -104,7 +111,7 @@ Gini(fit_DP)
 
 ## Estimating the rarefaction
 
-```
+```r
 rar_DP <- rarefaction(fit_DP) # Store the values of the rarefaction curve
 plot(fit_DP, type = "rarefaction")
 ```
