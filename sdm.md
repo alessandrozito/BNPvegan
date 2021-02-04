@@ -14,16 +14,38 @@ frequencies <- fungalOTU
 
 # Fit the model with 1000 resamples
 set.seed(1)
-fit <- sdm(Kimp, n_resamples = 1000, model = "LL3")
+fit <- sdm(frequencies, n_resamples = 1000, model = "LL3")
 ```
 
 To summarize the output, just run
 ```R
 summary(fit)
+```
+The result is
+```R
+Model:
+	 Three-parameter log-logistic (LL3)
+	 Number of resamples: 1000
+
+Quantities:
+	 Abundance: 21243
+	 Richness: 563
+	 Expected species at infinity: 683
+	 Standard deviation at infinity: 26.12
+	 Sample saturation: 0.8243
+
+Parameters:
+	     alpha       sigma         phi     loglik
+	 ---------  ----------  ----------  ---------
+	  91.86718   0.0269072   0.9999871   -1975.74
+```
+To make a plot of the chosen accumulation curve, run
+```R
 plot(fit)
 ```
 
-To extract relevant quantities, do:
+
+Finally, to extract relevant quantities, do:
 ```R
 coef(fit)
 logLik(fit)
