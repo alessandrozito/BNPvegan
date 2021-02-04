@@ -69,6 +69,9 @@ coverage(fit_DP) # 0.9966645
 
 The main advantage of model based estimates is the possibility of asses the associated **uncertainty**. 
 
+```r
+plot(fit_DP, type = "coverage")
+```
 
 ## Bio-diversity
 
