@@ -54,5 +54,5 @@ rcoverage.PY <- function(object, R = 1000, ...) {
   n <- sum(freq)
   K <- length(freq)
 
-  rbeta(R, n - sigma*K, alpha + sigma*K)
+  rbeta(R, n - sigma * K, alpha + sigma * K)
 }

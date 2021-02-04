@@ -4,7 +4,7 @@ Gini <- function(x, ...) {
 }
 
 #' @export
-Gini.numeric <- function(object,...) {
+Gini.numeric <- function(object, ...) {
   freq_rel <- frequencies / sum(frequencies)
   out <- 1 - sum(freq_rel^2)
   out
@@ -100,4 +100,3 @@ Gini.PY <- function(object, ...) {
 #'     )
 #'   tab
 #' }
-

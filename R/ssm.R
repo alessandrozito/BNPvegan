@@ -25,12 +25,12 @@ ssm <- function(frequencies, model) {
 }
 
 #' @export
-coef.ssm <- function(object, ...){
+coef.ssm <- function(object, ...) {
   object$param
 }
 
 #' @export
-logLik.ssm <- function(object, ...){
+logLik.ssm <- function(object, ...) {
   object$logLik
 }
 
@@ -123,7 +123,6 @@ summary.DP <- function(object, ...) {
 #' @export
 #'
 summary.PY <- function(object, ...) {
-
   alpha <- object$param[1]
   sigma <- object$param[2]
   freq <- object$frequencies
@@ -136,17 +135,17 @@ summary.PY <- function(object, ...) {
   colnames(out) <- c("alpha", "sigma", "loglik")
 
   cat("Model:",
-      "\t Pitman-Yor process",
-      "\nQuantities:",
-      paste0("\t Abundance: ", n),
-      paste0("\t Richness: ", K),
-      paste0("\t Estimated sample coverage: ", round(coverage(object), 4)),
-      paste0("\t Expected species after additional ", n, " samples: ", Expected + K),
-      paste0("\t New expected species after additional ", n, " samples: ", Expected),
-      paste0("\t Posterior Gini diversity: ", round(Gini, 4)),
-      "\nParameters:",
-      paste0("\t ", knitr::kable(out)),
-      sep = "\n"
+    "\t Pitman-Yor process",
+    "\nQuantities:",
+    paste0("\t Abundance: ", n),
+    paste0("\t Richness: ", K),
+    paste0("\t Estimated sample coverage: ", round(coverage(object), 4)),
+    paste0("\t Expected species after additional ", n, " samples: ", Expected + K),
+    paste0("\t New expected species after additional ", n, " samples: ", Expected),
+    paste0("\t Posterior Gini diversity: ", round(Gini, 4)),
+    "\nParameters:",
+    paste0("\t ", knitr::kable(out)),
+    sep = "\n"
   )
 }
 
@@ -226,8 +225,8 @@ plot.PY <- function(object, type = "rarefaction", ...) {
     return(p)
   } else if (type == "coverage") {
     p <- ggplot() +
-      xlim(qbeta(0.001, n - sigma*K, alpha + sigma*K), qbeta(0.999, n - sigma*K, alpha + sigma*K)) +
-      geom_function(fun = function(x) dbeta(x, n - sigma*K, alpha + sigma*K)) +
+      xlim(qbeta(0.001, n - sigma * K, alpha + sigma * K), qbeta(0.999, n - sigma * K, alpha + sigma * K)) +
+      geom_function(fun = function(x) dbeta(x, n - sigma * K, alpha + sigma * K)) +
       theme_bw() +
       xlab("Sample coverage") +
       ylab("Density")
