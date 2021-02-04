@@ -19,5 +19,5 @@ sdm(frequencies, n_resamples = 1000L, model = "LL3", verbose = TRUE)
 Fit the sequential discovery model of Zito et al. (2020+)
 }
 \details{
-This function.
+This function runs the sequential discovery model is Zito et al. (2020+)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/sdm.R
 \name{plot.sdm}
 \alias{plot.sdm}
-\title{Compute rarefaction curves}
+\title{Plot rarefaction curves}
 \usage{
 \method{plot}{sdm}(object, n_points = 100, ...)
 }
@@ -14,5 +14,5 @@
 \item{...}{additional parameters}
 }
 \description{
-Compute rarefaction curves
+Plot rarefaction curves
 }

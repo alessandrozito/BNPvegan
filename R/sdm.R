@@ -5,7 +5,7 @@
 #' @param model model to fit. Options are "LL3" and "Weibull"
 #' @param verbose Whether to monitor the state of the simulation or not
 #'
-#' @details This function.
+#' @details This function runs the sequential discovery model is Zito et al. (2020+)
 #' @export
 #'
 sdm <- function(frequencies, n_resamples = 1000L, model = "LL3", verbose = TRUE) {
@@ -189,7 +189,7 @@ predict.sdm <- function(object, newdata = NULL, ...) {
 }
 
 
-#' Compute rarefaction curves
+#' Plot rarefaction curves
 #'
 #' @param object An object of class \code{\link[sdm]{sdm}}.
 #' @param n_points Number of points to plot in the accumulation curve

@@ -79,21 +79,21 @@ moments_Kinf <- function(par, n, k, model) {
         Var_KInf <- Inf
       } else {
         E_KInf <- alpha^(1 / (1 - sigma)) * pi / ((1 - sigma) * sin(pi / (1 - sigma)))
-        Var_KInf <- E_KInf - cubintegrate(f = prob_LL3_squared, alpha = alpha, sigma = sigma, phi = phi, lower = 0, upper = Inf)$integral + 0.5
+        Var_KInf <- E_KInf - cubature::cubintegrate(f = prob_LL3_squared, alpha = alpha, sigma = sigma, phi = phi, lower = 0, upper = Inf)$integral + 0.5
       }
     } else {
-      E_KInf <- cubintegrate(f = prob_LL3, alpha = alpha, sigma = sigma, phi = phi, lower = n, upper = Inf)$integral + k
-      Var_KInf <- E_KInf - cubintegrate(f = prob_LL3_squared, alpha = alpha, sigma = sigma, phi = phi, lower = n, upper = Inf)$integral + 0.5
+      E_KInf <- cubature::cubintegrate(f = prob_LL3, alpha = alpha, sigma = sigma, phi = phi, lower = n, upper = Inf)$integral + k
+      Var_KInf <- E_KInf - cubature::cubintegrate(f = prob_LL3_squared, alpha = alpha, sigma = sigma, phi = phi, lower = n, upper = Inf)$integral + 0.5
     }
   } else if (model == "Weibull") {
     phi <- par[1]
     lambda <- par[2]
     if (n == 0 & k == 0) {
       E_KInf <- gamma(1 + 1 / lambda) * (-1 / log(phi))^(1 / lambda)
-      Var_KInf <- E_KInf - cubintegrate(f = prob_Weibull_squared, phi = phi, lambda = lambda, lower = 0, upper = Inf)$integral + 0.5
+      Var_KInf <- E_KInf - cubature::cubintegrate(f = prob_Weibull_squared, phi = phi, lambda = lambda, lower = 0, upper = Inf)$integral + 0.5
     } else {
-      E_KInf <- cubintegrate(f = prob_Weibull, phi = phi, lambda = lambda, lower = n, upper = Inf)$integral + k
-      Var_KInf <- E_KInf - cubintegrate(f = prob_Weibull_squared, phi = phi, lambda = lambda, lower = n, upper = Inf)$integral + 0.5
+      E_KInf <- cubature::cubintegrate(f = prob_Weibull, phi = phi, lambda = lambda, lower = n, upper = Inf)$integral + k
+      Var_KInf <- E_KInf - cubature::cubintegrate(f = prob_Weibull_squared, phi = phi, lambda = lambda, lower = n, upper = Inf)$integral + 0.5
     }
   }
 
