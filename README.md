@@ -13,6 +13,6 @@ devtools::install_github("alessandrozito/BNPvegan")
 
 We discuss the two class of models and the associated functions in the following tutorials. Please note that there might be some overlap between these two modeling classes. 
 
-- In the [ssm.md](ssm.md) tutorial we discuss **species sampling models** and their usage in ecology.
+- In the [**SSM tutorial**](ssm.md) we discuss **species sampling models** and their usage in ecology.
 
-- In the [sdm.md](sdm.md) tutorial we discuss **species discovery models** and their usage in ecology.
+- In the [**SDM tutorial**](sdm.md) tutorial we discuss **species discovery models** and their usage in ecology.
