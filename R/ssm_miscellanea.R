@@ -1,6 +1,6 @@
 expected_cl_py <- function(n, sigma, alpha) {
   n <- as.integer(n)
-  if (sigma == 0) {
+  if (sigma < 1e-6) {
     out <- alpha * (digamma(alpha + n) - digamma(alpha))
   } else {
     out <- 1 / sigma * exp(lgamma(alpha + sigma + n) - lgamma(alpha + sigma) - lgamma(alpha + n) + lgamma(alpha + 1)) - alpha / sigma
@@ -29,7 +29,7 @@ expected_m_py <- Vectorize(expected_m_py, vectorize.args = "m")
 
 extrapolate_cl_py <- function(m, K, n, sigma, alpha) {
   n <- as.integer(n)
-  if (sigma < 1e-10) {
+  if (sigma < 1e-6) {
     out <- alpha * (digamma(alpha + n + m) - digamma(alpha)) - alpha * (digamma(alpha + n) - digamma(alpha)) + K
   } else {
     out <- (K + alpha / sigma) * (exp(lgamma(alpha + n + sigma + m) - lgamma(alpha + n + sigma) - lgamma(alpha + n + m) + lgamma(alpha + n)) - 1) + K

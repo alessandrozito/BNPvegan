@@ -147,6 +147,7 @@ summary.PY <- function(object, ...) {
 plot.DP <- function(object, type = "rarefaction", ...) {
   n <- sum(object$frequencies)
   alpha <- object$param[1]
+  K <- length(object$frequencies)
 
   if (type == "freq") {
     M_l <- as.numeric(table(factor(object$frequencies, levels = 1:n)))
@@ -178,7 +179,16 @@ plot.DP <- function(object, type = "rarefaction", ...) {
       xlab("n") +
       ylab("Rarefaction")
     return(p)
+  } else if (type == "extrapolation") {
+    data_plot <- data.frame(n = c(1:(2*n)), rar = c(rarefaction(object), predict(object, 1:n)))
+    p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
+      geom_line() + geom_vline(xintercept = n, linetype= "dashed") +
+      theme_bw() +
+      xlab("n") +
+      ylab("Rarefaction and prediction")
+    return(p)
   }
+
 }
 
 
@@ -224,6 +234,14 @@ plot.PY <- function(object, type = "rarefaction", ...) {
       theme_bw() +
       xlab("n") +
       ylab("Rarefaction")
+    return(p)
+  } else if (type == "extrapolation") {
+    data_plot <- data.frame(n = c(1:(2*n)), rar = c(rarefaction(object), predict(object, 1:n)))
+    p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
+      geom_line() + geom_vline(xintercept = n, linetype= "dashed") +
+      theme_bw() +
+      xlab("n") +
+      ylab("Rarefaction and prediction")
     return(p)
   }
 }

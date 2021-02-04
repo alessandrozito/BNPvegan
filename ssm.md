@@ -133,5 +133,8 @@ predict(fit_DP, n) # Prediction at the m = n term
 predict(fit_DP, n) - K # New expected species
 
 # [1] 29.03911
+
+plot(fit_DP, type = "extrapolation")
 ```
 
+![](images/ssm_DP_pred.png)
