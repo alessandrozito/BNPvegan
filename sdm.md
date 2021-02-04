@@ -43,9 +43,8 @@ To make a plot of the chosen accumulation curve, run.
 plot(fit)
 ```
 
-```
-![See the plot here](/images/sdm_curve.pdf )
-```
+![](https://raw.githubusercontent.com/alessandrozito/BNPvegan/master/img/sdm_curve.png)
+
 
 Finally, to extract relevant quantities, do:
 ```R
