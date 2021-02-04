@@ -11,24 +11,8 @@ The `BNPvegan` package can be installed by running the following commands:
 devtools::install_github("alessandrozito/BNPvegan")
 ```
 
+We discuss the two class of models and the associated function is two distinct tutorials:
 
-## Species sampling models (`ssm` class)
+- In the [ssm.md](ssm.md) tutorial we discuss **species sampling models** and their usage in ecology.
 
-Species sampling models are a Bayesian nonparametric tools that have a large variety of applications in ecology. For a general overview, one can refer to:
-
-* De Blasi, P., Favaro, S., Lijoi, A., Mena, R.H., Pruenster, I., Ruggiero, M.: (2015): [Are Gibbs-type priors the most natural generalization of the Dirichlet process?](https://arxiv.org/abs/1503.00163), *IEEE Transactions on Pattern Analysis and Machine Intelligence* **37**(2), 212-229.
-
-As a working example, we make use of the frequencies available in the `data("Lepidoptera")` dataset. The sampling scheme currently availabe are the Dirichlet process `DP` and the Pitman-Yor process `PY`.
-
-```r 
-# Load the library into memory
-library(BNPvegan)
-data("Lepidoptera")
-```
-
-## Sequential discoveries models (`sdm` class) 
-
-
-```r 
-# Add here relevant commands
-```
+- In the [sdm.md](sdm.md) tutorial we discuss **species discovery models** and their usage in ecology.
