@@ -107,7 +107,8 @@ sdm <- function(frequencies, n_resamples = 1000L, model = "LL3", verbose = TRUE)
     discoveries = d,
     par = par,
     loglik = loglik,
-    Asymp_moments = Asymp_moments
+    Asymp_moments = Asymp_moments,
+    saturation = unname(sum(d)/Asymp_moments[1])
   )
   class(out) <- "sdm"
   return(out)
@@ -126,6 +127,7 @@ summary.sdm <- function(object, ...) {
   # Sample abundance and richness
   abundance <- sum(object$frequencies)
   richness <- length(object$frequencies)
+  saturation <- object$saturation
   asy_rich <- unname(round(object$Asymp_moments, 2))
   if (object$model == "LL3") {
     mod_print <- "\t Three-parameter log-logistic (LL3)"
@@ -143,6 +145,7 @@ summary.sdm <- function(object, ...) {
       paste0("\t Richness: ", richness),
       paste0("\t Expected species at infinity: ", asy_rich[1]),
       paste0("\t Standard deviation at infinity: ", asy_rich[2]),
+      paste0("\t Sample saturation: ", round(saturation, 4)),
       "\nParameters:",
       paste0("\t ", knitr::kable(t(c(object$par, object$loglik)), "simple")),
       sep = "\n"
@@ -250,5 +253,5 @@ logLik.sdm <- function(object, ...) {
 #' @export
 #'
 asymptotic_richness <- function(object, ...) {
-  return(object$Asymp_moments)
+  return(c(object$Asymp_moments, "saturation" = object$saturation))
 }
