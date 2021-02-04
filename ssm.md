@@ -22,15 +22,24 @@ frequencies <- as.numeric(Lepidoptera) # Frequencies of each species
 
 # Other quantities
 n <- sum(frequencies) # Sample size
-K <- length(freq_global) # Number of distinct species
-M <- as.numeric(table(factor(frequencies, levels=1:n))) # Frequency of frequencies
+K <- length(frequencies) # Number of distinct species, i.e. the richness. 
+M <- as.numeric(table(factor(frequencies, levels = 1:n))) # Frequency of frequencies
 ```
 
-The vector `M` include the **frequencies of frequencies**. In particular, `M[1]` represents the number of singletons, which in this case equals `31`. 
+In this specific dataset, the sample size equals `n = 12548` whereas the richness is `K = 240`. The vector `M` include the **frequencies of frequencies**. In particular, `M[1]` represents the number of singletons, which in this case equals `31`, namely the number of species that have been observed only once. 
 
 ## The `ssm` function
 
-The main function for the estimation of species sampling model is called `ssm`. We are currently implementing 
+The main function for the estimation of species sampling model is called `ssm`. Although several species sampling models existing, we have currently implemented only the `DP` and the `PY`. Please note that the latter is a generalization of the former. 
+
+In order to estimate, say, a `DP` model you can use the following **R** commands:
+
+```r
+fit_DP <- ssm(frequencies, "DP") # An object of class ssm
+alpha_hat <- fit_DP$param # Maximum likelihood estimate of the parameter
+```
+
+This obtains the maximum likelihood estimate for the parameter od the `DP`. In this case we have that `alpha_hat = 41.99451`. 
 
 
 ## Estimating the sample coverage
