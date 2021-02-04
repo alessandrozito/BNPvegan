@@ -84,7 +84,7 @@ The main advantage of model based estimates is the possibility of asses the asso
 plot(fit_DP, type = "coverage")
 ```
 
-## Bio-diversity
+## Bio-diversity and Gini index
 
 ```r
 Gini(frequencies)
