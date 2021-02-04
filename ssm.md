@@ -1,4 +1,4 @@
-# Species sampling models (`ssm` class)
+# Species sampling models (`ssm` class) - :warning: Under development
 
 Species sampling models are a Bayesian nonparametric tools that have a large variety of applications in ecology. For a **technical** overview, one can refer to:
 

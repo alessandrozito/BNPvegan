@@ -32,7 +32,6 @@ coverage.PY <- function(object, ...) {
 }
 
 
-
 #' @export
 rcoverage <- function(x, ...) {
   UseMethod("rcoverage", x)
