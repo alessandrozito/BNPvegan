@@ -82,10 +82,10 @@ summary.DP <- function(object, ...) {
     cat("Model: Dirichlet Process",
         paste0("\t Abundance: ", out[1]),
         paste0("\t Richness: ", out[2]),
-        paste0("\t Alpha: ", round(out[3],4)),
+        paste0("\t alpha: ", round(out[3],4)),
         paste0("\t Sample coverage: ", round(out[4],4)),
-        paste0("\t Expected species after ",  n, " samples: ", out[5]),
-        paste0("\t Posterior Gini diversity: ",  round(out[6],5)),
+        paste0("\t Expected species after additional ",  n, " samples: ", out[5]),
+        paste0("\t Posterior Gini diversity: ",  round(out[6],4)),
         sep = "\n"
     )
   invisible(out)
@@ -103,16 +103,27 @@ summary.PY <- function(object, ...) {
   n <- sum(freq)
   K <- length(freq)
 
-  tab <- cbind(
+  out <- cbind(
     Abundance = n,
     Richness = K,
     alpha = alpha,
     sigma = sigma,
     Coverage = (n - sigma * K) / (alpha + n),
-    Future_species = round(extrapolate_cl_py(m = n, n = n, K = K, sigma = sigma, alpha = alpha)),
+    Future_species = round(extrapolate_cl_py(m = n, n = n, K = K, sigma = sigma, alpha = alpha)) - K,
     Gini = 1 - 1 / Poch2(alpha + n) * ((1 - sigma) * (alpha + K * sigma) + sum(Poch2(freq - sigma)))
   )
-  tab
+
+  cat("Model: Dirichlet Process",
+      paste0("\t Abundance: ", out[1]),
+      paste0("\t Richness: ", out[2]),
+      paste0("\t alpha: ", round(c(out[3]),4)),
+      paste0("\t sigma: ", round(c(out[4]),4)),
+      paste0("\t Sample coverage: ", round(out[5],4)),
+      paste0("\t Expected species after additional ",  n, " samples: ", out[6]),
+      paste0("\t Posterior Gini diversity: ",  round(out[7],4)),
+      sep = "\n"
+  )
+  invisible(out)
 }
 
 #' Plot for the Pitman-Yor model
