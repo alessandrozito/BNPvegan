@@ -29,11 +29,11 @@ expected_m_py <- Vectorize(expected_m_py, vectorize.args = "m")
 
 extrapolate_cl_py <- function(m, K, n, sigma, alpha) {
   n <- as.integer(n)
-  # if (sigma == 0) {
-  #  out <- alpha * sum(1 / (alpha - 1 + 1:n))
-  # } else {
+  if (sigma == 0) {
+    out <- alpha*(digamma(alpha + n + m) - digamma(alpha)) - alpha*(digamma(alpha + n) - digamma(alpha)) + K
+  } else {
   out <- (K + alpha / sigma) * (exp(lgamma(alpha + n + sigma + m) - lgamma(alpha + n + sigma) - lgamma(alpha + n + m) + lgamma(alpha + n)) - 1)
-  # }
+  }
 
   return(out)
 }

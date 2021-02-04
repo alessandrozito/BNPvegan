@@ -61,38 +61,37 @@ predict.PY <- function(object, newdata = NULL, ...) {
   expected_cl_py(1:n, sigma = object$param[2], alpha = object$param[1])
 }
 
-#' Summary for the DP model
-#'
-#'
-#' Gini heterogeneity
-#'
-#' @param object An object of class \code{\link[ssm]{ssm}}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @details The method...
-#'
 #' @export
 #'
 summary.DP <- function(object, ...) {
-  tab <- cbind(
-    Simpson_Emp = Simpson(object$frequencies),
-    Shannon_Emp = Simpson(object$frequencies),
-    Simpson_MB = 1 / (object$param[1] + 1)
+  Poch2 <- function(x) x * (x + 1)
+
+  alpha <- object$param[1]
+  freq <- object$frequencies
+  n <- sum(freq)
+  K <- length(freq)
+
+  out <- cbind(
+    Abundance = n,
+    Richness = K,
+    alpha = alpha,
+    Coverage = n  / (alpha + n),
+    Additional_species = round(extrapolate_cl_py(m = n, n = n, K = K, sigma = 0, alpha = alpha)) - K,
+    Gini = 1 - 1 / Poch2(alpha + n) * (alpha + sum(Poch2(freq)))
   )
-  knitr::kable(tab)
+    cat("Model: Dirichlet Process",
+        paste0("\t Abundance: ", out[1]),
+        paste0("\t Richness: ", out[2]),
+        paste0("\t Alpha: ", round(out[3],4)),
+        paste0("\t Sample coverage: ", round(out[4],4)),
+        paste0("\t Expected species after ",  n, " samples: ", out[5]),
+        paste0("\t Posterior Gini diversity: ",  round(out[6],5)),
+        sep = "\n"
+    )
+  invisible(out)
 }
 
 
-#' Heterogeneity for the PY model
-#'
-#'
-#' Gini heterogeneity
-#'
-#' @param object An object of class \code{\link[ssm]{ssm}}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @details The method...
-#'
 #' @export
 #'
 summary.PY <- function(object, ...) {

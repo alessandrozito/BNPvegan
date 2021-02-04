@@ -41,6 +41,18 @@ alpha_hat <- fit_DP$param # Maximum likelihood estimate of the parameter
 
 This obtains the maximum likelihood estimate for the parameter od the `DP`. In this case we have that `alpha_hat = 41.99451`. 
 
+```r
+summary(fit_DP)
+
+Model: Dirichlet Process
+	 Abundance: 12548
+	 Richness: 240
+	 Alpha: 41.9945
+	 Sample coverage: 0.9967
+	 Expected species after 12548 samples: 29
+	 Posterior Gini diversity: 0.975
+```
+
 
 ## Estimating the sample coverage
 
