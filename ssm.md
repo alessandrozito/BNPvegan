@@ -82,6 +82,10 @@ plot(fit_DP, type = "coverage")
 
 ## Bio-diversity
 
+```r
+diversity(frequencies)
+```
+
 ## Estimating the rarefaction
 
 ## Extrapolation of the curve

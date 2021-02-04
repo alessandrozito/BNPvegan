@@ -24,37 +24,44 @@ Shannon_norm <- function(frequencies) {
   H / log(K)
 }
 
-unique_ratio <- function(frequencies) {
-  mean(frequencies == 1)
+#' @export
+diversity <- function(x, ...) {
+  UseMethod("diversity", x)
 }
 
 
-#' Diversity measures
-#'
-#'
-#' @param frequencies A \code{K}-dimensional vector of frequencies
-#' #'
-#' @return Collection of diversity indices
-#'
+
 #' @export
 #'
-diversity <- function(dataset) {
+diversity.data.frame <- function(dataset) {
   if (is.null(dim(dataset))) dataset <- matrix(dataset, nrow = 1)
-  tab <- matrix(0, nrow(dataset), 6)
+  tab <- matrix(0, nrow(dataset), 4)
   rownames(tab) <- rownames(dataset)
-  colnames(tab) <- c("Simpson", "Gini", "Normalized Gini", "Entropy", "Normalized entropy", "Rare species ratio")
+  colnames(tab) <- c( "Gini", "Normalized Gini", "Entropy", "Normalized entropy")
   for (i in 1:nrow(dataset)) {
     frequencies <- dataset[i, ]
     frequencies <- frequencies[frequencies > 0]
     tab[i, ] <- c(
-      Simpson(frequencies),
       Gini(frequencies),
       Gini_norm(frequencies),
       Shannon(frequencies),
       Shannon_norm(frequencies),
-      unique_ratio(frequencies)
     )
   }
-  print(knitr::kable(tab))
-  invisible(tab)
+  tab
 }
+
+#' @export
+#'
+diversity.numeric <- function(frequencies) {
+  tab <- matrix(0, 1, 4)
+  colnames(tab) <- c("Gini", "Normalized Gini", "Entropy", "Normalized entropy")
+  tab[1, ] <- c(
+      Gini(frequencies),
+      Gini_norm(frequencies),
+      Shannon(frequencies),
+      Shannon_norm(frequencies),
+    )
+  tab
+}
+
