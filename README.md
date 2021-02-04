@@ -19,6 +19,7 @@ Species sampling models are a common Bayesian Nonparametric class of methodologi
 
 * De Blasi, P., Favaro, S., Lijoi, A., Mena, R.H., Pruenster, I., Ruggiero, M.: (2015): [Are Gibbs-type priors the most natural generalization of the Dirichlet process?](https://arxiv.org/abs/1503.00163), *IEEE Transactions on Pattern Analysis and Machine Intelligence* **37**(2), 212-229.
 
+The sampling scheme availabe are the Dirichlet process `"DP"` and the Pitman-Yor process `"PY"`
 ```r 
 # Add here relevant commands
 ```
