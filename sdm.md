@@ -1,4 +1,4 @@
-# Sequential discovery models (class `sdm`)
+# Sequential discovery models (class `sdm`) - :warning: Under development
 
 Sequential discovery models are a Bayesian method to construct, fit and predict the accumulation curves arising from the frequencies with which species are observed. For a theoretical description, see:
 
