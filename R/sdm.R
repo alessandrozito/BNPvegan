@@ -37,30 +37,18 @@ sdm <- function(frequencies, n_resamples = 1000L, model = "LL3", verbose = TRUE)
     d <- extract_discoveries(seqD)
     discoveries_indexes[i, ] <- which(d == 1)
 
-    use_constrained_max <- FALSE
-
     if (model == "LL3") {
       # Fit the three-parameter log-logistic
-
-      if (use_constrained_max == TRUE) {
-        fit <- try(logit_regression(y = d[-1], X = X), silent = TRUE)
-        if (inherits(fit, "try-error")) {
-          use_constrained_max <- FALSE
-          fit <- max_logLik_LL3(d = d[-1], X = X)
-          loglik <- -fit$objective
-        } else {
-          loglik <- max(fit$Convergence[, 2])
-          if (fit$par[2] > 0 | fit$par[3] > 0) {
-            fit <- max_logLik_LL3(d = d[-1], X = X)
-            loglik <- -fit$objective
-          }
-        }
-      } else {
-        fit <- max_logLik_LL3(d = d[-1], X = X)
-        loglik <- -fit$objective
+      fitglm <- glmnet::glmnet(x=X[,-1], y=d[-1], family = "binomial", upper.limits = 0, lambda = 0, standardize=FALSE, tresh = 1e-7)
+      coeffs <- c(fitglm$a0, as.numeric(fitglm$beta))
+      if(coeffs[3] == 0){
+        coeffs[3] = -1e-7  # Force convergence
       }
 
-      param[i, ] <- c(exp(fit$par[1]), 1 + fit$par[2], exp(fit$par[3]), loglik)
+      # Compute loglikelihood and save parameters
+      loglik <- -logLik_LL3(d = d[-1], X = X, beta_0 = coeffs[1], beta_1 = coeffs[2],beta_2 = coeffs[3])
+      param[i, ] <- c(exp(coeffs[1]), 1 + coeffs[2], exp(coeffs[3]), loglik)
+
     } else if (model == "Weibull") {
       # Fit the Weibull model
       fit <- max_logLik_Weibull(d = d)
