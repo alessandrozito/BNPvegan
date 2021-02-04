@@ -55,17 +55,7 @@ rarefaction.PY <- function(object, ...) {
 }
 
 
-#' Predict method for the DP model
-#'
-#'
-#' Predict method for a DP model, producing either the rarefaction curve or the extrapolation curve.
-#'
-#' @param object An object of class \code{\link[ssm]{ssm}}.
-#' @param newdata A new data frame containing
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @details The method...
-#'
+
 #' @export
 #'
 predict.DP <- function(object, m, ...) {
@@ -73,25 +63,18 @@ predict.DP <- function(object, m, ...) {
   freq <- object$frequencies
   n <- sum(freq)
   K <- length(freq)
-  Expected <- extrapolate_cl_py(m = m, n = n, K = K, sigma = 0, alpha = alpha)
+  extrapolate_cl_py(m = m, n = n, K = K, sigma = 0, alpha = alpha)
 }
 
-#' Predict method for the PY model
-#'
-#'
-#' Predict method for a PY model, producing either the rarefaction curve or the extrapolation curve.
-#'
-#' @param object An object of class \code{\link[ssm]{ssm}}.
-#' @param newdata A new data frame containing
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @details The method...
-#'
 #' @export
 #'
 predict.PY <- function(object, newdata = NULL, ...) {
-  n <- sum(object$frequencies)
-  expected_cl_py(1:n, sigma = object$param[2], alpha = object$param[1])
+  alpha <- object$param[1]
+  sigma <- object$param[2]
+  freq <- object$frequencies
+  n <- sum(freq)
+  K <- length(freq)
+  extrapolate_cl_py(m = m, n = n, K = K, sigma = sigma, alpha = alpha)
 }
 
 #' @export

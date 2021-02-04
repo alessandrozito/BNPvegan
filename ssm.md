@@ -117,3 +117,19 @@ plot(fit_DP, type = "rarefaction")
 ```
 
 ## Extrapolation of the curve
+
+```r
+predict(fit_DP, 0:10)
+
+# [1] 240.0000 240.0033 240.0067 240.0100 240.0133 240.0167 240.0200 240.0233
+# [9] 240.0267 240.0300 240.0333
+
+predict(fit_DP, n)
+
+# [1] 269.0391
+
+predict(fit_DP, n) - K
+
+# [1] 29.03911
+```
+
