@@ -1,4 +1,4 @@
-# BNPvegan
+# The `BNPvegan` R package
 
 This **R** package is an implementation of various Bayesian nonparametric models for the analysis of ecological data.
 
