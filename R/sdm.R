@@ -10,7 +10,7 @@
 #'
 sdm <- function(frequencies, n_resamples = 1000L, model = "LL3", verbose = TRUE) {
   # Step 0 - filter out the frequencies equal to 0
-  frequencies <- frequencies[frequencies>0]
+  frequencies <- frequencies[frequencies > 0]
 
   # Initialize an empty matrix for the parameters
   if (model == "LL3") {
@@ -171,17 +171,17 @@ summary.sdm <- function(object, ...) {
 #' @param ... additional values
 #' @export
 predict.sdm <- function(object, newdata = NULL, ...) {
-  if(is.null(newdata)){
+  if (is.null(newdata)) {
     n <- c(1:length(object$discoveries)) - 1
-    index_to_store = newdata = n + 1
+    index_to_store <- newdata <- n + 1
   } else {
     n <- c(1:max(newdata)) - 1
-    index_to_store = newdata
+    index_to_store <- newdata
   }
 
-  if(object$model=="LL3"){
+  if (object$model == "LL3") {
     pred <- cumsum(prob_LL3(n = n, alpha = object$par[1], sigma = object$par[2], phi = object$par[3]))
-  } else if (object$model == "Weibull"){
+  } else if (object$model == "Weibull") {
     pred <- cumsum(prob_Weibull(n = n, phi = object$par[1], lambda = object$par[2]))
   }
 
@@ -227,7 +227,7 @@ plot.sdm <- function(object, n_points = 100, ...) {
 #'
 #' @export
 #'
-coef.sdm <- function(object, ...){
+coef.sdm <- function(object, ...) {
   return(object$par)
 }
 
@@ -238,7 +238,7 @@ coef.sdm <- function(object, ...){
 #'
 #' @export
 #'
-logLik.sdm <- function(object, ...){
+logLik.sdm <- function(object, ...) {
   return(object$loglik)
 }
 
@@ -249,6 +249,6 @@ logLik.sdm <- function(object, ...){
 #'
 #' @export
 #'
-asymptotic_richness<- function(object, ...){
+asymptotic_richness <- function(object, ...) {
   return(object$Asymp_moments)
 }

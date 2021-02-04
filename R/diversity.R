@@ -42,7 +42,7 @@ diversities <- function(dataset) {
 #' @export
 #'
 
-freq_of_freq <- function(dataset, rel=FALSE, plot = FALSE) {
+freq_of_freq <- function(dataset, rel = FALSE, plot = FALSE) {
   if (is.null(dim(dataset))) dataset <- matrix(dataset, nrow = 1)
 
   K <- max(dataset)
@@ -51,19 +51,20 @@ freq_of_freq <- function(dataset, rel=FALSE, plot = FALSE) {
   colnames(tab) <- 1:K
   for (i in 1:nrow(dataset)) {
     frequencies <- dataset[i, ]
-    frequencies <- factor(frequencies[frequencies > 0], levels=1:K)
+    frequencies <- factor(frequencies[frequencies > 0], levels = 1:K)
     tab[i, ] <- as.numeric(table(frequencies))
-    if(rel) tab[i, ] <- tab[i, ] / length(frequencies)
+    if (rel) tab[i, ] <- tab[i, ] / length(frequencies)
   }
   tab <- t(tab)
 
-  if(plot){
+  if (plot) {
     data_plot <- reshape2::melt(tab)
     data_plot$value[data_plot$values == 0] <- NA
     colnames(data_plot)[2] <- "Sample"
 
     p <- ggplot(data = data_plot, aes(x = Var1, y = value, col = Sample)) +
-      geom_point(size=0.8, alpha=0.5) + geom_smooth(size=0.8, se=F) +
+      geom_point(size = 0.8, alpha = 0.5) +
+      geom_smooth(size = 0.8, se = F) +
       scale_y_log10() +
       scale_x_log10() +
       theme_bw() +

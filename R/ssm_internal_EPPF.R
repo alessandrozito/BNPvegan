@@ -1,6 +1,6 @@
-#'@import stats
-#'@importFrom Rcpp evalCpp sourceCpp
-#'@importFrom vegan diversity
+#' @import stats
+#' @importFrom Rcpp evalCpp sourceCpp
+#' @importFrom vegan diversity
 #'
 
 

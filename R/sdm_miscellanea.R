@@ -17,7 +17,7 @@ extract_discoveries <- function(sequence) {
 sample_sequence <- function(frequencies) {
 
   # Extract the crude sequence
-  sequence <- rep(1:length(frequencies), times=frequencies)
+  sequence <- rep(1:length(frequencies), times = frequencies)
 
   # Randomize it
   sequence <- sample(sequence, size = sum(frequencies), replace = FALSE)
@@ -25,20 +25,17 @@ sample_sequence <- function(frequencies) {
   return(sequence)
 }
 
-rLL3 <- function(L, alpha, sigma, phi){
-  species = c()
-  D = c()
-  for(n in 0:(L-1)){
-    d = rbinom(1, 1, prob_LL3(n, alpha, sigma, phi))
-    D = c(D, d)
-    if (d == 1){
-      species = c(species, as.character(n))
+rLL3 <- function(L, alpha, sigma, phi) {
+  species <- c()
+  D <- c()
+  for (n in 0:(L - 1)) {
+    d <- rbinom(1, 1, prob_LL3(n, alpha, sigma, phi))
+    D <- c(D, d)
+    if (d == 1) {
+      species <- c(species, as.character(n))
     } else {
-      species = c(species, sample(species, 1, replace = TRUE))
+      species <- c(species, sample(species, 1, replace = TRUE))
     }
   }
   return(list("d" = D, "frequencies" = unname(table(species))))
 }
-
-
-

@@ -74,9 +74,11 @@ predict.PY <- function(object, newdata = NULL, ...) {
 #' @export
 #'
 summary.DP <- function(object, ...) {
-  tab <- cbind(Simpson_Emp = Simpson(object$frequencies),
-               Shannon_Emp = Simpson(object$frequencies),
-               Simpson_MB  = 1 / (object$param[1] + 1))
+  tab <- cbind(
+    Simpson_Emp = Simpson(object$frequencies),
+    Shannon_Emp = Simpson(object$frequencies),
+    Simpson_MB = 1 / (object$param[1] + 1)
+  )
   knitr::kable(tab)
 }
 
@@ -94,22 +96,23 @@ summary.DP <- function(object, ...) {
 #' @export
 #'
 summary.PY <- function(object, ...) {
-
-  Poch2 <- function(x) x*(x+1)
+  Poch2 <- function(x) x * (x + 1)
 
   alpha <- object$param[1]
   sigma <- object$param[2]
-  freq  <- object$frequencies
-  n     <- sum(freq)
-  K     <- length(freq)
+  freq <- object$frequencies
+  n <- sum(freq)
+  K <- length(freq)
 
-  tab <- cbind(Abundance   = n,
-               Richness   = K,
-               alpha = alpha,
-               sigma = sigma,
-               Coverage = (n - sigma*K) / (alpha + n),
-               Future_species = round(extrapolate_cl_py(m = n, n = n, K = K, sigma = sigma, alpha = alpha)),
-               Gini  = 1 - 1/Poch2(alpha + n)*((1 - sigma)*(alpha + K*sigma) + sum(Poch2(freq - sigma))))
+  tab <- cbind(
+    Abundance = n,
+    Richness = K,
+    alpha = alpha,
+    sigma = sigma,
+    Coverage = (n - sigma * K) / (alpha + n),
+    Future_species = round(extrapolate_cl_py(m = n, n = n, K = K, sigma = sigma, alpha = alpha)),
+    Gini = 1 - 1 / Poch2(alpha + n) * ((1 - sigma) * (alpha + K * sigma) + sum(Poch2(freq - sigma)))
+  )
   tab
 }
 
@@ -121,7 +124,7 @@ summary.PY <- function(object, ...) {
 #'
 #' @export
 #'
-plot.PY <- function(object,...) {
+plot.PY <- function(object, ...) {
   n <- sum(object$frequencies)
   alpha <- object$param[1]
   sigma <- object$param[2]
