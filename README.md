@@ -4,9 +4,6 @@ This **R** package is an implementation of various Bayesian nonparametric models
 
 The `BNPvegan` package can be installed by running the following commands:
 
-asd
-
-
 ```r 
 # If the devtools R package is not already installed
 # install.packages("devtools")
