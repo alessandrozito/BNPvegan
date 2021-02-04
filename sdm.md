@@ -20,9 +20,7 @@ fit <- sdm(frequencies, n_resamples = 1000, model = "LL3")
 To summarize the output, just run
 ```R
 summary(fit)
-```
-The result is
-```R
+
 Model:
 	 Three-parameter log-logistic (LL3)
 	 Number of resamples: 1000
@@ -39,16 +37,16 @@ Parameters:
 	 ---------  ----------  ----------  ---------
 	  91.86718   0.0269072   0.9999871   -1975.74
 ```
+
 To make a plot of the chosen accumulation curve, run
 ```R
 plot(fit)
 ```
 
-
 Finally, to extract relevant quantities, do:
 ```R
-coef(fit)
-logLik(fit)
-asymptotic_richness(fit)
+coef(fit)                   # Coefficients alpha, sigma and phi
+logLik(fit)                 # Loglikelihood of the best curve
+asymptotic_richness(fit)    # asymptotic species richness and saturation
 ```
 
