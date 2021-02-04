@@ -49,7 +49,7 @@ coef(fit_DP) # Extract the parameters
 logLik(fit_DP) # Extract the value of the log-likelihood
 ```
 
-Most of the relevant quantities can be obtained using the `summary` function. However, note that these values can be 
+Most of the relevant quantities can be obtained using the `summary` function. However, note that these values can be extracted using the specialized function that are illustrated in this tutorial. 
 
 ```r
 summary(fit_DP)
