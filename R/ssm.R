@@ -76,7 +76,7 @@ summary.DP <- function(object, ...) {
     Richness = K,
     alpha = alpha,
     Coverage = coverage(object),
-    Additional_species = extrapolate_cl_py(m = n, n = n, K = K, sigma = 0, alpha = alpha) - K,
+    Additional_species = round(extrapolate_cl_py(m = n, n = n, K = K, sigma = 0, alpha = alpha)) - K,
     Gini = 1 - 1 / Poch2(alpha + n) * (alpha + sum(Poch2(freq)))
   )
     cat("Model: Dirichlet Process",

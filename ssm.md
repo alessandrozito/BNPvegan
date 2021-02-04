@@ -55,6 +55,19 @@ Model: Dirichlet Process
 
 ## Estimating the sample coverage
 
+The first quantity we may want to compute is the **sample coverage**. The traditional estimator for the sample coverage is obtained as follows:
+
+```r
+coverage(frequencies) # 0.9975295
+```
+
+If the `coverage` function is applied to a `ssm` object, one get the **model based** coverage estimate. In this case, the two values are fairly similar
+
+```r
+coverage(fit_DP) # 0.9966645
+```
+
+
 ## Bio-diversity
 
 ## Estimating the rarefaction
