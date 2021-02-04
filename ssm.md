@@ -9,6 +9,9 @@ Species sampling models are a Bayesian nonparametric tools that have a large var
 As a working example, we make use of the frequencies available in the `data("Lepidoptera")` dataset. The sampling scheme currently availabe are the Dirichlet process `DP` and the Pitman-Yor process `PY`.
 
 ```r 
+# Clean the environment
+rm(list=ls())
+
 # Load the both the vegan and BNP vegan libraries into memory
 library(vegan) 
 library(BNPvegan)
@@ -35,22 +38,37 @@ The main function for the estimation of species sampling model is called `ssm`. 
 In order to estimate, say, a `DP` model you can use the following **R** commands:
 
 ```r
-fit_DP <- ssm(frequencies, "DP") # An object of class ssm
+fit_DP <- ssm(frequencies, "DP") # An object of class ssm using the DP model
+fit_PY <- ssm(frequencies, "PY") # An object of class ssm using the PY model
 ```
 
-This obtains the maximum likelihood estimate for the parameter od the `DP`. In this case we have that `alpha_hat = 41.99451`. Most of the relevant quantities can be obtained using the `summary` function. However, note that these values can be 
+This obtains the maximum likelihood estimate for the parameter od the `DP`. In this case we have that `alpha_hat = 41.99451`. We can access these values using
+
+```r
+coef(fit_DP) # Extract the parameters
+logLik(fit_DP) # Extract the value of the log-likelihood
+```
+
+Most of the relevant quantities can be obtained using the `summary` function. However, note that these values can be extracted using the specialized function that are illustrated in this tutorial. 
 
 ```r
 summary(fit_DP)
 
-Model: Dirichlet Process
-	 Abundance: 12548
-	 Richness: 240
-	 alpha: 41.9945
-	 Estimated sample coverage: 0.9967
-	 Expected species after additional 12548 samples: 269
-	 New expected species after additional 12548 samples: 29
-	 Posterior Gini diversity: 0.975
+# Model:
+# 	 Dirichlet process
+# 
+# Quantities:
+# 	 Abundance: 12548
+# 	 Richness: 240
+# 	 Estimated sample coverage: 0.9967
+# 	 Expected species after additional 12548 samples: 269
+# 	 New expected species after additional 12548 samples: 29
+# 	 Posterior Gini diversity: 0.975
+# 
+# Parameters:
+# 	 |    alpha|  loglik|
+# 	 |--------:|-------:|
+# 	 | 41.99451| -105253|
 ```
 
 ## Estimating the sample coverage
@@ -58,13 +76,17 @@ Model: Dirichlet Process
 The first quantity we may want to compute is the **sample coverage**. The traditional estimator for the sample coverage is obtained as follows:
 
 ```r
-coverage(frequencies) # 0.9975295
+coverage(frequencies)
+
+# [1] 0.9975295
 ```
 
 If the `coverage` function is applied to a `ssm` object, one get the **model based** coverage estimate. In the `Lepidoptera` dataset, the two values are fairly similar:
 
 ```r
-coverage(fit_DP) # 0.9966645
+coverage(fit_DP)
+
+# [1] 0.9966645
 ```
 
 The main advantage of model based estimates is the possibility of asses the associated **uncertainty**. 
@@ -73,8 +95,25 @@ The main advantage of model based estimates is the possibility of asses the asso
 plot(fit_DP, type = "coverage")
 ```
 
-## Bio-diversity
+## Bio-diversity and Gini index
+
+```r
+Gini(frequencies)
+
+# [1] 0.9749111
+```
+
+```r
+Gini(fit_DP)
+
+# [1] 0.9750008
+```
 
 ## Estimating the rarefaction
+
+```r
+rar_DP <- rarefaction(fit_DP) # Store the values of the rarefaction curve
+plot(fit_DP, type = "rarefaction")
+```
 
 ## Extrapolation of the curve

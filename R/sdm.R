@@ -96,7 +96,7 @@ sdm <- function(frequencies, n_resamples = 1000L, model = "LL3", verbose = TRUE)
     par = par,
     loglik = loglik,
     Asymp_moments = Asymp_moments,
-    saturation = unname(sum(d)/Asymp_moments[1])
+    saturation = unname(sum(d) / Asymp_moments[1])
   )
   class(out) <- "sdm"
   return(out)

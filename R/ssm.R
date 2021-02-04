@@ -11,17 +11,47 @@ ssm <- function(frequencies, model) {
   frequencies <- frequencies[frequencies > 0]
   if (model == "DP") {
     fit <- max_EPPF_DP(frequencies)
-    out <- list(frequencies = frequencies, param = fit$par, loglik = -fit$objective)
+    out <- list(frequencies = frequencies, param = fit$par, logLik = -fit$objective)
     class(out) <- c("ssm", "DP")
     return(out)
   }
 
   if (model == "PY") {
     fit <- max_EPPF_PY(frequencies)
-    out <- list(frequencies = frequencies, param = fit$par, loglik = -fit$objective)
+    out <- list(frequencies = frequencies, param = fit$par, logLik = -fit$objective)
     class(out) <- c("ssm", "PY")
     return(out)
   }
+}
+
+#' @export
+coef.ssm <- function(object, ...) {
+  object$param
+}
+
+#' @export
+logLik.ssm <- function(object, ...) {
+  object$logLik
+}
+
+#' @export
+rarefaction <- function(x, ...) {
+  UseMethod("rarefaction", x)
+}
+
+
+#' @export
+#'
+rarefaction.DP <- function(object, ...) {
+  n <- sum(object$frequencies)
+  expected_cl_py(1:n, sigma = 0, alpha = object$param)
+}
+
+#' @export
+#'
+rarefaction.PY <- function(object, ...) {
+  n <- sum(object$frequencies)
+  expected_cl_py(1:n, sigma = object$param[2], alpha = object$param[1])
 }
 
 
@@ -64,68 +94,59 @@ predict.PY <- function(object, newdata = NULL, ...) {
 #' @export
 #'
 summary.DP <- function(object, ...) {
-  Poch2 <- function(x) x * (x + 1)
-
   alpha <- object$param[1]
   freq <- object$frequencies
   n <- sum(freq)
   K <- length(freq)
+  Expected <- round(extrapolate_cl_py(m = n, n = n, K = K, sigma = 0, alpha = alpha)) - K
+  Gini <- Gini(object)
 
-  out <- cbind(
-    Abundance = n,
-    Richness = K,
-    alpha = alpha,
-    Coverage = coverage(object),
-    Additional_species = round(extrapolate_cl_py(m = n, n = n, K = K, sigma = 0, alpha = alpha)) - K,
-    Gini = 1 - 1 / Poch2(alpha + n) * (alpha + sum(Poch2(freq)))
-  )
-  cat("Model: Dirichlet Process",
-    paste0("\t Abundance: ", out[1]),
-    paste0("\t Richness: ", out[2]),
-    paste0("\t alpha: ", round(out[3], 4)),
-    paste0("\t Estimated sample coverage: ", round(out[4], 4)),
-    paste0("\t Expected species after additional ", n, " samples: ", out[2] + out[5]),
-    paste0("\t New expected species after additional ", n, " samples: ", out[5]),
-    paste0("\t Posterior Gini diversity: ", round(out[6], 4)),
+  out <- t(c(alpha, object$loglik))
+  colnames(out) <- c("alpha", "loglik")
+
+  cat("Model:",
+    "\t Dirichlet process",
+    "\nQuantities:",
+    paste0("\t Abundance: ", n),
+    paste0("\t Richness: ", K),
+    paste0("\t Estimated sample coverage: ", round(coverage(object), 4)),
+    paste0("\t Expected species after additional ", n, " samples: ", Expected + K),
+    paste0("\t New expected species after additional ", n, " samples: ", Expected),
+    paste0("\t Posterior Gini diversity: ", round(Gini, 4)),
+    "\nParameters:",
+    paste0("\t ", knitr::kable(out)),
     sep = "\n"
   )
-  invisible(out)
 }
 
 
 #' @export
 #'
 summary.PY <- function(object, ...) {
-  Poch2 <- function(x) x * (x + 1)
-
   alpha <- object$param[1]
   sigma <- object$param[2]
   freq <- object$frequencies
   n <- sum(freq)
   K <- length(freq)
+  Expected <- round(extrapolate_cl_py(m = n, n = n, K = K, sigma = sigma, alpha = alpha)) - K
+  Gini <- Gini(object)
 
-  out <- cbind(
-    Abundance = n,
-    Richness = K,
-    alpha = alpha,
-    sigma = sigma,
-    Coverage = coverage(object),
-    Future_species = round(extrapolate_cl_py(m = n, n = n, K = K, sigma = sigma, alpha = alpha)) - K,
-    Gini = 1 - 1 / Poch2(alpha + n) * ((1 - sigma) * (alpha + K * sigma) + sum(Poch2(freq - sigma)))
-  )
+  out <- t(c(alpha, sigma, object$loglik))
+  colnames(out) <- c("alpha", "sigma", "loglik")
 
-  cat("Model: Dirichlet Process",
-    paste0("\t Abundance: ", out[1]),
-    paste0("\t Richness: ", out[2]),
-    paste0("\t alpha: ", round(c(out[3]), 4)),
-    paste0("\t sigma: ", round(c(out[4]), 4)),
-    paste0("\t Estimated sample coverage: ", round(out[5], 4)),
-    paste0("\t Expected species after additional ", n, " samples: ", out[2] + out[6]),
-    paste0("\t New expected species after additional ", n, " samples: ", out[6]),
-    paste0("\t Posterior Gini diversity: ", round(out[7], 4)),
+  cat("Model:",
+    "\t Pitman-Yor process",
+    "\nQuantities:",
+    paste0("\t Abundance: ", n),
+    paste0("\t Richness: ", K),
+    paste0("\t Estimated sample coverage: ", round(coverage(object), 4)),
+    paste0("\t Expected species after additional ", n, " samples: ", Expected + K),
+    paste0("\t New expected species after additional ", n, " samples: ", Expected),
+    paste0("\t Posterior Gini diversity: ", round(Gini, 4)),
+    "\nParameters:",
+    paste0("\t ", knitr::kable(out)),
     sep = "\n"
   )
-  invisible(out)
 }
 
 
@@ -137,7 +158,7 @@ summary.PY <- function(object, ...) {
 #'
 #' @export
 #'
-plot.DP <- function(object, type = "freq", ...) {
+plot.DP <- function(object, type = "rarefaction", ...) {
   n <- sum(object$frequencies)
   alpha <- object$param[1]
 
@@ -163,6 +184,14 @@ plot.DP <- function(object, type = "freq", ...) {
       xlab("Sample coverage") +
       ylab("Density")
     return(p)
+  } else if (type == "rarefaction") {
+    data_plot <- data.frame(n = 1:n, rar = rarefaction(object))
+    p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
+      geom_line() +
+      theme_bw() +
+      xlab("n") +
+      ylab("Rarefaction")
+    return(p)
   }
 }
 
@@ -175,7 +204,7 @@ plot.DP <- function(object, type = "freq", ...) {
 #'
 #' @export
 #'
-plot.PY <- function(object, type = "freq", ...) {
+plot.PY <- function(object, type = "rarefaction", ...) {
   n <- sum(object$frequencies)
   alpha <- object$param[1]
   sigma <- object$param[2]
@@ -196,11 +225,19 @@ plot.PY <- function(object, type = "freq", ...) {
     return(p)
   } else if (type == "coverage") {
     p <- ggplot() +
-      xlim(qbeta(0.001, n - sigma*K, alpha + sigma*K), qbeta(0.999, n - sigma*K, alpha + sigma*K)) +
-      geom_function(fun = function(x) dbeta(x, n - sigma*K, alpha + sigma*K)) +
+      xlim(qbeta(0.001, n - sigma * K, alpha + sigma * K), qbeta(0.999, n - sigma * K, alpha + sigma * K)) +
+      geom_function(fun = function(x) dbeta(x, n - sigma * K, alpha + sigma * K)) +
       theme_bw() +
       xlab("Sample coverage") +
       ylab("Density")
+    return(p)
+  } else if (type == "rarefaction") {
+    data_plot <- data.frame(n = 1:n, rar = rarefaction(object))
+    p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
+      geom_line() +
+      theme_bw() +
+      xlab("n") +
+      ylab("Rarefaction")
     return(p)
   }
 }

@@ -10,7 +10,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
-Imports: vegan (>= 2.5.0), Rcpp (>= 1.0.5), RcppArmadillo(>= 0.10.1.2.0), ggplot2, reshape2, tidyr, cubature, glmnet, Matrix
+Imports: vegan (>= 2.5.0), Rcpp (>= 1.0.5), RcppArmadillo(>= 0.10.1.2.0), ggplot2, reshape2, tidyr, cubature, knitr, glmnet
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
