@@ -137,7 +137,7 @@ summary.PY <- function(object, ...) {
 #'
 #' @export
 #'
-plot.DP <- function(object, type, ...) {
+plot.DP <- function(object, type = "freq", ...) {
   n <- sum(object$frequencies)
   alpha <- object$param[1]
 
@@ -175,25 +175,32 @@ plot.DP <- function(object, type, ...) {
 #'
 #' @export
 #'
-plot.PY <- function(object, type, ...) {
+plot.PY <- function(object, type = "freq", ...) {
   n <- sum(object$frequencies)
   alpha <- object$param[1]
   sigma <- object$param[2]
 
-
-  M_l <- as.numeric(table(factor(object$frequencies, levels = 1:n)))
-  # P_l <- M_l / sum(M_l)
-
-  idx <- 1:(which.min(M_l) - 1) # which(P_l > 0)
-
-  data_plot <- data.frame(Size = idx, M_l = M_l[idx], Theoretical = expected_m_py(idx, n = n, sigma = sigma, alpha = alpha))
-  p <- ggplot(data = data_plot, aes(x = Size, y = M_l)) +
-    geom_point() +
-    geom_line(aes(y = Theoretical), color = "blue", linetype = "dashed") +
-    scale_y_log10() +
-    scale_x_log10() +
-    theme_bw() +
-    xlab("l") +
-    ylab(expression(M[l]))
-  p
+  if (type == "freq") {
+    M_l <- as.numeric(table(factor(object$frequencies, levels = 1:n)))
+    # P_l <- M_l / sum(M_l)
+    idx <- 1:(which.min(M_l) - 1) # which(P_l > 0)
+    data_plot <- data.frame(Size = idx, M_l = M_l[idx], Theoretical = expected_m_py(idx, n = n, sigma = sigma, alpha = alpha))
+    p <- ggplot(data = data_plot, aes(x = Size, y = M_l)) +
+      geom_point() +
+      geom_line(aes(y = Theoretical), color = "blue", linetype = "dashed") +
+      scale_y_log10() +
+      scale_x_log10() +
+      theme_bw() +
+      xlab("l") +
+      ylab(expression(M[l]))
+    return(p)
+  } else if (type == "coverage") {
+    p <- ggplot() +
+      xlim(qbeta(0.001, n - sigma*K, alpha + sigma*K), qbeta(0.999, n - sigma*K, alpha + sigma*K)) +
+      geom_function(fun = function(x) dbeta(x, n - sigma*K, alpha + sigma*K)) +
+      theme_bw() +
+      xlab("Sample coverage") +
+      ylab("Density")
+    return(p)
+  }
 }

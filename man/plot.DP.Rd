@@ -4,7 +4,7 @@
 \alias{plot.DP}
 \title{Plot for the DP model}
 \usage{
-\method{plot}{DP}(object, type, ...)
+\method{plot}{DP}(object, type = "freq", ...)
 }
 \arguments{
 \item{object}{An object of class \code{\link[ssm]{ssm}}.}

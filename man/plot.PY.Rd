@@ -4,7 +4,7 @@
 \alias{plot.PY}
 \title{Plot for the Pitman-Yor model}
 \usage{
-\method{plot}{PY}(object, type, ...)
+\method{plot}{PY}(object, type = "freq", ...)
 }
 \arguments{
 \item{object}{An object of class \code{\link[ssm]{ssm}}.}
