@@ -28,14 +28,14 @@ Model:
 Quantities:
 	 Abundance: 21243
 	 Richness: 563
-	 Expected species at infinity: 683
-	 Standard deviation at infinity: 26.12
-	 Sample saturation: 0.8243
+	 Expected species at infinity: 682
+	 Standard deviation at infinity: 26.11
+	 Sample saturation: 0.8255
 
 Parameters:
 	     alpha       sigma         phi     loglik
 	 ---------  ----------  ----------  ---------
-	  91.86718   0.0269072   0.9999871   -1975.74
+	  91.47824   0.0275633   0.9999869   -1975.74
 ```
 
 To make a plot of the chosen accumulation curve, run
