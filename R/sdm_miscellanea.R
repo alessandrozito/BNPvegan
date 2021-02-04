@@ -25,6 +25,8 @@ sample_sequence <- function(frequencies) {
   return(sequence)
 }
 
+# THIS FUNCTION IS HIGHLY INEFFICIENT AND SHOULD BE REWRITTEN
+
 rLL3 <- function(L, alpha, sigma, phi) {
   species <- c()
   D <- c()
