@@ -45,7 +45,7 @@ diversity.data.frame <- function(dataset) {
       Gini(frequencies),
       Gini_norm(frequencies),
       Shannon(frequencies),
-      Shannon_norm(frequencies),
+      Shannon_norm(frequencies)
     )
   }
   tab
@@ -60,7 +60,7 @@ diversity.numeric <- function(frequencies) {
       Gini(frequencies),
       Gini_norm(frequencies),
       Shannon(frequencies),
-      Shannon_norm(frequencies),
+      Shannon_norm(frequencies)
     )
   tab
 }

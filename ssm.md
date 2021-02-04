@@ -65,13 +65,17 @@ Parameters:
 The first quantity we may want to compute is the **sample coverage**. The traditional estimator for the sample coverage is obtained as follows:
 
 ```r
-coverage(frequencies) # 0.9975295
+coverage(frequencies)
+
+[1] 0.9975295
 ```
 
 If the `coverage` function is applied to a `ssm` object, one get the **model based** coverage estimate. In the `Lepidoptera` dataset, the two values are fairly similar:
 
 ```r
-coverage(fit_DP) # 0.9966645
+coverage(fit_DP)
+
+[1] 0.9966645
 ```
 
 The main advantage of model based estimates is the possibility of asses the associated **uncertainty**. 
@@ -84,6 +88,9 @@ plot(fit_DP, type = "coverage")
 
 ```r
 diversity(frequencies)
+
+          Gini Normalized Gini  Entropy Normalized entropy
+[1,] 0.9749111       0.9789903 4.288713          0.7825205
 ```
 
 ## Estimating the rarefaction
