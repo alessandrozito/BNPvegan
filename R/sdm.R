@@ -8,9 +8,24 @@
 #' @details This function runs the sequential discovery model is Zito et al. (2020+)
 #' @export
 #'
-sdm <- function(frequencies, n_resamples = 500L, model = "LL3", verbose = TRUE) {
+sdm <- function(frequencies, model = "LL3", n_resamples = NULL, verbose = TRUE) {
   # Step 0 - filter out the frequencies equal to 0
   frequencies <- frequencies[frequencies > 0]
+  tot_sp <- sum(frequencies)
+
+  # Select the number of resamples
+  if(is.null(n_resamples)){
+    if(tot_sp <= 1000){n_resamples = 7500}
+    else if(tot_sp <= 5000){n_resamples = 5000}
+    else if(tot_sp <= 20000){n_resamples = 1000}
+    else if(tot_sp <= 70000){n_resamples = 500}
+    else if(tot_sp <= 150000){n_resamples = 100}
+    else {n_resamples = 50}
+  }
+
+  # Print output
+  cat(paste0("Sample size is n = ", tot_sp, ", taking ", n_resamples, " resamplings \n"))
+
 
   # Initialize an empty matrix for the parameters
   if (model == "LL3") {
@@ -88,7 +103,8 @@ sdm <- function(frequencies, n_resamples = 500L, model = "LL3", verbose = TRUE) 
 
 
   # List to store the re-sampling output
-  resampling_output <- list(param = param, discoveries_indexes = discoveries_indexes, selected_curve = selected_curve)
+  resampling_output <- list(param = param, discoveries_indexes = discoveries_indexes, selected_curve = selected_curve, asy_richness = asym_p)
+
   Asymp_moments <- moments_Kinf(param[selected_curve, -4], n = length(d), k = sum(d), model = model)
   # Return the output
   out <- list(
