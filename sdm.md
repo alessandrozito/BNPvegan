@@ -30,7 +30,7 @@ Quantities:
 	 Richness: 563
 	 Expected species at infinity: 682
 	 Standard deviation at infinity: 26.11
-	 New species to discover: 119
+	 Expected new species to discover: 119
 	 Sample saturation: 0.8255
 
 Parameters:
