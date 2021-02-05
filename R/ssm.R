@@ -202,6 +202,7 @@ plot.DP <- function(object, type = "rarefaction", ...) {
 #'
 plot.PY <- function(object, type = "rarefaction", ...) {
   n <- sum(object$frequencies)
+  K <- length(object$frequencies)
   alpha <- object$param[1]
   sigma <- object$param[2]
 
