@@ -226,7 +226,12 @@ extrapolation <- function(x, ...) {
 extrapolation.sdm <- function(object, m, ...) {
   n <- length(object$discoveries)
   k <- sum(object$discoveries)
-  extr <- k + cumsum(prob_LL3(c(n:(n + m - 1)), alpha = object$par[1], sigma = object$par[2], phi = object$par[3]))
+  if(object$model == "LL3"){
+    extr <- k + cumsum(prob_LL3(c(n:(n + m - 1)), alpha = object$par[1], sigma = object$par[2], phi = object$par[3]))
+  } else if (object$model == "Weibull"){
+    extr <- k + cumsum(prob_Weibull(c(n:(n + m - 1)), phi = object$par[1], lambda = object$par[2]))
+  }
+
   return(extr)
 }
 
