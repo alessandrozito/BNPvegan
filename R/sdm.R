@@ -15,11 +15,10 @@ sdm <- function(frequencies, model = "LL3", n_resamples = NULL, verbose = TRUE) 
 
   # Select the number of resamples
   if(is.null(n_resamples)){
-    if(tot_sp <= 1000){n_resamples = 7500}
-    else if(tot_sp <= 5000){n_resamples = 5000}
+    if(tot_sp <= 10000){n_resamples = 5000}
     else if(tot_sp <= 20000){n_resamples = 1000}
     else if(tot_sp <= 70000){n_resamples = 500}
-    else if(tot_sp <= 150000){n_resamples = 100}
+    else if(tot_sp <= 100000){n_resamples = 200}
     else {n_resamples = 50}
   }
 
