@@ -23,6 +23,7 @@ sdm <- function(frequencies, n_resamples = 500L, model = "LL3", verbose = TRUE) 
     param <- matrix(NA, nrow = n_resamples, ncol = 3)
     colnames(param) <- c("phi", "lambda", "loglik")
   }
+  asym_p <- numeric(n_resamples)
 
   # List to store the position of the discoveries in the list
   discoveries_indexes <- matrix(NA, nrow = n_resamples, ncol = length(frequencies))
@@ -58,17 +59,23 @@ sdm <- function(frequencies, n_resamples = 500L, model = "LL3", verbose = TRUE) 
       return(NA)
     }
 
+    # compute moments
+    # Compute E(Kinf) and var(Kinf)
+    asym_p[i] <- moments_Kinf(param[i, -4], n = length(d), k = sum(d), model = model)[1]
+
     # Monitor output
     if (verbose) {
       if (i %% verbose_step == 0) {
         cat(paste0("Number of accumulation curves fitted: ", i, " [", round(100 * i / n_resamples), "%]"), sep = "\n")
       }
     }
+
   }
 
   # Choose the accumulation curve with the highest loglikelihood
   if (model == "LL3") {
-    selected_curve <- which.max(param[, 4])
+    #selected_curve <- which.max(param[, 4])
+    selected_curve <- sort(asym_p, index.return = TRUE)$ix[floor(n_resamples/2)]
     par <- param[selected_curve, -4]
     loglik <- param[selected_curve, 4]
   } else if (model == "Weibull") {
@@ -79,8 +86,6 @@ sdm <- function(frequencies, n_resamples = 500L, model = "LL3", verbose = TRUE) 
   d <- rep(0, sum(frequencies))
   d[discoveries_indexes[selected_curve, ]] <- 1
 
-  # Compute E(Kinf) and var(Kinf)
-  Asymp_moments <- moments_Kinf(par, n = length(d), k = sum(d), model = model)
 
   # List to store the re-sampling output
   resampling_output <- list(param = param, discoveries_indexes = discoveries_indexes, selected_curve = selected_curve)
