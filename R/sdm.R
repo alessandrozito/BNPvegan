@@ -89,7 +89,7 @@ sdm <- function(frequencies, n_resamples = 500L, model = "LL3", verbose = TRUE) 
 
   # List to store the re-sampling output
   resampling_output <- list(param = param, discoveries_indexes = discoveries_indexes, selected_curve = selected_curve)
-
+  Asymp_moments <- moments_Kinf(param[selected_curve, -4], n = length(d), k = sum(d), model = model)
   # Return the output
   out <- list(
     model = model,
