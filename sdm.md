@@ -6,7 +6,7 @@ Sequential discovery models are a Bayesian method to construct, fit and predict 
  
 The models available for the latent variables are the three-parameter log-logistic distribution (`"LL3"`, *the default*) and the Weibull distribution (`"Weibull"`). Both methods assume that the *asymptotic species richness*, which is the total number of species observable in the sample, is always finite. Such an assumption allows to determine how close the accumulation curves are to convergence according to the selected model. **Note**: the models provide reliable results when the sample size is larger than 5000. 
 
-As a working example, we consider the following examples of accumulation curve generated from a set of frequencies of fungal operational taxonomic units (OTU), called `fungalOTU`. Notice that the construction of the accumulation curves is inherently order dependent. To cope for this fact, we adopt a resampling approach by specifying the parameter `n_resamples`. The default value is set to `n_resamples=1000`, but should be reduced under large datasets to shorten the computational time. At every iteration, the model samples one random sequence of discoveries from the observed `frequencies` and runs the `model` specified. The output corresponds to the curve and the parameters for which the chosen `model` reaches the highest log-likelihood. To ensure exact reproducinbility, it is recommended to set a seed before running. 
+As a working example, we consider the following examples of accumulation curve generated from a set of frequencies of fungal operational taxonomic units (OTU), called `fungalOTU`. Notice that the construction of the accumulation curves is inherently order dependent. To cope for this fact, we adopt a resampling approach by specifying the parameter `n_resamples`. The default value is set to `n_resamples=500`, but should be reduced under large datasets to shorten the computational time. At every iteration, the model samples one random sequence of discoveries from the observed `frequencies` and runs the `model` specified. The output corresponds to the curve and the parameters for which the chosen `model` reaches the highest log-likelihood. To ensure exact reproducinbility, it is recommended to set a seed before running. 
 
 ```R
 # Load the frequencies
@@ -30,6 +30,7 @@ Quantities:
 	 Richness: 563
 	 Expected species at infinity: 682
 	 Standard deviation at infinity: 26.11
+	 New species to discover: 119
 	 Sample saturation: 0.8255
 
 Parameters:
@@ -38,14 +39,19 @@ Parameters:
 	  91.47824   0.0275633   0.9999869   -1975.74
 ```
 
-To make a plot of the chosen accumulation curve, run.
+To make a plot of the chosen accumulation curve, run:
 ```R
-plot(fit)
+plot(fit, type = "rarefaction")  # Note: default type is rarefaction, which plots also the observed accumulation curve
 ```
 
 <img src="https://github.com/alessandrozito/BNPvegan/blob/master/img/sdm_plot.png" width="600" >
 
+To plot the out of sample prediction, just type
+```R
+plot(fit, type = "extrapolation") 
+```
 
+<img src="https://github.com/alessandrozito/BNPvegan/blob/master/img/sdm_plot_extrapolation.png" width="600" >
 
 Finally, to extract relevant quantities, do:
 ```R
