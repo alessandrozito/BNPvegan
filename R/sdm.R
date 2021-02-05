@@ -39,16 +39,15 @@ sdm <- function(frequencies, n_resamples = 500L, model = "LL3", verbose = TRUE) 
 
     if (model == "LL3") {
       # Fit the three-parameter log-logistic
-      fitglm <- glmnet::glmnet(x=X[,-1], y=d[-1], family = "binomial", upper.limits = 0, lambda = 0, standardize=FALSE, tresh = 1e-7)
+      fitglm <- glmnet::glmnet(x = X[, -1], y = d[-1], family = "binomial", upper.limits = 0, lambda = 0, standardize = FALSE, tresh = 1e-7)
       coeffs <- c(fitglm$a0, as.numeric(fitglm$beta))
-      if(coeffs[3] == 0){
-        coeffs[3] = -1e-7  # Force convergence
+      if (coeffs[3] == 0) {
+        coeffs[3] <- -1e-7 # Force convergence
       }
 
       # Compute loglikelihood and save parameters
-      loglik <- -logLik_LL3(d = d[-1], X = X, beta_0 = coeffs[1], beta_1 = coeffs[2],beta_2 = coeffs[3])
+      loglik <- -logLik_LL3(d = d[-1], X = X, beta_0 = coeffs[1], beta_1 = coeffs[2], beta_2 = coeffs[3])
       param[i, ] <- c(exp(coeffs[1]), 1 + coeffs[2], exp(coeffs[3]), loglik)
-
     } else if (model == "Weibull") {
       # Fit the Weibull model
       fit <- max_logLik_Weibull(d = d)
@@ -139,7 +138,6 @@ summary.sdm <- function(object, ...) {
       paste0("\t ", knitr::kable(t(c(object$par, object$loglik)), "simple")),
       sep = "\n"
     )
-
 }
 
 #' Predict sdm
@@ -174,13 +172,13 @@ predict.sdm <- function(object, newdata = NULL, ...) {
 #' @param ... additional parameters
 
 #' @export
-plot.sdm <- function(object, n_points = 100, type = "rarefaction", m = NULL,  ...) {
+plot.sdm <- function(object, n_points = 100, type = "rarefaction", m = NULL, ...) {
   # Step 1 - Plot the accumulation curve with the highest likelihood
   accum <- cumsum(object$discoveries)
   # Rarefaction curve
   rar <- rarefaction(object)
 
-  if(type == "rarefaction"){
+  if (type == "rarefaction") {
 
     # Step 3 - compute the average rarefaction curve
     df <- data.frame("n" = c(1:length(accum)), "accum" = accum, "rar" = rar)
@@ -191,7 +189,7 @@ plot.sdm <- function(object, n_points = 100, type = "rarefaction", m = NULL,  ..
       df <- df[unlist(lapply(seqY, function(a) tail(a, 1))), ]
     }
 
-    p<- ggplot2::ggplot(df) +
+    p <- ggplot2::ggplot(df) +
       ggplot2::geom_point(ggplot2::aes(x = n, y = accum), shape = 1) +
       ggplot2::geom_line(ggplot2::aes(x = n, y = rar), color = "red", size = 0.9) +
       ggplot2::theme_bw() +
@@ -199,21 +197,20 @@ plot.sdm <- function(object, n_points = 100, type = "rarefaction", m = NULL,  ..
       ggplot2::ylab(expression(K[n]))
 
     return(p)
-
-  } else if (type == "extrapolation"){
+  } else if (type == "extrapolation") {
     # Extrapolate up to m. if unspecified, m = n
-    if(is.null(m)){
-      m = length(accum)
+    if (is.null(m)) {
+      m <- length(accum)
     }
 
     ext <- extrapolation(object, m = m)
 
-    df <- data.frame("n" = c(1:(length(rar) + length(ext))),  "curve" = c(rar, ext))
-    p<- ggplot2::ggplot(df) +
+    df <- data.frame("n" = c(1:(length(rar) + length(ext))), "curve" = c(rar, ext))
+    p <- ggplot2::ggplot(df) +
       ggplot2::geom_line(ggplot2::aes(x = n, y = curve), color = "red", size = 0.9) +
       ggplot2::theme_bw() +
       ggplot2::facet_wrap(~"Rarefaction and Extrapolation curve") +
-      ggplot2::geom_segment(x = m, xend =m, y = 0, yend = Inf, linetype = "dashed")+
+      ggplot2::geom_segment(x = m, xend = m, y = 0, yend = Inf, linetype = "dashed") +
       ggplot2::ylab(expression(K[n]))
     return(p)
   }
@@ -226,10 +223,10 @@ extrapolation <- function(x, ...) {
 
 #' @export
 #'
-extrapolation.sdm <- function(object, m, ...){
+extrapolation.sdm <- function(object, m, ...) {
   n <- length(object$discoveries)
   k <- sum(object$discoveries)
-  extr = k + cumsum(prob_LL3(c(n:(n+m-1)), alpha = object$par[1], sigma = object$par[2], phi = object$par[3]))
+  extr <- k + cumsum(prob_LL3(c(n:(n + m - 1)), alpha = object$par[1], sigma = object$par[2], phi = object$par[3]))
   return(extr)
 }
 
@@ -241,7 +238,7 @@ coef.sdm <- function(object, ...) {
 
 #' @export
 #'
-rarefaction.sdm <- function(object, ...){
+rarefaction.sdm <- function(object, ...) {
   predict(object)
 }
 

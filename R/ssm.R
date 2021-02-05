@@ -180,15 +180,15 @@ plot.DP <- function(object, type = "rarefaction", ...) {
       ylab("Rarefaction")
     return(p)
   } else if (type == "extrapolation") {
-    data_plot <- data.frame(n = c(1:(2*n)), rar = c(rarefaction(object), predict(object, 1:n)))
+    data_plot <- data.frame(n = c(1:(2 * n)), rar = c(rarefaction(object), predict(object, 1:n)))
     p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
-      geom_line() + geom_vline(xintercept = n, linetype= "dashed") +
+      geom_line() +
+      geom_vline(xintercept = n, linetype = "dashed") +
       theme_bw() +
       xlab("n") +
       ylab("Rarefaction and prediction")
     return(p)
   }
-
 }
 
 
@@ -236,9 +236,10 @@ plot.PY <- function(object, type = "rarefaction", ...) {
       ylab("Rarefaction")
     return(p)
   } else if (type == "extrapolation") {
-    data_plot <- data.frame(n = c(1:(2*n)), rar = c(rarefaction(object), predict(object, 1:n)))
+    data_plot <- data.frame(n = c(1:(2 * n)), rar = c(rarefaction(object), predict(object, 1:n)))
     p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
-      geom_line() + geom_vline(xintercept = n, linetype= "dashed") +
+      geom_line() +
+      geom_vline(xintercept = n, linetype = "dashed") +
       theme_bw() +
       xlab("n") +
       ylab("Rarefaction and prediction")
