@@ -48,15 +48,35 @@ plot(fit, type = "rarefaction")  # Note: default type is rarefaction, which plot
 
 To plot the out of sample prediction, just type
 ```R
-plot(fit, type = "extrapolation") 
+n <- length(fit$discoveries)
+plot(fit, type = "extrapolation", m = n)  # m are the additionall points to compute the prediciton. Default is m=n
 ```
 
 <img src="https://github.com/alessandrozito/BNPvegan/blob/master/img/sdm_plot_extrapolation.png" width="600" >
 
-Finally, to extract relevant quantities, do:
+To extract relevant quantities, do:
 ```R
 coef(fit)                   # Coefficients alpha, sigma and phi
 logLik(fit)                 # Loglikelihood of the best curve
 asymptotic_richness(fit)    # asymptotic species richness and saturation
 ```
+
+Finally, rarefactions and predictions can be obtained as follows 
+```R
+# To obtain a generic prediction with the estimated parameters 
+newdata <- c(10, 100, 1000)
+predict(fit, newdata = newdata)
+
+# To obtain the rarefaction curve, do one of the following (they are equivalent. predict is a generic prediction method)
+predict(fit)
+rarefaction(fit)
+
+# To obtain the extrapolation, use
+m = 10
+extrapolation(fit, m = m)  # extrapolates the curve for additional 10 point.
+```
+
+
+
+
 
