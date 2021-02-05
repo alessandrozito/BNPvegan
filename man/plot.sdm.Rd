@@ -4,7 +4,7 @@
 \alias{plot.sdm}
 \title{Plot rarefaction curves}
 \usage{
-\method{plot}{sdm}(object, n_points = 100, ...)
+\method{plot}{sdm}(object, n_points = 100, type = "rarefaction", m = NULL, ...)
 }
 \arguments{
 \item{object}{An object of class \code{\link[sdm]{sdm}}.}

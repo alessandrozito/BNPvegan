@@ -4,7 +4,7 @@
 \alias{sdm}
 \title{Fit the sequential discovery model of Zito et al. (2020+)}
 \usage{
-sdm(frequencies, n_resamples = 1000L, model = "LL3", verbose = TRUE)
+sdm(frequencies, n_resamples = 500L, model = "LL3", verbose = TRUE)
 }
 \arguments{
 \item{frequencies}{Counts of the species}

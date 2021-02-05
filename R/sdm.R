@@ -8,7 +8,7 @@
 #' @details This function runs the sequential discovery model is Zito et al. (2020+)
 #' @export
 #'
-sdm <- function(frequencies, n_resamples = 1000L, model = "LL3", verbose = TRUE) {
+sdm <- function(frequencies, n_resamples = 500L, model = "LL3", verbose = TRUE) {
   # Step 0 - filter out the frequencies equal to 0
   frequencies <- frequencies[frequencies > 0]
 
@@ -133,26 +133,13 @@ summary.sdm <- function(object, ...) {
       paste0("\t Richness: ", richness),
       paste0("\t Expected species at infinity: ", asy_rich[1]),
       paste0("\t Standard deviation at infinity: ", asy_rich[2]),
+      paste0("\t Expected new species to discover: ", asy_rich[1] - richness),
       paste0("\t Sample saturation: ", round(saturation, 4)),
       "\nParameters:",
       paste0("\t ", knitr::kable(t(c(object$par, object$loglik)), "simple")),
       sep = "\n"
     )
 
-  # Output
-  # out <- list(
-  #  Abundance = abundance,
-  #  Richness = richness,
-  #  n_resamples = object$n_resamples,
-  #  n_div = n_div,
-  #  Asymp_richness = EK,
-  #  Asymp_richness_summary = asymp_tab,
-  #  Asymp_richness_plot = richness_plot,
-  #  param_plot = param_plot,
-  #  param_summary = pars_tab
-  # )
-  # class(out) <- union("summary", class(object))
-  # return(invisible(out))
 }
 
 #' Predict sdm
@@ -187,46 +174,77 @@ predict.sdm <- function(object, newdata = NULL, ...) {
 #' @param ... additional parameters
 
 #' @export
-plot.sdm <- function(object, n_points = 100, ...) {
+plot.sdm <- function(object, n_points = 100, type = "rarefaction", m = NULL,  ...) {
   # Step 1 - Plot the accumulation curve with the highest likelihood
   accum <- cumsum(object$discoveries)
+  # Rarefaction curve
+  rar <- rarefaction(object)
 
-  # Plot the rarefaction by predicting
-  rar <- predict(object)
+  if(type == "rarefaction"){
 
-  # Step 3 - compute the average rarefaction curve
-  df <- data.frame("n" = c(1:length(accum)), "accum" = accum, "rar" = rar)
+    # Step 3 - compute the average rarefaction curve
+    df <- data.frame("n" = c(1:length(accum)), "accum" = accum, "rar" = rar)
 
-  if (nrow(df) > n_points) {
-    seqX <- 1:nrow(df)
-    seqY <- split(seqX, sort(seqX %% n_points))
-    df <- df[unlist(lapply(seqY, function(a) tail(a, 1))), ]
+    if (nrow(df) > n_points) {
+      seqX <- 1:nrow(df)
+      seqY <- split(seqX, sort(seqX %% n_points))
+      df <- df[unlist(lapply(seqY, function(a) tail(a, 1))), ]
+    }
+
+    p<- ggplot2::ggplot(df) +
+      ggplot2::geom_point(ggplot2::aes(x = n, y = accum), shape = 1) +
+      ggplot2::geom_line(ggplot2::aes(x = n, y = rar), color = "red", size = 0.9) +
+      ggplot2::theme_bw() +
+      ggplot2::facet_wrap(~"Rarefaction curve") +
+      ggplot2::ylab(expression(K[n]))
+
+    return(p)
+
+  } else if (type == "extrapolation"){
+    # Extrapolate up to m. if unspecified, m = n
+    if(is.null(m)){
+      m = length(accum)
+    }
+
+    ext <- extrapolation(object, m = m)
+
+    df <- data.frame("n" = c(1:(length(rar) + length(ext))),  "curve" = c(rar, ext))
+    p<- ggplot2::ggplot(df) +
+      ggplot2::geom_line(ggplot2::aes(x = n, y = curve), color = "red", size = 0.9) +
+      ggplot2::theme_bw() +
+      ggplot2::facet_wrap(~"Rarefaction and Extrapolation curve") +
+      ggplot2::geom_segment(x = m, xend =m, y = 0, yend = Inf, linetype = "dashed")+
+      ggplot2::ylab(expression(K[n]))
+    return(p)
   }
-
-  ggplot2::ggplot(df) +
-    ggplot2::geom_point(ggplot2::aes(x = n, y = accum), shape = 1) +
-    ggplot2::geom_line(ggplot2::aes(x = n, y = rar), color = "red", size = 0.9) +
-    ggplot2::theme_bw() +
-    ggplot2::facet_wrap(~"Rarefaction curve") +
-    ggplot2::ylab(expression(K[n]))
 }
 
-#' Extract the coefficients of the sdm output
+#' @export
+extrapolation <- function(x, ...) {
+  UseMethod("extrapolation", x)
+}
+
+#' @export
 #'
-#' @param object an object of class \code{\link[sdm]{sdm}}.
-#' @param ... additional parameters
-#'
+extrapolation.sdm <- function(object, m, ...){
+  n <- length(object$discoveries)
+  k <- sum(object$discoveries)
+  extr = k + cumsum(prob_LL3(c(n:(n+m-1)), alpha = object$par[1], sigma = object$par[2], phi = object$par[3]))
+  return(extr)
+}
+
 #' @export
 #'
 coef.sdm <- function(object, ...) {
   return(object$par)
 }
 
-#' Extract the loglikelihood of the sdm output
+#' @export
 #'
-#' @param object an object of class \code{\link[sdm]{sdm}}.
-#' @param ... additional parameters
-#'
+rarefaction.sdm <- function(object, ...){
+  predict(object)
+}
+
 #' @export
 #'
 logLik.sdm <- function(object, ...) {
