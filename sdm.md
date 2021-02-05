@@ -23,7 +23,7 @@ frequencies <- fungalOTU
 
 # Fit the model with 1000 resamples
 set.seed(1) 
-fit <- sdm(frequencies, n_resamples = 1000, model = "LL3", verbose = TRUE)
+fit <- sdm(frequencies, model = "LL3", verbose = TRUE)
 ```
 
 To summarize the output, just run
