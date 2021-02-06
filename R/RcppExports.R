@@ -5,3 +5,7 @@ cluster_py_C <- function(n, sigma, theta) {
     .Call('_BNPvegan_cluster_py_C', PACKAGE = 'BNPvegan', n, sigma, theta)
 }
 
+rarefy_C <- function(freq, n, K) {
+    .Call('_BNPvegan_rarefy_C', PACKAGE = 'BNPvegan', freq, n, K)
+}
+

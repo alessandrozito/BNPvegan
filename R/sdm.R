@@ -12,15 +12,16 @@ sdm <- function(frequencies, model = "LL3", n_resamples = 1000, verbose = TRUE) 
   # Step 0 - filter out the frequencies equal to 0
   frequencies <- frequencies[frequencies > 0]
 
+  # Average output
+  d <- c(1, diff(rarefy_C(freq, sum(frequencies), length(frequencies))))
+
+
   # Initialize an empty matrix for the parameters
   if (model == "LL3") {
     # Initialize the matrix of predictors
     n <- sum(frequencies) - 1
     X <- cbind(1, log(1:n), c(1:n))
   }
-
-  # Sampling the output
-  d <- rowMeans(sapply(numeric(n_resamples), function(x) extract_discoveries(sample_sequence(frequencies))))
 
   if (model == "LL3") {
     # Fit the three-parameter log-logistic
