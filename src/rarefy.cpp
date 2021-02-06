@@ -1,6 +1,7 @@
-#include <RcppArmadillo.h>
-// [[Rcpp::depends(RcppArmadillo)]]
+#include "RcppArmadillo.h"
 using namespace Rcpp;
+
+// [[Rcpp::depends(RcppArmadillo)]]
 
 // [[Rcpp::export]]
 arma::vec rarefy_C(arma::vec freq, int n, int K) {

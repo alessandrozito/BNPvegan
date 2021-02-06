@@ -1,6 +1,7 @@
 #' @import stats ggplot2
 #' @importFrom Rcpp evalCpp sourceCpp
 #' @importFrom vegan diversity
+#' @useDynLib BNPvegan
 #'
 
 logEPPF_PY <- function(alpha, sigma, frequencies) {

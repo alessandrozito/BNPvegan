@@ -1,19 +1,18 @@
 #' Fit the sequential discovery model of Zito et al. (2020+)
 #'
 #' @param frequencies Counts of the species
-#' @param n_resamples number of accumulation curves to generate
 #' @param model model to fit. Options are "LL3" and "Weibull"
 #' @param verbose Whether to monitor the state of the simulation or not
 #'
 #' @details This function runs the sequential discovery model is Zito et al. (2020+)
 #' @export
 #'
-sdm <- function(frequencies, model = "LL3", n_resamples = 1000, verbose = TRUE) {
+sdm <- function(frequencies, model = "LL3", verbose = TRUE) {
   # Step 0 - filter out the frequencies equal to 0
   frequencies <- frequencies[frequencies > 0]
 
   # Average output
-  d <- c(1, diff(rarefy_C(freq, sum(frequencies), length(frequencies))))
+  d <- c(1, diff(rarefy_C(frequencies, sum(frequencies), length(frequencies))))
 
 
   # Initialize an empty matrix for the parameters
@@ -56,7 +55,6 @@ sdm <- function(frequencies, model = "LL3", n_resamples = 1000, verbose = TRUE) 
   out <- list(
     model = model,
     frequencies = frequencies,
-    n_resamples = n_resamples,
     discoveries = d,
     par = par,
     loglik = loglik,
@@ -92,7 +90,6 @@ summary.sdm <- function(object, ...) {
     # Print the summary
     cat("Model:",
       mod_print,
-      paste0("\t Number of resamples: ", object$n_resamples),
       "\nQuantities:",
       paste0("\t Abundance: ", abundance),
       paste0("\t Richness: ", richness),
