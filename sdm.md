@@ -4,26 +4,21 @@ Sequential discovery models are a Bayesian method to construct, fit and predict 
 
  * Zito, A., Rigon, T., Ovaskainen, O. and Dunson, D. B. (2020+): [Bayesian nonparametric modelling of sequential discoveries](https://arxiv.org/abs/2011.06629)
  
-The models available for the latent variables are the three-parameter log-logistic distribution (`"LL3"`, *the default*) and the Weibull distribution (`"Weibull"`). Both methods assume that the *asymptotic species richness*, which is the total number of species observable in the sample, is always finite. Such an assumption allows to determine how close the accumulation curves are to convergence according to the selected model. **Note**: the models provide reliable results when the sample size is larger than 5000. 
+The models available for the latent variables are the three-parameter log-logistic distribution (`"LL3"`, *the default*) and the Weibull distribution (`"Weibull"`). Both methods assume that the *asymptotic species richness*, which is the total number of species observable in the sample, is always finite. Such an assumption allows to determine how close the accumulation curves are to convergence according to the selected model. **Note**: the models provide reliable results when the sample size is large enough (i.e. larger  than 5000). 
 
-As a working example, we consider the following examples of accumulation curve generated from a set of frequencies of fungal operational taxonomic units (OTU), called `fungalOTU`. Notice that the construction of the accumulation curves is inherently order dependent. To cope for this fact, we adopt a resampling approach by specifying the parameter `n_resamples`. Its default value depends on the sample size `n = sum(frequencies)` in the following manner
+As a working example, we consider the following examples of accumulation curve generated from a set of frequencies of fungal operational taxonomic units (OTU), called `fungalOTU`. Notice that the construction of the accumulation curves is inherently order dependent. To cope for this fact, we adopt a resampling approach by specifying the parameter `n_resamples = 1000`.
 
-* if `n<= 10000`, `n_resamples = 5000`
-* if `n<= 20000`, `n_resamples = 1000`
-* if `n<= 70000`, `n_resamples = 500`
-* if `n<= 70000`, `n_resamples = 500`
-* if `n<= 100000`, `n_resamples = 200`
-* if `n > 100000`, `n_resamples = 50`.
-
-This ensures a reasonable computational time irrespective of the size of the curve. At every resample, the model samples one random sequence of discoveries from the observed `frequencies` and runs the `model` specified. The curve and the parameters returned for which the chosen `model` are the ones corresponding to the median asymptotic species richness across reamples. To ensure exact reproducibility, it is recommended to set a seed before running (under sufficiently `n`, differences in saturation are minimal). 
+ This ensures a reasonable computational time irrespective of the size of the curve. At every resample, the model samples one random sequence of discoveries from the observed `frequencies` and runs the `model` specified. The curve and the parameters returned for which the chosen `model` are the ones corresponding to the median asymptotic species richness across reamples. To ensure exact reproducibility, it is recommended to set a seed before running (under sufficiently `n`, differences in saturation are minimal). 
 
 ```R
+library(BNPvegan)
+
 # Load the frequencies
 frequencies <- fungalOTU
 
 # Fit the model with 1000 resamples
 set.seed(1) 
-fit <- sdm(frequencies, model = "LL3", verbose = TRUE)
+fit <- sdm(frequencies, model = "Weibull", verbose = TRUE, n_resamples = 100)
 ```
 
 To summarize the output, just run
