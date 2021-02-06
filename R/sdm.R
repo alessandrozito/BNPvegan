@@ -14,7 +14,6 @@ sdm <- function(frequencies, model = "LL3", verbose = TRUE) {
   # Average output
   d <- c(1, diff(rarefy_C(frequencies, sum(frequencies), length(frequencies))))
 
-
   # Initialize an empty matrix for the parameters
   if (model == "LL3") {
     # Initialize the matrix of predictors

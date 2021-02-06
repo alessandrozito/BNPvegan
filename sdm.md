@@ -16,8 +16,7 @@ library(BNPvegan)
 # Load the frequencies
 frequencies <- fungalOTU
 
-# Fit the model with 1000 resamples
-set.seed(1) 
+# Fit the model
 fit <- sdm(frequencies, model = "LL3", verbose = TRUE)
 ```
 
