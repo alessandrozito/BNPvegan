@@ -11,8 +11,8 @@ sdm <- function(frequencies, model = "LL3", verbose = TRUE) {
   # Step 0 - filter out the frequencies equal to 0
   frequencies <- frequencies[frequencies > 0]
 
-  # Average output
-  d <- c(1, diff(rarefy_C(frequencies, sum(frequencies), length(frequencies))))
+  # Extract the rarefaction curves
+  d <- c(1, diff(rarefy_C(frequencies, sum(frequencies), length(frequencies), verbose)))
 
   # Initialize an empty matrix for the parameters
   if (model == "LL3") {
@@ -36,12 +36,13 @@ sdm <- function(frequencies, model = "LL3", verbose = TRUE) {
     # Compute loglikelihood and save parameters
     loglik <- -logLik_LL3(d = d[-1], X = X, beta_0 = coeffs[1], beta_1 = coeffs[2], beta_2 = coeffs[3])
     par <- c(exp(coeffs[1]), 1 + coeffs[2], exp(coeffs[3]))
+    names(par) <- c("alpha", "sigma", "phi")
 
   } else if (model == "Weibull") {
     # Fit the Weibull model
     fit <- max_logLik_Weibull(d = d)
     loglik <- -fit$objective
-    par <- c(fit$par[1], fit$par[2], loglik)
+    par <- c(fit$par[1], fit$par[2], "logLik" = loglik)
   } else {
     cat(paste("No method exists for specified model:", model))
     return(NA)
@@ -58,7 +59,7 @@ sdm <- function(frequencies, model = "LL3", verbose = TRUE) {
     par = par,
     loglik = loglik,
     Asymp_moments = asym_p,
-    saturation = sum(d) / asym_p[1]
+    saturation = c("saturation" = sum(d) / asym_p[1])
   )
   class(out) <- "sdm"
   return(out)
@@ -97,7 +98,7 @@ summary.sdm <- function(object, ...) {
       paste0("\t Expected new species to discover: ", asy_rich[1] - richness),
       paste0("\t Sample saturation: ", round(saturation, 4)),
       "\nParameters:",
-      paste0("\t ", knitr::kable(t(c(object$par, object$loglik)), "simple")),
+      paste0("\t ", knitr::kable(t(c(object$par, "logLik" = object$loglik)), "simple")),
       sep = "\n"
     )
 }

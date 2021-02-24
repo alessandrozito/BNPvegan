@@ -20,22 +20,23 @@ BEGIN_RCPP
 END_RCPP
 }
 // rarefy_C
-arma::vec rarefy_C(arma::vec freq, int n, int K);
-RcppExport SEXP _BNPvegan_rarefy_C(SEXP freqSEXP, SEXP nSEXP, SEXP KSEXP) {
+arma::vec rarefy_C(arma::vec freq, int n, int K, bool verbose);
+RcppExport SEXP _BNPvegan_rarefy_C(SEXP freqSEXP, SEXP nSEXP, SEXP KSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::vec >::type freq(freqSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< int >::type K(KSEXP);
-    rcpp_result_gen = Rcpp::wrap(rarefy_C(freq, n, K));
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(rarefy_C(freq, n, K, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BNPvegan_cluster_py_C", (DL_FUNC) &_BNPvegan_cluster_py_C, 3},
-    {"_BNPvegan_rarefy_C", (DL_FUNC) &_BNPvegan_rarefy_C, 3},
+    {"_BNPvegan_rarefy_C", (DL_FUNC) &_BNPvegan_rarefy_C, 4},
     {NULL, NULL, 0}
 };
 
