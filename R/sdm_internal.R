@@ -19,12 +19,15 @@ max_logLik_LL3 <- function(d, X) {
 }
 
 # Loglikelihood of the Weibull
-Weibull_logLik <- function(d, phi, lambda) {
+Weibull_logLik <- function(d, phi, lambda){
   # Prob_new = phi^(t-1)^lambda
-  t_one <- which(d == 1)
-  t_one <- t_one[-1] # <=== the first observation is always a 1, needs to be removed
-  t_zero <- which(d == 0)
-  logLik <- log(phi) * sum((t_one - 1)^lambda) + sum(log(1 - exp(log(phi) * ((t_zero - 1)^lambda))))
+  #t_one = which(d==1)
+  #t_one = t_one[-1] # <=== the first observation is always a 1, needs to be removed
+  #t_zero = which(d==0)
+  ids = 1:length(d)
+  ids_lambda = ids^lambda
+  logLik = log(phi) * sum(ids_lambda*d) + sum((1-d)*log(1-exp(log(phi)*ids_lambda)))
+  #logLik = log(phi)*sum((t_one-1)^lambda) + sum(log(1-exp(log(phi)*((t_zero-1)^lambda))))
   return(-logLik)
 }
 

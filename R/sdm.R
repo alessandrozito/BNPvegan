@@ -40,9 +40,9 @@ sdm <- function(frequencies, model = "LL3", verbose = TRUE) {
 
   } else if (model == "Weibull") {
     # Fit the Weibull model
-    fit <- max_logLik_Weibull(d = d)
+    fit <- max_logLik_Weibull(d = d[-1])
     loglik <- -fit$objective
-    par <- c(fit$par[1], fit$par[2], "logLik" = loglik)
+    par <- c("phi" = fit$par[1], "lambda" = fit$par[2])
   } else {
     cat(paste("No method exists for specified model:", model))
     return(NA)
