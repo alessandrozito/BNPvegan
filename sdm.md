@@ -6,7 +6,7 @@ Sequential discovery models are a Bayesian method to construct, fit and predict 
  
 The models available for the latent variables are the three-parameter log-logistic distribution (`"LL3"`, *the default*) and the Weibull distribution (`"Weibull"`). Both methods assume that the *asymptotic species richness*, which is the total number of species observable in the sample, is always finite. Such an assumption allows to determine how close the accumulation curves are to convergence according to the selected model. **Note**: the models provide reliable results when the sample size is large enough (i.e. larger  than 5000). 
 
-As a working example, we consider the following accumulation curve generated from a set of frequencies of fungal operational taxonomic units (OTU), called `fungalOTU`. As a first step, the function constructs the exact rarefaction obtained from the given `frequencies` according to formula XX in the slides XX. Then, it runs the chosen `model` on such a curve, and returns the asymptotic estimates for the species richness and the sample saturation. 
+As a working example, we consider the following accumulation curve generated from a set of frequencies of fungal operational taxonomic units (OTU), called `fungalOTU`. As a first step, the function constructs the exact rarefaction obtained from the given `frequencies` according to equation () in the explanatory  [**slides**](slides_SSM.pdf). Then, it runs the chosen `model` on such a curve, and returns the asymptotic estimates for the species richness and the sample saturation. 
 
 ```R
 library(BNPvegan)
