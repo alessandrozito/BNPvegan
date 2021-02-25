@@ -26,20 +26,19 @@ summary(fit)
 
 Model:
 	 Three-parameter log-logistic (LL3)
-	 Number of resamples: 500
 
 Quantities:
 	 Abundance: 21243
 	 Richness: 563
-	 Expected species at infinity: 689
-	 Standard deviation at infinity: 26.24
-	 Expected new species to discover: 126
-	 Sample saturation: 0.8171
+	 Expected species at infinity: 690
+	 Standard deviation at infinity: 26.26
+	 Expected new species to discover: 127
+	 Sample saturation: 0.8159
 
 Parameters:
-	     alpha       sigma         phi     loglik
-	 ---------  ----------  ----------  ---------
-	  40.52234   0.1385731   0.9999812   -2081.25
+	     alpha       sigma         phi      logLik
+	 ---------  ----------  ----------  ----------
+	  45.51308   0.1225816   0.9999824   -2067.835
 ```
 
 To make a plot of the chosen accumulation curve, run:
