@@ -231,9 +231,9 @@ coef.sdm <- function(object, ...) {
 #'
 #' @export
 #'
-rarefaction.sdm <- function(object, ...) {
-  predict(object)
-}
+#rarefaction.sdm <- function(object, ...) {
+#  predict(object)
+#}
 
 #' @export
 #'

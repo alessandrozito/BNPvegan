@@ -1,10 +1,10 @@
-#' Fit a species sampling model
+#' Species sampling model
 #'
 #'
 #' @param frequencies A \code{K}-dimensional vector of frequencies
-#' @param model Model to fit. Available models are "DP" (Dirichlet Process) and "PY" (Pitman-Yor process)
+#' @param model Model to fit. Available models are \code{DP} (Dirichlet Process) and \code{PY" (Pitman-Yor process)
 #' #'
-#' @return An object of class "ssm"
+#' @return An object of class \code{ssm}
 #'
 #' @export
 ssm <- function(frequencies, model) {
@@ -33,27 +33,6 @@ coef.ssm <- function(object, ...) {
 logLik.ssm <- function(object, ...) {
   object$logLik
 }
-
-#' @export
-rarefaction <- function(x, ...) {
-  UseMethod("rarefaction", x)
-}
-
-
-#' @export
-#'
-rarefaction.DP <- function(object, ...) {
-  n <- sum(object$frequencies)
-  expected_cl_py(1:n, sigma = 0, alpha = object$param)
-}
-
-#' @export
-#'
-rarefaction.PY <- function(object, ...) {
-  n <- sum(object$frequencies)
-  expected_cl_py(1:n, sigma = object$param[2], alpha = object$param[1])
-}
-
 
 
 #' @export
