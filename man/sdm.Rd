@@ -2,20 +2,28 @@
 % Please edit documentation in R/sdm.R
 \name{sdm}
 \alias{sdm}
-\title{Fit the sequential discovery model of Zito et al. (2020+)}
+\title{Sequential discovery model as in Zito et al. (2020+)}
 \usage{
 sdm(frequencies, model = "LL3", verbose = TRUE)
 }
 \arguments{
-\item{frequencies}{Counts of the species}
+\item{frequencies}{Vector of frequencies of the observed species}
 
-\item{model}{model to fit. Options are "LL3" and "Weibull"}
+\item{model}{Model to fit. Options are "LL3" and "Weibull"}
 
-\item{verbose}{Whether to monitor the state of the simulation or not}
+\item{verbose}{if TRUE, monitor the construction of the average rarefaction curve.}
 }
 \description{
-Fit the sequential discovery model of Zito et al. (2020+)
+Sequential discovery model as in Zito et al. (2020+)
 }
 \details{
-This function runs the sequential discovery model is Zito et al. (2020+)
+This function fits the sequential discovery model is Zito et al. (2020+) on the average rarefaction curve obtained from a vector of species frequencies.
+         The models available are "LL3" and "Weibull".
+}
+\examples{
+# Fit the model
+frequencies <- fungalOTU
+fit <- sdm(frequencies, model = "LL3")
+summary(fit)
+
 }

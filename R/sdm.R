@@ -1,11 +1,17 @@
-#' Fit the sequential discovery model of Zito et al. (2020+)
+#' Sequential discovery model as in Zito et al. (2020+)
 #'
-#' @param frequencies Counts of the species
-#' @param model model to fit. Options are "LL3" and "Weibull"
-#' @param verbose Whether to monitor the state of the simulation or not
+#' @param frequencies Vector of frequencies of the observed species
+#' @param model Model to fit. Options are "LL3" and "Weibull"
+#' @param verbose if TRUE, monitor the construction of the average rarefaction curve.
 #'
-#' @details This function runs the sequential discovery model is Zito et al. (2020+)
+#' @details This function fits the sequential discovery model is Zito et al. (2020+) on the average rarefaction curve obtained from a vector of species frequencies.
+#'          The models available are "LL3" and "Weibull".
+#'
 #' @export
+#' @examples # Fit the model
+#' frequencies <- fungalOTU
+#' fit <- sdm(frequencies, model = "LL3")
+#' summary(fit)
 #'
 sdm <- function(frequencies, model = "LL3", verbose = TRUE) {
   # Step 0 - filter out the frequencies equal to 0
@@ -71,7 +77,7 @@ sdm <- function(frequencies, model = "LL3", verbose = TRUE) {
 #' @param object An object of class \code{\link[sdm]{sdm}}.
 #' @param ... additional parameters
 #'
-#' @details A function to summarize the three parameter log-logistic output
+#' @details A function to print out a summary of a species discovery model on a given vector of frequencies.
 #' @export
 summary.sdm <- function(object, ...) {
 
@@ -103,12 +109,14 @@ summary.sdm <- function(object, ...) {
     )
 }
 
-#' Predict sdm
+#' Predict function for a species discovery model
 #'
 #' @param object object of class \code{\link[sdm]{sdm}}
-#' @param newdata Indexes to predict
+#' @param newdata Indexes (or additional new samples) to predict
 #' @param ... additional values
+#'
 #' @export
+#'
 predict.sdm <- function(object, newdata = NULL, ...) {
   if (is.null(newdata)) {
     n <- c(1:length(object$discoveries)) - 1
@@ -118,9 +126,12 @@ predict.sdm <- function(object, newdata = NULL, ...) {
     index_to_store <- newdata
   }
 
+  # Prediction under LL3
   if (object$model == "LL3") {
     pred <- cumsum(prob_LL3(n = n, alpha = object$par[1], sigma = object$par[2], phi = object$par[3]))
+  # Prediction under Weibull
   } else if (object$model == "Weibull") {
+
     pred <- cumsum(prob_Weibull(n = n, phi = object$par[1], lambda = object$par[2]))
   }
 
@@ -128,12 +139,15 @@ predict.sdm <- function(object, newdata = NULL, ...) {
 }
 
 
-#' Plot rarefaction curves
+#' Plot the average rarefaction curve and the fitted one (in red)
 #'
 #' @param object An object of class \code{\link[sdm]{sdm}}.
 #' @param n_points Number of points to plot in the accumulation curve
+#' @param type Type of curve to plot. Available options are "rarefaction" and "extrapolation".
+#'             In the second case, one needs to provide the additional number of samples m up to which extrapolate.
+#' @param m Additional number of samples. Required for extrapolation only
 #' @param ... additional parameters
-
+#'
 #' @export
 plot.sdm <- function(object, n_points = 100, type = "rarefaction", m = NULL, ...) {
   # Step 1 - Plot the accumulation curve with the highest likelihood
@@ -184,6 +198,12 @@ extrapolation <- function(x, ...) {
   UseMethod("extrapolation", x)
 }
 
+#' Extrapolation function for a species discovery model.
+#'
+#' @param object An object of class \code{\link[sdm]{sdm}}.
+#' @param m Additional number of samples to predict.
+#' @param ...
+#'
 #' @export
 #'
 extrapolation.sdm <- function(object, m, ...) {
@@ -204,6 +224,11 @@ coef.sdm <- function(object, ...) {
   return(object$par)
 }
 
+
+#' Extract the predicted rarefaction curve from a species discovery model. This is equivalent to the prediction function with default parameters
+#' @param object  An object of class \code{\link[sdm]{sdm}}.
+#' @param ... Additional parameters
+#'
 #' @export
 #'
 rarefaction.sdm <- function(object, ...) {
@@ -216,7 +241,7 @@ logLik.sdm <- function(object, ...) {
   return(object$loglik)
 }
 
-#' Extract the species richness estimates of the sdm output
+#' Asymptotic species richness estimates for the species discovery model.
 #'
 #' @param object an object of class \code{\link[sdm]{sdm}}.
 #' @param ... additional parameters

@@ -2,7 +2,7 @@
 % Please edit documentation in R/sdm.R
 \name{asymptotic_richness}
 \alias{asymptotic_richness}
-\title{Extract the species richness estimates of the sdm output}
+\title{Asymptotic species richness estimates for the species discovery model.}
 \usage{
 asymptotic_richness(object, ...)
 }
@@ -12,5 +12,5 @@ asymptotic_richness(object, ...)
 \item{...}{additional parameters}
 }
 \description{
-Extract the species richness estimates of the sdm output
+Asymptotic species richness estimates for the species discovery model.
 }

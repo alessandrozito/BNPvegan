@@ -2,7 +2,7 @@
 % Please edit documentation in R/sdm.R
 \name{plot.sdm}
 \alias{plot.sdm}
-\title{Plot rarefaction curves}
+\title{Plot the average rarefaction curve and the fitted one (in red)}
 \usage{
 \method{plot}{sdm}(object, n_points = 100, type = "rarefaction", m = NULL, ...)
 }
@@ -11,8 +11,13 @@
 
 \item{n_points}{Number of points to plot in the accumulation curve}
 
+\item{type}{Type of curve to plot. Available options are "rarefaction" and "extrapolation".
+In the second case, one needs to provide the additional number of samples m up to which extrapolate.}
+
+\item{m}{Additional number of samples. Required for extrapolation only}
+
 \item{...}{additional parameters}
 }
 \description{
-Plot rarefaction curves
+Plot the average rarefaction curve and the fitted one (in red)
 }

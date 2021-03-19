@@ -2,17 +2,17 @@
 % Please edit documentation in R/sdm.R
 \name{predict.sdm}
 \alias{predict.sdm}
-\title{Predict sdm}
+\title{Predict function for a species discovery model}
 \usage{
 \method{predict}{sdm}(object, newdata = NULL, ...)
 }
 \arguments{
 \item{object}{object of class \code{\link[sdm]{sdm}}}
 
-\item{newdata}{Indexes to predict}
+\item{newdata}{Indexes (or additional new samples) to predict}
 
 \item{...}{additional values}
 }
 \description{
-Predict sdm
+Predict function for a species discovery model
 }
