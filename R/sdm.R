@@ -131,7 +131,6 @@ predict.sdm <- function(object, newdata = NULL, ...) {
     pred <- cumsum(prob_LL3(n = n, alpha = object$par[1], sigma = object$par[2], phi = object$par[3]))
   # Prediction under Weibull
   } else if (object$model == "Weibull") {
-
     pred <- cumsum(prob_Weibull(n = n, phi = object$par[1], lambda = object$par[2]))
   }
 
@@ -186,68 +185,34 @@ plot.sdm <- function(object, n_points = 100, type = "rarefaction", m = NULL, ...
     p <- ggplot2::ggplot(df) +
       ggplot2::geom_line(ggplot2::aes(x = n, y = curve), color = "red", size = 0.9) +
       ggplot2::theme_bw() +
-      ggplot2::facet_wrap(~"Rarefaction and Extrapolation curve") +
+      ggplot2::facet_wrap(~"Rarefaction and extrapolation curve") +
       ggplot2::geom_segment(x = m, xend = m, y = 0, yend = Inf, linetype = "dashed") +
       ggplot2::ylab(expression(K[n]))
     return(p)
   }
 }
 
-#' @export
-extrapolation <- function(x, ...) {
-  UseMethod("extrapolation", x)
-}
-
-#' Extrapolation function for a species discovery model.
-#'
-#' @param object An object of class \code{\link[sdm]{sdm}}.
-#' @param m Additional number of samples to predict.
-#' @param ...
-#'
-#' @export
-#'
-extrapolation.sdm <- function(object, m, ...) {
-  n <- length(object$discoveries)
-  k <- sum(object$discoveries)
-  if (object$model == "LL3") {
-    extr <- k + cumsum(prob_LL3(c(n:(n + m - 1)), alpha = object$par[1], sigma = object$par[2], phi = object$par[3]))
-  } else if (object$model == "Weibull") {
-    extr <- k + cumsum(prob_Weibull(c(n:(n + m - 1)), phi = object$par[1], lambda = object$par[2]))
-  }
-
-  return(extr)
-}
-
-#' @export
-#'
-coef.sdm <- function(object, ...) {
-  return(object$par)
-}
-
-
-#' Extract the predicted rarefaction curve from a species discovery model. This is equivalent to the prediction function with default parameters
-#' @param object  An object of class \code{\link[sdm]{sdm}}.
-#' @param ... Additional parameters
-#'
-#' @export
-#'
-#rarefaction.sdm <- function(object, ...) {
-#  predict(object)
-#}
-
-#' @export
-#'
-logLik.sdm <- function(object, ...) {
-  return(object$loglik)
-}
 
 #' Asymptotic species richness estimates for the species discovery model.
 #'
 #' @param object an object of class \code{\link[sdm]{sdm}}.
 #' @param ... additional parameters
-#'
 #' @export
-#'
 asymptotic_richness <- function(object, ...) {
-  return(c(object$Asymp_moments, "saturation" = object$saturation))
+  rich <- unname(c(object$Asymp_moments, object$saturation))
+  rich[1] <- as.integer(rich[1])
+  names(rich) <- c("Exp. species at Inf","sd at Inf", "Saturation")
+  return(rich)
 }
+
+#' @export
+coef.sdm <- function(object, ...) {
+  return(object$par)
+}
+
+#' @export
+logLik.sdm <- function(object, ...) {
+  return(object$loglik)
+}
+
+

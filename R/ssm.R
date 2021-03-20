@@ -1,9 +1,8 @@
 #' Species sampling model
 #'
-#'
 #' @param frequencies A \code{K}-dimensional vector of frequencies
-#' @param model Model to fit. Available models are \code{DP} (Dirichlet Process) and \code{PY" (Pitman-Yor process)
-#' #'
+#' @param model Model to fit. Available models are \code{DP} (Dirichlet Process) and \code{PY} (Pitman-Yor process)
+#'
 #' @return An object of class \code{ssm}
 #'
 #' @export
@@ -159,7 +158,7 @@ plot.DP <- function(object, type = "rarefaction", ...) {
       ylab("Rarefaction")
     return(p)
   } else if (type == "extrapolation") {
-    data_plot <- data.frame(n = c(1:(2 * n)), rar = c(rarefaction(object), predict(object, 1:n)))
+    data_plot <- data.frame(n = c(1:(2 * n)), rar = c(rarefaction(object), extrapolation(object, 1:n)))
     p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
       geom_line() +
       geom_vline(xintercept = n, linetype = "dashed") +
@@ -216,13 +215,13 @@ plot.PY <- function(object, type = "rarefaction", ...) {
       ylab("Rarefaction")
     return(p)
   } else if (type == "extrapolation") {
-    data_plot <- data.frame(n = c(1:(2 * n)), rar = c(rarefaction(object), predict(object, 1:n)))
+    data_plot <- data.frame(n = c(1:(2 * n)), rar = c(rarefaction(object), extrapolation(object, 1:n)))
     p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
       geom_line() +
       geom_vline(xintercept = n, linetype = "dashed") +
       theme_bw() +
       xlab("n") +
-      ylab("Rarefaction and prediction")
+      ylab("Rarefaction and extrapolation")
     return(p)
   }
 }

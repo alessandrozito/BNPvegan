@@ -1,0 +1,175 @@
+---
+title: "An introduction to BNPvegan"
+subtitle: "Bayesian nonparametric methods for ecology"
+author: "Alessandro Zito"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+bibliography: BNPvegan_lib.bib
+output: rmdformats::readthedown
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(BNPvegan)
+```
+
+```{r, eval = FALSE}
+# If the devtools R package is not already installed
+# install.packages("devtools")
+devtools::install_github("alessandrozito/BNPvegan")
+library(BNPvegan)
+```
+
+# Introduction  
+
+## Package description
+
+BNPvegan is an R package that implements the fundamental tools of the Bayesian nonparametric literature on Species Sampling models. The package has been designed for ecological applications. In this spirit, we borrowed the name to mimic and extend the existing `vegan` package [@vegan]. In this tutorial we provide both a mathematical overview of the main methods available in the `BNPvegan` package, and we describe in details how to use it an how to interpret its results.
+
+The package is constructed on two building blocks, which are highly interrelated:
+
+* `ssm`: **Species Sampling model** module, which runs the basic processes in the species sampling model literature [@pitman_1996], including the Dirichlet process [@Ferguson1973] and the Pitman-Yor process [@Perman_1992].  
+* `sdm`: **Species Discovery model** module, which runs the species discovery model introduced in [@Zito_2020]. 
+
+Both functions are design to work with a standard `R` sintax, as they accept the classic methods  `summary`, `predict`, `coef` and `logLik`. Before dealing with the specifics of each block, we first describe the sample-based methods available in `BNPvegan`. 
+
+In both cases, the main input of the package is a vector of `frequencies` representing the species counts observed in a sample. The package comes with two example datasets:
+
+1. `Lepidoptera`, which the dataset of butterfly counts in [@Fisher_1943]
+2. `fungalOTU`, which contains the counts for some fungal species recorded in a field experiment. 
+
+We will use both to show the basic functions of the package. As a preliminary step however, we demonstrate how to obtain some simple **sample-based quantities** from the vector.
+
+# Sample-based quantities
+
+We hereby refer to **sample-based quantities** as those quantities which are not inherited from the the `ssm` or the `sdm` method, but can be directly derived from the vector of species `frequencies` without specific modelling assumptions. These methods are
+
+* The `coverage` 
+* The `Gini` heterogeneity index  
+* The `rarefaction` method
+
+## Coverage
+
+## Gini heterogeneity
+
+## Rarefaction
+
+
+
+# Species Sampling models
+
+
+
+
+# Species Discovery models
+
+## Mathematical background 
+
+- Species discovery models focus directly on the discovery of new species. Unlike Species Sampling models, they are *not* a generative model for a species distribution. 
+- Species discovery models are designed to fit and predict any accumulation curve, potentially assessing its saturation level, ie. how close the curve is to convergence.
+
+Their formulation is is the following. Let $(D_n)_{n \geq 1}$ be a sequence of *discovery indicators*, such that 
+
+$$
+D_n = \begin{cases}
+1 & \text{if} \quad  X_n = ``\text{new"}\\
+0 & \text{if} \quad  X_n = ``\text{observed"}
+\end{cases}
+$$
+and trivially $D_n = 1$. Then, an accumulation curve $(K_n)_{n \geq 1}$ is defined as 
+$$
+K_n = \sum_{i = 1}^{n} D_i, \quad n \geq 1.
+$$
+
+The goal of a Species Discovery model is threefold:
+
+1. **Rarefy**: obtain an in-sample estimator for the number of in-sample discoveries $\mathbb{E}(K_n)$. This is called model-based rarefaction, as it estimates a functional form for the rarefaction curve.
+2. **Extrapolate**: predict the extected additional number of new species to be observed if more samples where obtained, $\mathbb{E}(K_{n+m} \mid K_n = k)$ and $m \geq 1$.
+3. **Saturate**: Estimate the *sample richness* $\mathbb{E}(K_\infty\mid K_n = k)$ and the sample *saturation* $\mathbb{E}(S_n\mid K_n = k)$, with $S_n = K_n/K_\infty$.
+
+All three goals are obtain by directly modelling the discovery probabilities linked to $D_1, \ldots, D_n$. In particular, we let $D_n \stackrel{iid}{\sim} Bernoulli(\pi_n)$, with 
+
+$$
+\pi_{n+1} = \mathbb{P}(D_{n+1} = 1) = \mathcal{S}(n;\theta), \quad \theta \in \Theta \subset \mathbb{R}^p
+$$
+be the discovery probability and $\mathcal{S}(n;\theta)$ a survival function such that 
+
+* $S(0; \theta) = 1$ - the first observation is necessarily a new discovery,
+* $S(n; \theta) > S(n+1; \theta)$ - the discovery probabilities descrease over time,
+* $\lim_{n\to \infty}S(n;\theta) = 0$ - eventually, all species in the sample are discovered.
+ 
+Then, any functional form that supports the three assumptions can work as a Species discovery model. Notice that under such a formulation $K_n$ is distributed as a Poisson-binomial distribution 
+$$K_n \sim PB\{1,\mathcal{S}(1, \theta), \ldots,\mathcal{S}(n-1, \theta)\}.$$
+This leads to two convenient estimators, namely
+$$\mathbb{E}(K_n) = \sum_{i =1}^n \mathcal{S}(i-1, \theta)$$
+and 
+$$
+\mathbb{E}(K_{n+m}\mid K_n = k) = k + \sum_{j = 0}^{n-m-1} \mathcal{S}(j, \theta).
+$$
+
+The package BNPvegan supports two type of kernel function: 
+
+* The three-parameter log-logistic model, `LL3` (the *deault*):
+$$
+\mathbb{P}(D_{n+1} = 1) = \frac{\alpha\phi^n}{\alpha\phi^n + n^{1-\sigma} }
+$$
+with $\alpha >0$, $\sigma <1$ and $\phi \in (0,1)$. 
+
+* The `Weibull` model:
+$$
+\mathbb{P}(D_{n+1} = 1) = \phi^{n^\lambda}
+$$
+with $\phi \in (0,1)$, $\lambda > 0$. Under both model, the value for $K_\infty = \lim_{n\to \infty} K_n$ is **guaranteed to converge**. In other words, the species discovery model will always  ensure a finite saturation. 
+
+## The `sdm` module
+
+The `sdm` module runs the model described above on the sample-based rarefaction curve of the specified vector of `frequencies`. The available choice for `model` are `model = "LL3"` (default) and `model = "Weibull"`. Both models are estimated via empirical Bayes by maximizing the log-likelihood associated to the collection of independent Bernoulli random variables. In what follows, we estimate the three-parameter log-logistic model on a vector of counts called `fungalOTU`. As a first step, `sdm` computes the average accumulation curve via the sample-based rarefaction formula, and then estimates the model parameters. 
+
+```{r, cache = TRUE}
+frequencies <- fungalOTU
+quantile(frequencies)
+```
+
+```{r, cache = TRUE}
+# Fit the species discovery model. 
+# Note: verbose controls the state of the construction of the sample-based rarefaction, which is 
+#       the most demanding part
+fit <- sdm(frequencies, model = "LL3", verbose = TRUE)
+
+# Summarise the output
+summary(fit)
+```
+
+The quantities reported in the summary are: 
+
+1. `Abundance`: the number of observation in the sample. 
+2. `Richness`: the number of distinct species in the sample
+3. `Expected species at infinity`: the asymptotic posterior species richness, ie. $\mathbb{E}(K_\infty\mid K_n = k)$
+4. `Standard deviation at infinity`: the asymptotic standard deviation ie. $\{Var(K_\infty\mid K_n = k)\}^{1/2}$
+5. `Expected new species to discover`: the difference between `Expected species at infinity` and `Richness`
+6. `Sample saturation`: the ratio between `Richness` and `Expected species at infinity`.
+7. `Parameters` the empirical Bayes estimates for the parameters of the model.
+
+All the above quantities are easily extracted with the following commands
+```{r}
+# Asymptotic richness estimators
+asymptotic_richness(fit)
+
+# Parameters
+coef(fit)
+
+# Loglikelihood
+logLik(fit)
+```
+
+Once the model is estimated, it is very easy to plot both the in-sample rarefaction and to obtain the out of sample prediction. First, let's start with a plot. 
+
+
+```{r}
+# Plot the model-based rarefaction curve vs the average accumulation curve
+plot(fit, type = "rarefaction")
+```
+
+
+# References
+

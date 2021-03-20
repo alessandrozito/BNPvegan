@@ -2,19 +2,18 @@
 % Please edit documentation in R/ssm.R
 \name{ssm}
 \alias{ssm}
-\title{Fit a species sampling model}
+\title{Species sampling model}
 \usage{
 ssm(frequencies, model)
 }
 \arguments{
 \item{frequencies}{A \code{K}-dimensional vector of frequencies}
 
-\item{model}{Model to fit. Available models are "DP" (Dirichlet Process) and "PY" (Pitman-Yor process)
-#'}
+\item{model}{Model to fit. Available models are \code{DP} (Dirichlet Process) and \code{PY} (Pitman-Yor process)}
 }
 \value{
-An object of class "ssm"
+An object of class \code{ssm}
 }
 \description{
-Fit a species sampling model
+Species sampling model
 }
