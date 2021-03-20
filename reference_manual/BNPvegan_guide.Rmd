@@ -28,32 +28,68 @@ BNPvegan is an R package that implements the fundamental tools of the Bayesian n
 
 The package is constructed on two building blocks, which are highly interrelated:
 
-* `ssm`: **Species Sampling model** module, which runs the basic processes in the species sampling model literature [@pitman_1996], including the Dirichlet process [@Ferguson1973] and the Pitman-Yor process [@Perman_1992].  
-* `sdm`: **Species Discovery model** module, which runs the species discovery model introduced in [@Zito_2020]. 
+* The **Species Sampling model** module -`ssm`- which runs the basic processes in the species sampling model literature [@pitman_1996], including the Dirichlet process [@Ferguson1973] and the Pitman-Yor process [@Perman_1992].  
+* The **Species Discovery model** module -`sdm`- which runs the species discovery model introduced in [@Zito_2020]. 
 
 Both functions are design to work with a standard `R` sintax, as they accept the classic methods  `summary`, `predict`, `coef` and `logLik`. Before dealing with the specifics of each block, we first describe the sample-based methods available in `BNPvegan`. 
 
-In both cases, the main input of the package is a vector of `frequencies` representing the species counts observed in a sample. The package comes with two example datasets:
+In both cases, the main input of the package is a vector of `frequencies` representing the species counts observed in a sample. The package is endowed with two example datasets:
 
 1. `Lepidoptera`, which the dataset of butterfly counts in [@Fisher_1943]
 2. `fungalOTU`, which contains the counts for some fungal species recorded in a field experiment. 
 
-We will use both to show the basic functions of the package. As a preliminary step however, we demonstrate how to obtain some simple **sample-based quantities** from the vector.
+We will use both to show the basic functioning of `ssm` and `sdm`. As a preliminary step however, we demonstrate how to obtain some simple **sample-based quantities**.
 
 # Sample-based quantities
 
-We hereby refer to **sample-based quantities** as those quantities which are not inherited from the the `ssm` or the `sdm` method, but can be directly derived from the vector of species `frequencies` without specific modelling assumptions. These methods are
+We hereby refer to **sample-based quantities** as those quantities which are not inherited from the the `ssm` or the `sdm` method, but can be directly derived from the vector of species `frequencies` without a specific model fit. These methods are the sample `coverage`, the `Gini` heterogeneity index and the `rarefaction` curve. 
 
-* The `coverage` 
-* The `Gini` heterogeneity index  
-* The `rarefaction` method
+From a mathematical perspective, let $X_1, \ldots, X_n$ be a collection of "species" tags, with $X_i$ being the $i$th species observed in the sample. We call *abundance* the total number of species observed, $n$, and *richness* the number distinct species observed in the sample, $K$. Furthermore, let $n_1, \ldots, n_K$ the frequencies with which each species appears in the sample. The three *sample-based* methods offer a way to quickly summaries the feature of the samples based on these simple quantities. 
 
-## Coverage
+## The sample `coverage` 
+The **sample coverage** is the sum of the proportions of species that have been observed in the sample. Is is defined as 
+$$
+C_n = \sum_{h \in \mathcal{H}} f_h, \quad \mathcal{H} = \{\text{Inexes of the species observed among the } n \text{ data}\}
+$$
+where $\sum_{h=1}^H f_h = 1$ are the *species proportions* and $H$ is the total number of species in the population. Clearly, $K \leq H$, ie. the number of species discovered is less than the true number. The `BNPvegan` package offers a very simple first "estimator" for $C_n$, the old-timely Turing estimator [@Good_1953]:
+$$
+\hat{C}_n = 1 - \frac{m_1}{n}.
+$$
+with $m_1$ being the number of species observed only once. This estimator can be called in `R` with the function `coverage` as follows.
 
-## Gini heterogeneity
+```{r}
+frequencies <- as.numeric(Lepidoptera)
+coverage(frequencies)
+```
+A first analysis then tells that roughly 99.75% of the species in the population from which `Lepidoptera` was drawn have been discovered. 
 
-## Rarefaction
+## The `Gini` heterogeneity index
+The **Gini heterogeneity index** is a measure to quantify the amount of **biodiverity** present in the sample. In probabilistic terms, Gini index is the *probability that two species are different when taken at random from the population*:
 
+$$
+G = 1- \sum_{h = 1}^H f_h^2
+$$
+An estimator for $G$ is 
+$$\hat{G} = 1 - \frac{1}{n^2}\sum_{j = 1}^K n_j^2,$$
+and can be obtained by running the `Gini` command:
+```{r}
+Gini(frequencies)
+```
+In other words, the probability that two species are equal when drawn at random from the population is 0.975. This result is in line with what found with the `coverage` method
+
+## The `rarefaction` method
+While often ecologists deal with species frequencies, sometimes the species tags  $X_1, \ldots, X_n$, are observed sequentially. This allows to construct an **accumulation curve**, which plots the number of distinct species observed, $K_n$, as a function of the abundance, $n$. However, in the cases in which the data are not sequential, it is necessary to construct the so-called  **rarefaction curve**, ie. the *average accumulation curve*. This quantity is derived from a combinatorial argument and it is equal to
+$$
+\bar{K}_i = K - \binom{n}{i}^{-1} \sum_{j = 1}^K \binom{n - n_j}{i}.
+$$
+The `rarefaction` function computes precisely this quantity. Notice that the function can be computationally demanding for large $n$ and large $K$. Thus, a `verbose` option is available if one wants to monitor the process. 
+```{r, cache = TRUE}
+# Compute and plot the sample-based rarefaction curve
+rar <- rarefaction(frequencies, verbose = TRUE)
+plot(rar, type = "l", xlab = "Sample size", ylab = "Rarefaction")
+```
+
+**Note:** the `rarefaction` method performs the same task as the `rarefy` function in the `vegan` package. 
 
 
 # Species Sampling models
