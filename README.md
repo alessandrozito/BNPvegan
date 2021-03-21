@@ -11,8 +11,4 @@ The `BNPvegan` package can be installed by running the following commands:
 devtools::install_github("alessandrozito/BNPvegan")
 ```
 
-We discuss the two class of models and the associated functions in the following tutorials. Please note that there might be some overlap between these two modeling classes. 
-
-- In the [**SSM tutorial**](ssm.md) we discuss **species sampling models** and their usage in ecology. Further documentation is also given in these [**slides**](slides_SSM.pdf).
-
-- In the [**SDM tutorial**](sdm.md) tutorial we discuss **species discovery models** and their usage in ecology.
+We discuss the two class of models and the associated functions in this [introduction to the BNPvegan package](https://alessandrozito.github.io/BNPvegan/vignette.html)
