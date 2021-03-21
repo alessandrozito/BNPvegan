@@ -2,7 +2,7 @@
 #'
 #' @param size Number of observations to draw
 #' @param alpha Centrality parameter
-#' @param sigma Strenght parameter
+#' @param sigma Discount parameter
 #'
 #' @return  A vector of frequencies
 #' @export
