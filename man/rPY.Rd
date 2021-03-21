@@ -11,7 +11,7 @@ rPY(size, alpha, sigma)
 
 \item{alpha}{Centrality parameter}
 
-\item{sigma}{Strenght parameter}
+\item{sigma}{Discount parameter}
 }
 \value{
 A vector of frequencies
