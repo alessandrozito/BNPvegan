@@ -14,15 +14,18 @@ extrapolation <- function(x, ...) {
 #' @param ... Additional parameters
 #' @export
 extrapolation.sdm <- function(object, m, ...) {
+  m_max <- max(m)
+  index_to_store <- c(1:length(m))
+
   n <- length(object$discoveries)
   k <- sum(object$discoveries)
   if (object$model == "LL3") {
-    extr <- k + cumsum(prob_LL3(c(n:(n + m - 1)), alpha = object$par[1], sigma = object$par[2], phi = object$par[3]))
+    extr <- k + cumsum(prob_LL3(c(n:(n + m_max - 1)), alpha = object$par[1], sigma = object$par[2], phi = object$par[3]))
   } else if (object$model == "Weibull") {
-    extr <- k + cumsum(prob_Weibull(c(n:(n + m - 1)), phi = object$par[1], lambda = object$par[2]))
+    extr <- k + cumsum(prob_Weibull(c(n:(n + m_max - 1)), phi = object$par[1], lambda = object$par[2]))
   }
 
-  return(extr)
+  return(extr[index_to_store])
 }
 
 

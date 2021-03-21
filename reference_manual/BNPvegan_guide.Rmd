@@ -318,9 +318,9 @@ Once the model is estimated, it is very easy to plot both the in-sample rarefact
 $$K_n \sim PB\{1,\mathcal{S}(1, \theta), \ldots,\mathcal{S}(n-1, \theta)\},$$
 with mean
 $$\mathbb{E}(K_n) = \sum_{i =1}^n \mathcal{S}(i-1, \theta).$$
-The above quantity can be obtained by using the rarefaction method.
+The above quantity can be obtained by using the `rarefaction` method.
 
-```{r}
+```{r, cache = TRUE}
 # Extract the model-based rarefaction curve
 rar_sdm <- rarefaction(fit_sdm)
 head(rar_sdm)
@@ -329,14 +329,28 @@ tail(rar_sdm)
 plot(fit_sdm, type ="rarefaction") 
 ```
 
+As for extrapolation, it can be easily proved that for any $m\geq 1$, 
 $$
 \mathbb{E}(K_{n+m}\mid K_n = k) = k + \sum_{j = 0}^{n-m-1} \mathcal{S}(j, \theta).
 $$
 
+Again, the method works in the same way as in the `ssm` module
 ```{r}
-# Plot the model-based rarefaction curve vs the average accumulation curve
-plot(fit_sdm, type = "rarefaction")
+# Extrapolate
+extr_sdm <- extrapolation(fit_sdm, m = 1:1000)
+head(extr_sdm)
+tail(extr_sdm)
+
+# Plot
+plot(fit_sdm, type = "extrapolation", m = 10000)
 ```
+
+## Saturation and asymptotic richness methods
+The final feature of `sdm` is the fact that it provides an estimate for the asymptotic species richness, which is the total number of distinct species present in the population. The estimator is equal to 
+$$\mathbb{E}(K_\infty \mid K_n = k) = k + \sum_{j = n}^\infty S(j; \theta) <\infty.$$
+Then, the **saturation** is the fraction of species discovered over the asymptotic estimate, namely
+$$S_n\mid K_n = k = \frac{k}{K_\infty}.$$
+As computing the expected value for this quantity can be demanding, `sdm` function simply computes $k/\mathbb{E}(K_\infty \mid K_n = k)$, which is a first approximation. To extract the quantites, just run:
 
 ```{r}
 # Asymptotic richness estimators

@@ -179,14 +179,15 @@ plot.sdm <- function(object, n_points = 100, type = "rarefaction", m = NULL, ...
       m <- length(accum)
     }
 
-    ext <- extrapolation(object, m = m)
+    ext <- extrapolation(object, m = 1:m)
+    cutoff <- length(rar)
 
     df <- data.frame("n" = c(1:(length(rar) + length(ext))), "curve" = c(rar, ext))
     p <- ggplot2::ggplot(df) +
       ggplot2::geom_line(ggplot2::aes(x = n, y = curve), color = "red", size = 0.9) +
       ggplot2::theme_bw() +
       ggplot2::facet_wrap(~"Rarefaction and extrapolation curve") +
-      ggplot2::geom_segment(x = m, xend = m, y = 0, yend = Inf, linetype = "dashed") +
+      ggplot2::geom_segment(x = cutoff, xend = cutoff, y = 0, yend = Inf, linetype = "dashed") +
       ggplot2::ylab(expression(K[n]))
     return(p)
   }
