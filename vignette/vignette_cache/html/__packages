@@ -1,5 +1,4 @@
 base
-BNPvegan
 tidyverse
 ggplot2
 tibble
@@ -9,3 +8,4 @@ purrr
 dplyr
 stringr
 forcats
+BNPvegan

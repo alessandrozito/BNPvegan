@@ -350,7 +350,7 @@ The final feature of `sdm` is the fact that it provides an estimate for the asym
 $$\mathbb{E}(K_\infty \mid K_n = k) = k + \sum_{j = n}^\infty S(j; \theta) <\infty.$$
 Then, the **saturation** is the fraction of species discovered over the asymptotic estimate, namely
 $$S_n\mid K_n = k = \frac{k}{K_\infty}.$$
-As computing the expected value for this quantity can be demanding, `sdm` function simply computes $k/\mathbb{E}(K_\infty \mid K_n = k)$, which is a first approximation. To extract the quantites, just run:
+As computing the expected value for this quantity can be demanding, `sdm` function simply computes $k/\mathbb{E}(K_\infty \mid K_n = k)$, which is a first approximation. To extract the quantities, just run:
 
 ```{r}
 # Asymptotic richness estimators
