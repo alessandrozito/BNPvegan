@@ -115,15 +115,20 @@ summary.PY <- function(object, ...) {
 
 
 #' Plot for the DP model
+#'
 #' @param object An object of class \code{\link[ssm]{ssm}}.
 #' @param m additional sample to predict. Valid only for \code{type = "extrapolation"}.
+#' @param type Type of plot. Available options are:  \code{"rarefaction"},\code{"extrapolation"}, \code{"freq"} and \code{"coverage"}
+#' @param plot_sample Whether to add the sample-based rarefaction curve. Available for \code{type = "rarefaction"} only
+#' @param verbose Monitor the output of the sample-based rarefaction curve. Available for \code{type = "rarefaction"} only
+#' @param n_points Number of points to plot
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @details The method...
+#' @details The method produces summary plots for the Dirichlet output
 #'
 #' @export
 #'
-plot.DP <- function(object, type = "rarefaction", m = NULL, ...) {
+plot.DP <- function(object, type = "rarefaction", plot_sample = TRUE, m = NULL, verbose = TRUE, n_points = 100, ...) {
   n <- sum(object$frequencies)
   alpha <- object$param[1]
   K <- length(object$frequencies)
@@ -151,14 +156,41 @@ plot.DP <- function(object, type = "rarefaction", m = NULL, ...) {
       ylab("Density")
     return(p)
   } else if (type == "rarefaction") {
-    data_plot <- data.frame(n = 1:n, rar = rarefaction(object))
-    p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
-      geom_line() +
-      theme_bw() +
-      xlab("n") +
-      ylab("Rarefaction")+
-      ggplot2::facet_wrap(~"Rarefaction curve")
+
+    if(plot_sample == TRUE){
+      # Model-based rarefaction
+      rar <- rarefaction(object)
+      accum <- rarefaction(object$frequencies, verbose = verbose)
+      df <- data.frame(n = 1:n, rar = rar, accum = accum)
+
+      if (nrow(df) > n_points) {
+        seqX <- 1:nrow(df)
+        seqY <- split(seqX, sort(seqX %% n_points))
+        df <- df[unlist(lapply(seqY, function(a) tail(a, 1))), ]
+      }
+
+      p <- ggplot2::ggplot(df) +
+        ggplot2::geom_point(ggplot2::aes(x = n, y = accum), shape = 1) +
+        ggplot2::geom_line(ggplot2::aes(x = n, y = rar), color = "red", size = 0.9) +
+        ggplot2::theme_bw() +
+        ggplot2::facet_wrap(~"Rarefaction curve") +
+        ggplot2::ylab(expression(K[n]))
+
+    } else {
+      # Model-based rarefaction
+      rar <- rarefaction(object)
+      data_plot <- data.frame(n = 1:n, rar = rarefaction(object))
+
+      p <- ggplot2::ggplot(data = data_plot, aes(x = n, y = rar)) +
+        ggplot2::geom_line(color = "red", size = 0.9) +
+        ggplot2::theme_bw() +
+        ggplot2::xlab("n") +
+        ggplot2::ylab("Rarefaction")+
+        ggplot2::facet_wrap(~"Rarefaction curve")+
+        ggplot2::ylab(expression(K[n]))
+    }
     return(p)
+
   } else if (type == "extrapolation") {
     if(is.null(m)){
       m = n
@@ -177,15 +209,20 @@ plot.DP <- function(object, type = "rarefaction", m = NULL, ...) {
 
 
 #' Plot for the Pitman-Yor model
+#'
 #' @param object An object of class \code{\link[ssm]{ssm}}.
 #' @param m additional sample to predict. Valid only for \code{type = "extrapolation"}. By default, it is equal to the sample size.
+#' @param type Type of plot. Available options are:  \code{"rarefaction"},\code{"extrapolation"}, \code{"freq"} and \code{"coverage"}
+#' @param plot_sample Whether to add the sample-based rarefaction curve. Available for \code{type = "rarefaction"} only
+#' @param verbose Monitor the output of the sample-based rarefaction curve. Available for \code{type = "rarefaction"} only
+#' @param n_points Number of points to plot
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @details The method...
+#' @details The method produces summary plots for the Pitman-Yor output
 #'
 #' @export
 #'
-plot.PY <- function(object, type = "rarefaction", m = NULL, ...) {
+plot.PY <- function(object, type = "rarefaction", plot_sample = TRUE, m = NULL, verbose = TRUE, n_points = 100, ...) {
   n <- sum(object$frequencies)
   K <- length(object$frequencies)
   alpha <- object$param[1]
@@ -214,13 +251,38 @@ plot.PY <- function(object, type = "rarefaction", m = NULL, ...) {
       ylab("Density")
     return(p)
   } else if (type == "rarefaction") {
-    data_plot <- data.frame(n = 1:n, rar = rarefaction(object))
-    p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
-      geom_line() +
-      theme_bw() +
-      xlab("n") +
-      ylab("Rarefaction")+
-      facet_wrap(~"Rarefaction curve")
+    if(plot_sample == TRUE){
+      # Model-based rarefaction
+      rar <- rarefaction(object)
+      accum <- rarefaction(object$frequencies, verbose = verbose)
+      df <- data.frame(n = 1:n, rar = rar, accum = accum)
+
+      if (nrow(df) > n_points) {
+        seqX <- 1:nrow(df)
+        seqY <- split(seqX, sort(seqX %% n_points))
+        df <- df[unlist(lapply(seqY, function(a) tail(a, 1))), ]
+      }
+
+      p <- ggplot2::ggplot(df) +
+        ggplot2::geom_point(ggplot2::aes(x = n, y = accum), shape = 1) +
+        ggplot2::geom_line(ggplot2::aes(x = n, y = rar), color = "red", size = 0.9) +
+        ggplot2::theme_bw() +
+        ggplot2::facet_wrap(~"Rarefaction curve") +
+        ggplot2::ylab(expression(K[n]))
+
+    } else {
+      # Model-based rarefaction
+      rar <- rarefaction(object)
+      data_plot <- data.frame(n = 1:n, rar = rarefaction(object))
+
+      p <- ggplot2::ggplot(data = data_plot, aes(x = n, y = rar)) +
+        ggplot2::geom_line(color = "red", size = 0.9) +
+        ggplot2::theme_bw() +
+        ggplot2::xlab("n") +
+        ggplot2::ylab("Rarefaction")+
+        ggplot2::facet_wrap(~"Rarefaction curve")+
+        ggplot2::ylab(expression(K[n]))
+    }
     return(p)
   } else if (type == "extrapolation") {
     if(is.null(m)){

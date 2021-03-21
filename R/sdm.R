@@ -149,14 +149,14 @@ predict.sdm <- function(object, newdata = NULL, ...) {
 #'
 #' @export
 plot.sdm <- function(object, n_points = 100, type = "rarefaction", m = NULL, ...) {
-  # Step 1 - Plot the accumulation curve with the highest likelihood
+  # Step 1 - Sample-based rarefaction curve
   accum <- cumsum(object$discoveries)
   # Rarefaction curve
   rar <- rarefaction(object)
 
   if (type == "rarefaction") {
 
-    # Step 3 - compute the average rarefaction curve
+    # Step 3 - create the dataframe
     df <- data.frame("n" = c(1:length(accum)), "accum" = accum, "rar" = rar)
 
     if (nrow(df) > n_points) {
@@ -199,12 +199,23 @@ plot.sdm <- function(object, n_points = 100, type = "rarefaction", m = NULL, ...
 #' @param object an object of class \code{\link[sdm]{sdm}}.
 #' @param ... additional parameters
 #' @export
-asymptotic_richness <- function(object, ...) {
-  rich <- unname(c(object$Asymp_moments, object$saturation))
+asym_richness <- function(object, ...) {
+  rich <- unname(c(object$Asymp_moments))
   rich[1] <- as.integer(rich[1])
-  names(rich) <- c("Exp. species at Inf","sd at Inf", "Saturation")
+  names(rich) <- c("Exp. species at Inf","sd at Inf")
   return(rich)
 }
+
+#' Saturation for a sequential discovery model
+#'
+#' @param object an object of class \code{\link[sdm]{sdm}}.
+#' @param ... additional parameters
+#' @export
+saturation <- function(object, ...){
+  sat <- unname(object$saturation)
+  return(c("Saturation" = sat))
+}
+
 
 #' @export
 coef.sdm <- function(object, ...) {

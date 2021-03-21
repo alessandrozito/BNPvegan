@@ -4,12 +4,28 @@
 \alias{plot.DP}
 \title{Plot for the DP model}
 \usage{
-\method{plot}{DP}(object, type = "rarefaction", m = NULL, ...)
+\method{plot}{DP}(
+  object,
+  type = "rarefaction",
+  plot_sample = TRUE,
+  m = NULL,
+  verbose = TRUE,
+  n_points = 100,
+  ...
+)
 }
 \arguments{
 \item{object}{An object of class \code{\link[ssm]{ssm}}.}
 
+\item{type}{Type of plot. Available options are:  \code{"rarefaction"},\code{"extrapolation"}, \code{"freq"} and \code{"coverage"}}
+
+\item{plot_sample}{Whether to add the sample-based rarefaction curve. Available for \code{type = "rarefaction"} only}
+
 \item{m}{additional sample to predict. Valid only for \code{type = "extrapolation"}.}
+
+\item{verbose}{Monitor the output of the sample-based rarefaction curve. Available for \code{type = "rarefaction"} only}
+
+\item{n_points}{Number of points to plot}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
@@ -17,5 +33,5 @@
 Plot for the DP model
 }
 \details{
-The method...
+The method produces summary plots for the Dirichlet output
 }

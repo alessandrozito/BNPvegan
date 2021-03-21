@@ -1,7 +1,7 @@
 ---
 title: "An introduction to BNPvegan"
 subtitle: "Bayesian nonparametric methods for ecology"
-author: "Alessandro Zito"
+author: "Alessandro Zito and Tommaso Rigon"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 bibliography: BNPvegan_lib.bib
 output: rmdformats::readthedown
@@ -354,7 +354,9 @@ As computing the expected value for this quantity can be demanding, `sdm` functi
 
 ```{r}
 # Asymptotic richness estimators
-asymptotic_richness(fit_sdm)
+asym_richness(fit_sdm)
+# Saturation
+saturation(fit_sdm)
 ```
 
 # References

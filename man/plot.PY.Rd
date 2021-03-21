@@ -4,12 +4,28 @@
 \alias{plot.PY}
 \title{Plot for the Pitman-Yor model}
 \usage{
-\method{plot}{PY}(object, type = "rarefaction", m = NULL, ...)
+\method{plot}{PY}(
+  object,
+  type = "rarefaction",
+  plot_sample = TRUE,
+  m = NULL,
+  verbose = TRUE,
+  n_points = 100,
+  ...
+)
 }
 \arguments{
 \item{object}{An object of class \code{\link[ssm]{ssm}}.}
 
+\item{type}{Type of plot. Available options are:  \code{"rarefaction"},\code{"extrapolation"}, \code{"freq"} and \code{"coverage"}}
+
+\item{plot_sample}{Whether to add the sample-based rarefaction curve. Available for \code{type = "rarefaction"} only}
+
 \item{m}{additional sample to predict. Valid only for \code{type = "extrapolation"}. By default, it is equal to the sample size.}
+
+\item{verbose}{Monitor the output of the sample-based rarefaction curve. Available for \code{type = "rarefaction"} only}
+
+\item{n_points}{Number of points to plot}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
@@ -17,5 +33,5 @@
 Plot for the Pitman-Yor model
 }
 \details{
-The method...
+The method produces summary plots for the Pitman-Yor output
 }
