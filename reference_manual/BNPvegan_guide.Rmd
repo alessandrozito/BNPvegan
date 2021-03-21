@@ -89,22 +89,143 @@ rar <- rarefaction(frequencies, verbose = TRUE)
 plot(rar, type = "l", xlab = "Sample size", ylab = "Rarefaction")
 ```
 
-**Note:** the `rarefaction` method performs the same task as the `rarefy` function in the `vegan` package. 
+**Note:** the `rarefaction` method performs the same task as the `rarefy` function in the `vegan` package.  In the next sections, we show how the same methods are also available for the object of the class `ssm` and `sdm`.
 
 
 # Species Sampling models
 
+## Sequential allocation scheme
+
+Species sampling models [@pitman_1996] are a class of **generative models** for species distributions which belong to the Bayesian nonprametric literature. The most common species sampling models are the Dirichlet process, `"DP"` [@Ferguson1973] and the Pitman-Yor process, `"PY"` [@Perman_1992]. For the purpose of this guide, we will limit our discussion on how species sampling model works to the basics. For an extensive overview on how they work, see @DeBlasi_2015.
+
+Both the Dirichlet and the Pitman-Yor process generate a species distribution through a sequential prediction scheme. Let $X_{1}, \ldots, X_{n}$ be a sequence of individuals observed, $K_n$ the total number of distinct species observed and  $X_{1}^*, \ldots, X_{K_n}^*$  the distinct species labels. In other words, $X_{j}^*$ is the $j$th species label observed in among the first $n$ observations. Then, the species of $X_{n+1}$ is determined by the following prediction rules:
+
+* In the **Dirichlet process**: $$X_{n+1} \mid X_1, \ldots, X_n \sim \frac{\alpha}{\alpha + n}(\text{"new species"}) + \sum_{j=1}^{K_n} \frac{n_j}{\alpha + n}\delta_{X_j^*}$$
+with $\alpha >0$;
+* In the **Pitman-Yor process**: $$X_{n+1} \mid X_1, \ldots, X_n \sim \frac{\alpha - \sigma K_{n}}{\alpha + n}(\text{"new species"}) + \sum_{j=1}^{K_n} \frac{n_j - \sigma}{\alpha + n}\delta_{X_j^*}$$ with $\alpha >-\sigma$ and $\sigma \in [0, 1)$.
+
+The parameters `alpha` and `sigma` govern the allocation scheme. In particular, it is easy to see that the Pitman-Yor process degenerates to the Dirichlet process when $\sigma = 0$. The interpretation of both equations is rather simple: the species observed at time $n+1$ can either be of a new type or of a previously observed one. In particular, the probability of observing an "old" species is increasing in the number of times that species has been observed in the past. The package `BNPvegan` contains a random sampler for both processes. 
+
+```{r}
+set.seed(1)
+n <- 1000
+# Random sample from a Dirichlet process
+rDP(n, alpha = 1)  
+# Random sample from a Pitman-Yor process 
+rPY(n, alpha = 1, sigma = 0.3)  
+```
+
+In the following subsection, we show how to perform inference on the parameters $\alpha$ and $\sigma$ via the `ssm` module. 
+
+## The `ssm` module
+In what follows, we describe the functioning of the `ssm` module by estimating a Pitman-Yor on the `Lepidoptera` dataset. All the functions are equivalent for the Dirichlet process. 
+
+The likelihood function of the Pitman-Yor process is given by the following quantity (known as exchangeable partition probability function).
+$$
+\mathcal{L}(\alpha, \sigma \mid X_1, \ldots, X_n) = \frac{\prod_{j=1}^{K_n-1}(\alpha + j\sigma)}{(\alpha + 1)_{n-1}}\prod_{j=1}^{K_n}(1-\sigma)_{n_j - 1}
+$$
+To estimate the parameters $\alpha$ and $\sigma$, the `ssm` function adopts an empirical Bayes procedure and performs a simple off-theshelf numerical optimization of $\mathcal{L}(\alpha, \sigma \mid X_1, \ldots, X_n)$ via `nlminb`. The commands are the following.
+
+```{r}
+frequencies <- Lepidoptera
+fit <- ssm(frequencies, model = "PY")  # set model = "DP" for the Diririchlet process.
+summary(fit)  # Summarize the output.
+```
+The `summary` function applied to an object of class `ssm` returns the following quantities:
+
+1. `Abundance`: the number of observation in the sample. 
+2. `Richness`: the number of distinct species in the sample
+3. `Estimated sample coverage`: model-based sample coverage
+4. `Expected species after additional xx samples`: model-based extrapolation
+5. `New expected species after additional xxx samples:`: the difference between `Expected species after additional xx samples` and `Richness`
+6. `Posterior Gini diversity`: model-based Gini diversity
+7. `Parameters` the empirical Bayes estimates for the parameters of the model.
+
+Notice that in this particular case, $\sigma$ is estimated to be 0 (ie. the Pitman-Yor degenerates to the Dirichlet process). To assess the goodness-of-fit of the `ssm` function, we plot the observed frequency-of-frequencies against the model-based ones.
+
+```{r}
+# Frequency-of-frequencies plot
+plot(fit, type = "freq")
+```
+
+The `ssm` module offers an alternative to the sample-based estimators described in the previous section. In particular, it is endowed with a **model-based** `coverage`, `Gini` diversity and `rarefaction` function. Moreover, due to the sequential urn scheme characteristic, it also allows to **extrapolate** the rarefaction curve via the command `extrapolation`, ie. predict the additional number of distinct species if additional samples where observed. Let's see the one by one.
+
+### Model-based `coverage`
+In a Pitman-Yor model, the distribution of the sample coverage is 
+$$C_n \mid X_1, \ldots, X_n \sim Beta(n-\sigma K_n, \alpha + \sigma K_n)$$
+and the posterior mean is 
+$$\mathbb{E}(C_n \mid X_1, \ldots, X_n) = \mathbb{P}(X_{n+1} = \text{old species} \mid X_1, \ldots, X_n) = \frac{n-\sigma K_n}{\alpha + n}$$
+The advantage of this result is that it allows to obtain **uncertainty quantification on the coverage**.  To see this, just run the following commands:
+```{r, cache = TRUE}
+# Estimate for the mean coverage under a Pitman-Yor model
+coverage(fit)
+# Draw random samples from the posterior distribution of the coverage
+coverage_samples <- rcoverage(fit) 
+head(coverage_samples)
+# Plot the posterior distribution of the coverage
+plot(fit, type = "coverage")
+```
+Notice that the `plot` method can be applied to an object of class `ssm`.  
+
+### Posterior `Gini` index
+The Pitman-Yor process admits a closed for estimator for the Gini index. In particular, the **a priori** Bayesian estimate for the Gini index is 
+$$\mathbb{E}(G) = \frac{\alpha + \sigma}{\alpha + 1},$$ while the **a posteriori** estimate is
+$$
+\mathbb{E}(G\mid X_1\ldots, X_n)  = 1- \frac{1}{(\alpha + n)_2}\Big\{(1 -\sigma)(\alpha + K_n\sigma) + \sum_{j=1}^K(n_j - \sigma)_2\Big\} 
+$$
+where $(a)_n = \Gamma(a + n)/\Gamma(a)$ is the Pochhammer symbol. To obtain the estimate for the posteriro Gini index, run the `Gini` function.
+```{r}
+Gini(fit)
+```
+
+### Model-based `rarefaction` and `extrapolation`. 
+Both the Dirichlet and the Pitman-Yor process assume that the observations $X_1, \ldots, X_n$ are exchangeable. In other words, the order in which they appear does not matter. Moreover, we can show that the rarefaction curve in the Pitman-Yor process is a Markov process such that $K_1 = 1$ and 
+$$K_{n+1} \mid K_n = K_{n-1} + D_n, \quad (D_n \mid K_n)\sim Bernoulli\Big(\frac{\alpha + \sigma K_n}{\alpha + n}\Big)$$
+Moreover, the associated Bayesian estimate for the rarefaction curve is
+$$\mathbb{E}(K_n) = \frac{\alpha}{\sigma}\Big\{ \frac{(\alpha + \sigma)_n}{(\alpha)_n} - 1\Big\}$$
+To obtain such a curve and plot ir. just run 
+```{r}
+# Obtain the rarefaction curve
+rar <- rarefaction(fit)
+head(rar)
+tail(rar)
+```
+ 
+```{r, cache = TRUE}
+# Plot the rarefaction curve
+plot(fit, type = "rarefaction")
+```
 
 
+An additional convenient feature of the Pitman-Yor process is the fact that the prediction of additional number of distinct species if further samples where observed  is also available in closed form. In particular, following @Favaro_2009, we have that 
+$$
+\mathbb{E}(K_m^{(n)} \mid K_n = k) = \Big(k + \frac{\alpha}{\sigma}\Big)\Big\{\frac{(\alpha + n + \sigma)_m}{(\alpha + n)_m} - 1\Big\}
+$$
+Such a quantity can be obtained by specifying the parameter $m$ in the `extrapolation` function. In particular:
+```{r}
+# Obtain te extrapolation estimates for m additonal samples
+extr <- extrapolation(fit, m = c(1:1000))
+head(extr)
+tail(extr)
+```
+
+```{r, cache = TRUE}
+# Plot the extrapolation curve
+plot(fit, type = "extrapolation", m = 3000)
+```
+
+
+**A final note**: in the Pitman-Yor process, the growth rate of the number of clusters $K_n$ is $\mathcal{O}(n^\sigma)$, while in the Dirichlet process it is $\mathcal{O}(\alpha \log n)$. In other words, **both models assume an infinite number of species asymptotically**. Thus, they cannot be used to assess the sample saturation. Dealing with converging accumulation curves is the purpose of the `sdm` module. 
 
 # Species Discovery models
 
-## Mathematical background 
+## Background 
 
 - Species discovery models focus directly on the discovery of new species. Unlike Species Sampling models, they are *not* a generative model for a species distribution. 
 - Species discovery models are designed to fit and predict any accumulation curve, potentially assessing its saturation level, ie. how close the curve is to convergence.
+- Their formualtion involves a **direct** modelling of the accumulation curve obtained from the sample. 
 
-Their formulation is is the following. Let $(D_n)_{n \geq 1}$ be a sequence of *discovery indicators*, such that 
+Let $(D_n)_{n \geq 1}$ be a sequence of *discovery indicators*, such that 
 
 $$
 D_n = \begin{cases}
@@ -133,47 +254,44 @@ be the discovery probability and $\mathcal{S}(n;\theta)$ a survival function suc
 * $S(0; \theta) = 1$ - the first observation is necessarily a new discovery,
 * $S(n; \theta) > S(n+1; \theta)$ - the discovery probabilities descrease over time,
 * $\lim_{n\to \infty}S(n;\theta) = 0$ - eventually, all species in the sample are discovered.
- 
-Then, any functional form that supports the three assumptions can work as a Species discovery model. Notice that under such a formulation $K_n$ is distributed as a Poisson-binomial distribution 
-$$K_n \sim PB\{1,\mathcal{S}(1, \theta), \ldots,\mathcal{S}(n-1, \theta)\}.$$
-This leads to two convenient estimators, namely
-$$\mathbb{E}(K_n) = \sum_{i =1}^n \mathcal{S}(i-1, \theta)$$
-and 
-$$
-\mathbb{E}(K_{n+m}\mid K_n = k) = k + \sum_{j = 0}^{n-m-1} \mathcal{S}(j, \theta).
-$$
 
-The package BNPvegan supports two type of kernel function: 
+Then, any functional form that supports the three assumptions can work as a Species discovery model. The package `BNPvegan` supports two type of kernel function: 
 
 * The three-parameter log-logistic model, `LL3` (the *deault*):
 $$
 \mathbb{P}(D_{n+1} = 1) = \frac{\alpha\phi^n}{\alpha\phi^n + n^{1-\sigma} }
 $$
-with $\alpha >0$, $\sigma <1$ and $\phi \in (0,1)$. 
+with $\alpha >0$, $\sigma <1$ and $\phi \in (0,1)$. Notice that for $\phi = 1$ and $\sigma = 0$, `LL3` has the same discovery probability of the Dirichlet process .
 
 * The `Weibull` model:
 $$
 \mathbb{P}(D_{n+1} = 1) = \phi^{n^\lambda}
 $$
-with $\phi \in (0,1)$, $\lambda > 0$. Under both model, the value for $K_\infty = \lim_{n\to \infty} K_n$ is **guaranteed to converge**. In other words, the species discovery model will always  ensure a finite saturation. 
+with $\phi \in (0,1)$, $\lambda > 0$. Under both model, the value for $K_\infty = \lim_{n\to \infty} K_n$ is **guaranteed to converge**. In other words, the species discovery model will always ensure a finite saturation. 
 
 ## The `sdm` module
 
-The `sdm` module runs the model described above on the sample-based rarefaction curve of the specified vector of `frequencies`. The available choice for `model` are `model = "LL3"` (default) and `model = "Weibull"`. Both models are estimated via empirical Bayes by maximizing the log-likelihood associated to the collection of independent Bernoulli random variables. In what follows, we estimate the three-parameter log-logistic model on a vector of counts called `fungalOTU`. As a first step, `sdm` computes the average accumulation curve via the sample-based rarefaction formula, and then estimates the model parameters. 
+The `sdm` module runs the model described above on the sample-based rarefaction curve of the specified vector of `frequencies`. The available choice for `model` are `model = "LL3"` (default) and `model = "Weibull"`. Both models are estimated via empirical Bayes by maximizing the log-likelihood associated to the collection of independent Bernoulli random variables. This quantity is equal to 
+$$\mathcal{L}(\theta\mid D_1, \ldots, D_n) = \prod_{i = 2}^n  \mathcal{S}(i-1;\theta)^{D_n}(1-\mathcal{S}(i-1;\theta))^{1-D_n}$$
+where the degenerate case $i= 1$ is trivially excluded. As already mentioned above, it is important to notice that often the sequence of species discovery is not available. In the sample based-methods, this problem is solved by computing the **rarefaction** curve from the vector of given `frequencies`, while in the `ssm` module the **exchangeability** assumption implies that the ordering is irrelevant. In the `sdm` case however, the order of the discoveries does matter. To solve this issue, the module maximizes the following likelihood:
+$$\mathcal{L}(\theta\mid \tilde{D}_1, \ldots, \tilde{D}_n) = \prod_{i = 2}^n  \mathcal{S}(i-1;\theta)^{\tilde{D}_n}(1-\mathcal{S}(i-1;\theta))^{1-\tilde{D}_n}$$
+where $\tilde{D}_i = \hat{K}_{i+1}- \hat{K}_i$ and $\hat{K}_i$ is derived from the average sample-based rarefaction curve. Thus, `sdm` works in three steps 
 
-```{r, cache = TRUE}
-frequencies <- fungalOTU
-quantile(frequencies)
-```
+1. Compute the  sample-based rarefaction curve $\hat{K}_i$ for $i = 1, \ldots, n$
+2. Compute the differences and $\tilde{D}_i = \hat{K}_{i+1}- \hat{K}_i$ with $\tilde{D}_i = 1$
+3. Obtain the empirical Bayes estimates for $\theta$ via constrained maximization of the likelihood.
+
+In the case of `model = "LL3`, the maximization of the likelihood can be obtained with a simple constrained logistic regression (package `glmnet`). This is makes the `sdm` function particularly efficient
 
 ```{r, cache = TRUE}
 # Fit the species discovery model. 
+frequencies <- fungalOTU
 # Note: verbose controls the state of the construction of the sample-based rarefaction, which is 
 #       the most demanding part
-fit <- sdm(frequencies, model = "LL3", verbose = TRUE)
+fit_sdm <- sdm(frequencies, model = "LL3", verbose = TRUE)
 
 # Summarise the output
-summary(fit)
+summary(fit_sdm)
 ```
 
 The quantities reported in the summary are: 
@@ -186,26 +304,44 @@ The quantities reported in the summary are:
 6. `Sample saturation`: the ratio between `Richness` and `Expected species at infinity`.
 7. `Parameters` the empirical Bayes estimates for the parameters of the model.
 
-All the above quantities are easily extracted with the following commands
+The parameters are easily extracted with the following commands
 ```{r}
-# Asymptotic richness estimators
-asymptotic_richness(fit)
-
 # Parameters
-coef(fit)
+coef(fit_sdm)
 
 # Loglikelihood
-logLik(fit)
+logLik(fit_sdm)
 ```
 
-Once the model is estimated, it is very easy to plot both the in-sample rarefaction and to obtain the out of sample prediction. First, let's start with a plot. 
+## `rarefaction` and `extrapolation`
+Once the model is estimated, it is very easy to plot both the in-sample rarefaction and to obtain the out of sample prediction. In particular, the convenient property of the `sdm` model ensure that the `rarefaction` and `extrapolation` estimators are easily derived. Indeed, we can prove that under such a formulation the number of distinct species $K_n$ is distributed as a Poisson-binomial distribution,
+$$K_n \sim PB\{1,\mathcal{S}(1, \theta), \ldots,\mathcal{S}(n-1, \theta)\},$$
+with mean
+$$\mathbb{E}(K_n) = \sum_{i =1}^n \mathcal{S}(i-1, \theta).$$
+The above quantity can be obtained by using the rarefaction method.
 
+```{r}
+# Extract the model-based rarefaction curve
+rar_sdm <- rarefaction(fit_sdm)
+head(rar_sdm)
+tail(rar_sdm)
+# Plot the model-based and the sample-based rarefaction
+plot(fit_sdm, type ="rarefaction") 
+```
+
+$$
+\mathbb{E}(K_{n+m}\mid K_n = k) = k + \sum_{j = 0}^{n-m-1} \mathcal{S}(j, \theta).
+$$
 
 ```{r}
 # Plot the model-based rarefaction curve vs the average accumulation curve
-plot(fit, type = "rarefaction")
+plot(fit_sdm, type = "rarefaction")
 ```
 
+```{r}
+# Asymptotic richness estimators
+asymptotic_richness(fit_sdm)
+```
 
 # References
 

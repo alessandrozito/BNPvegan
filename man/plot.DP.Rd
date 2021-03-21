@@ -4,10 +4,12 @@
 \alias{plot.DP}
 \title{Plot for the DP model}
 \usage{
-\method{plot}{DP}(object, type = "rarefaction", ...)
+\method{plot}{DP}(object, type = "rarefaction", m = NULL, ...)
 }
 \arguments{
 \item{object}{An object of class \code{\link[ssm]{ssm}}.}
+
+\item{m}{additional sample to predict. Valid only for \code{type = "extrapolation"}.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }

@@ -78,7 +78,7 @@ summary.DP <- function(object, ...) {
     paste0("\t New expected species after additional ", n, " samples: ", Expected),
     paste0("\t Posterior Gini diversity: ", round(Gini, 4)),
     "\nParameters:",
-    paste0("\t ", knitr::kable(out)),
+    paste0("\t ", knitr::kable(out, "simple")),
     sep = "\n"
   )
 }
@@ -108,7 +108,7 @@ summary.PY <- function(object, ...) {
     paste0("\t New expected species after additional ", n, " samples: ", Expected),
     paste0("\t Posterior Gini diversity: ", round(Gini, 4)),
     "\nParameters:",
-    paste0("\t ", knitr::kable(out)),
+    paste0("\t ", knitr::kable(out, "simple")),
     sep = "\n"
   )
 }
@@ -116,13 +116,14 @@ summary.PY <- function(object, ...) {
 
 #' Plot for the DP model
 #' @param object An object of class \code{\link[ssm]{ssm}}.
+#' @param m additional sample to predict. Valid only for \code{type = "extrapolation"}.
 #' @param ... Further arguments passed to or from other methods.
 #'
 #' @details The method...
 #'
 #' @export
 #'
-plot.DP <- function(object, type = "rarefaction", ...) {
+plot.DP <- function(object, type = "rarefaction", m = NULL, ...) {
   n <- sum(object$frequencies)
   alpha <- object$param[1]
   K <- length(object$frequencies)
@@ -155,16 +156,21 @@ plot.DP <- function(object, type = "rarefaction", ...) {
       geom_line() +
       theme_bw() +
       xlab("n") +
-      ylab("Rarefaction")
+      ylab("Rarefaction")+
+      ggplot2::facet_wrap(~"Rarefaction curve")
     return(p)
   } else if (type == "extrapolation") {
-    data_plot <- data.frame(n = c(1:(2 * n)), rar = c(rarefaction(object), extrapolation(object, 1:n)))
+    if(is.null(m)){
+      m = n
+    }
+    data_plot <- data.frame(n = c(1:(m+n)), rar = c(rarefaction(object), extrapolation(object, 1:m)))
     p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
       geom_line() +
       geom_vline(xintercept = n, linetype = "dashed") +
       theme_bw() +
       xlab("n") +
-      ylab("Rarefaction and prediction")
+      ylab("Rarefaction and extrapolation")+
+      ggplot2::facet_wrap(~"Rarefaction and extrapolation curve")
     return(p)
   }
 }
@@ -172,13 +178,14 @@ plot.DP <- function(object, type = "rarefaction", ...) {
 
 #' Plot for the Pitman-Yor model
 #' @param object An object of class \code{\link[ssm]{ssm}}.
+#' @param m additional sample to predict. Valid only for \code{type = "extrapolation"}. By default, it is equal to the sample size.
 #' @param ... Further arguments passed to or from other methods.
 #'
 #' @details The method...
 #'
 #' @export
 #'
-plot.PY <- function(object, type = "rarefaction", ...) {
+plot.PY <- function(object, type = "rarefaction", m = NULL, ...) {
   n <- sum(object$frequencies)
   K <- length(object$frequencies)
   alpha <- object$param[1]
@@ -212,16 +219,21 @@ plot.PY <- function(object, type = "rarefaction", ...) {
       geom_line() +
       theme_bw() +
       xlab("n") +
-      ylab("Rarefaction")
+      ylab("Rarefaction")+
+      facet_wrap(~"Rarefaction curve")
     return(p)
   } else if (type == "extrapolation") {
-    data_plot <- data.frame(n = c(1:(2 * n)), rar = c(rarefaction(object), extrapolation(object, 1:n)))
+    if(is.null(m)){
+      m = n
+    }
+    data_plot <- data.frame(n = c(1:(m+n)), rar = c(rarefaction(object), extrapolation(object, 1:m)))
     p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
       geom_line() +
       geom_vline(xintercept = n, linetype = "dashed") +
       theme_bw() +
       xlab("n") +
-      ylab("Rarefaction and extrapolation")
+      ylab("Rarefaction and extrapolation")+
+      facet_wrap(~"Rarefaction and extrapolation curve")
     return(p)
   }
 }

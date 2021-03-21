@@ -4,10 +4,12 @@
 \alias{plot.PY}
 \title{Plot for the Pitman-Yor model}
 \usage{
-\method{plot}{PY}(object, type = "rarefaction", ...)
+\method{plot}{PY}(object, type = "rarefaction", m = NULL, ...)
 }
 \arguments{
 \item{object}{An object of class \code{\link[ssm]{ssm}}.}
+
+\item{m}{additional sample to predict. Valid only for \code{type = "extrapolation"}. By default, it is equal to the sample size.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
