@@ -7,7 +7,6 @@
 #' @return  A vector of frequencies
 #' @export
 #'
-#' @examples
 rPY <- function(size, alpha, sigma){
   if(size == 1){
     return(1)

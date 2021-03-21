@@ -1,7 +1,9 @@
 ---
 title: "An introduction to BNPvegan"
 subtitle: "Bayesian nonparametric methods for ecology"
-author: "Alessandro Zito and Tommaso Rigon"
+author: 
+  - Alessandro Zito^[Duke University, alessandro.zito@duke.edu]
+  - Tommaso Rigon^[University of Milano-Bicocca, tommaso.rigon@unimib.it]
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 bibliography: BNPvegan_lib.bib
 output: rmdformats::readthedown
@@ -75,7 +77,7 @@ and can be obtained by running the `Gini` command:
 ```{r}
 Gini(frequencies)
 ```
-In other words, the probability that two species are equal when drawn at random from the population is 0.975. This result is in line with what found with the `coverage` method
+In other words, the probability that two species are equal when drawn at random from the population is 0.975. This result is in line with what found with the `coverage` method. 
 
 ## The `rarefaction` method
 While often ecologists deal with species frequencies, sometimes the species tags  $X_1, \ldots, X_n$, are observed sequentially. This allows to construct an **accumulation curve**, which plots the number of distinct species observed, $K_n$, as a function of the abundance, $n$. However, in the cases in which the data are not sequential, it is necessary to construct the so-called  **rarefaction curve**, ie. the *average accumulation curve*. This quantity is derived from a combinatorial argument and it is equal to
@@ -147,6 +149,15 @@ Notice that in this particular case, $\sigma$ is estimated to be 0 (ie. the Pitm
 # Frequency-of-frequencies plot
 plot(fit, type = "freq")
 ```
+Such a plot can be obtained by looking at the model-based frequency-of-frequencies plot, which is available in closed form for the Pitman-Yor process [@Favaro_2013]. In particular, it is equal to
+
+$$
+\mathbb{E}(M_m) = \frac{\alpha}{(\alpha)_n}\binom{n}{m}(1-\sigma)_{m-1}(\alpha + \sigma)_{n-m}
+$$
+for $\m = 1, \ldots, n$, and can be accessed with the function
+```{r}
+expected_m_py(m = 1, n = sum(frequencies), alpha = coef(fit)[1], sigma =coef(fit)[2])
+```
 
 The `ssm` module offers an alternative to the sample-based estimators described in the previous section. In particular, it is endowed with a **model-based** `coverage`, `Gini` diversity and `rarefaction` function. Moreover, due to the sequential urn scheme characteristic, it also allows to **extrapolate** the rarefaction curve via the command `extrapolation`, ie. predict the additional number of distinct species if additional samples where observed. Let's see the one by one.
 
@@ -177,6 +188,7 @@ where $(a)_n = \Gamma(a + n)/\Gamma(a)$ is the Pochhammer symbol. To obtain the 
 ```{r}
 Gini(fit)
 ```
+**Note**: There exists a way to simulate from the posterior distribution of the Gini index. Such a function will be implemented in future versions of the package.
 
 ### Model-based `rarefaction` and `extrapolation`. 
 Both the Dirichlet and the Pitman-Yor process assume that the observations $X_1, \ldots, X_n$ are exchangeable. In other words, the order in which they appear does not matter. Moreover, we can show that the rarefaction curve in the Pitman-Yor process is a Markov process such that $K_1 = 1$ and 
@@ -193,7 +205,7 @@ tail(rar)
  
 ```{r, cache = TRUE}
 # Plot the rarefaction curve
-plot(fit, type = "rarefaction")
+plot(fit, type = "rarefaction", verbose = FALSE)
 ```
 
 
@@ -335,7 +347,7 @@ $$
 $$
 
 Again, the method works in the same way as in the `ssm` module
-```{r}
+```{r, cache = TRUE}
 # Extrapolate
 extr_sdm <- extrapolation(fit_sdm, m = 1:1000)
 head(extr_sdm)

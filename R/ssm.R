@@ -144,8 +144,9 @@ plot.DP <- function(object, type = "rarefaction", plot_sample = TRUE, m = NULL, 
       scale_y_log10() +
       scale_x_log10() +
       theme_bw() +
-      xlab("l") +
-      ylab(expression(M[l]))
+      xlab("m") +
+      ylab(expression(M[m]))+
+      facet_wrap(~"Frequency-of-frequencies plot")
     return(p)
   } else if (type == "coverage") {
     p <- ggplot() +
@@ -160,7 +161,7 @@ plot.DP <- function(object, type = "rarefaction", plot_sample = TRUE, m = NULL, 
     if(plot_sample == TRUE){
       # Model-based rarefaction
       rar <- rarefaction(object)
-      accum <- rarefaction(object$frequencies, verbose = verbose)
+      accum <- rarefaction(as.integer(object$frequencies), verbose = verbose)
       df <- data.frame(n = 1:n, rar = rar, accum = accum)
 
       if (nrow(df) > n_points) {
@@ -239,8 +240,9 @@ plot.PY <- function(object, type = "rarefaction", plot_sample = TRUE, m = NULL, 
       scale_y_log10() +
       scale_x_log10() +
       theme_bw() +
-      xlab("l") +
-      ylab(expression(M[l]))
+      xlab("m") +
+      ylab(expression(M[m]))+
+      facet_wrap(~"Frequency-of-frequencies plot")
     return(p)
   } else if (type == "coverage") {
     p <- ggplot() +
@@ -254,7 +256,7 @@ plot.PY <- function(object, type = "rarefaction", plot_sample = TRUE, m = NULL, 
     if(plot_sample == TRUE){
       # Model-based rarefaction
       rar <- rarefaction(object)
-      accum <- rarefaction(object$frequencies, verbose = verbose)
+      accum <- rarefaction(as.integer(object$frequencies), verbose = verbose)
       df <- data.frame(n = 1:n, rar = rar, accum = accum)
 
       if (nrow(df) > n_points) {
