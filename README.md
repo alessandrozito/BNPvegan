@@ -11,4 +11,4 @@ The `BNPvegan` package can be installed by running the following commands:
 devtools::install_github("alessandrozito/BNPvegan")
 ```
 
-We discuss the two class of models and the associated functions in this [introduction to the BNPvegan package](https://alessandrozito.github.io/BNPvegan/vignette.html)
+For a description of the two class of models and the associated functions, please refer to the [BNPvegan package documentation](https://alessandrozito.github.io/BNPvegan/vignette.html)
