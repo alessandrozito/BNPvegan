@@ -196,14 +196,39 @@ plot.DP <- function(object, type = "rarefaction", plot_sample = TRUE, m = NULL, 
     if(is.null(m)){
       m = n
     }
-    data_plot <- data.frame(n = c(1:(m+n)), rar = c(rarefaction(object), extrapolation(object, 1:m)))
-    p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
-      geom_line() +
-      geom_vline(xintercept = n, linetype = "dashed") +
-      theme_bw() +
-      xlab("n") +
-      ylab("Rarefaction and extrapolation")+
-      ggplot2::facet_wrap(~"Rarefaction and extrapolation curve")
+    if(plot_sample == TRUE){
+      # Model-based rarefaction
+      rar <- rarefaction(object)
+      accum <- rarefaction(as.integer(object$frequencies), verbose = verbose)
+      ext <- extrapolation(object, 1:m)
+      df <- data.frame(n = 1:(n+m), curve = c(rar,ext) , accum = c(accum, rep(NA, length(ext))))
+
+      if (nrow(df) > n_points) {
+        seqX <- 1:nrow(df)
+        seqY <- split(seqX, sort(seqX %% n_points))
+        df <- df[unlist(lapply(seqY, function(a) tail(a, 1))), ]
+      }
+
+      p <- ggplot2::ggplot(df) +
+        ggplot2::geom_point(ggplot2::aes(x = n, y = accum), shape = 1, na.rm=TRUE) +
+        ggplot2::geom_line(ggplot2::aes(x = n, y = curve), color = "red", size = 0.9) +
+        ggplot2::theme_bw() +
+        ggplot2::facet_wrap(~"Rarefaction and extrapolation") +
+        ggplot2::geom_segment(x = n, xend = n, y = 0, yend = Inf, linetype = "dashed") +
+        ggplot2::ylab(expression(K[n]))
+
+    } else {
+
+      data_plot <- data.frame(n = c(1:(m+n)), rar = c(rarefaction(object), extrapolation(object, 1:m)))
+      p <- ggplot2::ggplot(data = data_plot, aes(x = n, y = rar)) +
+        ggplot2::geom_line() +
+        ggplot2::geom_segment(x = n, xend = n, y = 0, yend = Inf, linetype = "dashed") +
+        ggplot2::theme_bw() +
+        ggplot2::xlab("n") +
+        ggplot2::ylab("Rarefaction and extrapolation")+
+        ggplot2::facet_wrap(~"Rarefaction and extrapolation curve")
+    }
+
     return(p)
   }
 }
@@ -290,14 +315,38 @@ plot.PY <- function(object, type = "rarefaction", plot_sample = TRUE, m = NULL, 
     if(is.null(m)){
       m = n
     }
-    data_plot <- data.frame(n = c(1:(m+n)), rar = c(rarefaction(object), extrapolation(object, 1:m)))
-    p <- ggplot(data = data_plot, aes(x = n, y = rar)) +
-      geom_line() +
-      geom_vline(xintercept = n, linetype = "dashed") +
-      theme_bw() +
-      xlab("n") +
-      ylab("Rarefaction and extrapolation")+
-      facet_wrap(~"Rarefaction and extrapolation curve")
+    if(plot_sample == TRUE){
+      # Model-based rarefaction
+      rar <- rarefaction(object)
+      accum <- rarefaction(as.integer(object$frequencies), verbose = verbose)
+      ext <- extrapolation(object, 1:m)
+      df <- data.frame(n = 1:(n+m), curve = c(rar,ext) , accum = c(accum, rep(NA, length(ext))))
+
+      if (nrow(df) > n_points) {
+        seqX <- 1:nrow(df)
+        seqY <- split(seqX, sort(seqX %% n_points))
+        df <- df[unlist(lapply(seqY, function(a) tail(a, 1))), ]
+      }
+
+      p <- ggplot2::ggplot(df) +
+        ggplot2::geom_point(ggplot2::aes(x = n, y = accum), shape = 1, na.rm=TRUE) +
+        ggplot2::geom_line(ggplot2::aes(x = n, y = curve), color = "red", size = 0.9) +
+        ggplot2::theme_bw() +
+        ggplot2::facet_wrap(~"Rarefaction and extrapolation") +
+        ggplot2::geom_segment(x = n, xend = n, y = 0, yend = Inf, linetype = "dashed") +
+        ggplot2::ylab(expression(K[n]))
+
+    } else {
+
+      data_plot <- data.frame(n = c(1:(m+n)), rar = c(rarefaction(object), extrapolation(object, 1:m)))
+      p <- ggplot2::ggplot(data = data_plot, aes(x = n, y = rar)) +
+        ggplot2::geom_line() +
+        ggplot2::geom_segment(x = n, xend = n, y = 0, yend = Inf, linetype = "dashed") +
+        ggplot2::theme_bw() +
+        ggplot2::xlab("n") +
+        ggplot2::ylab("Rarefaction and extrapolation")+
+        ggplot2::facet_wrap(~"Rarefaction and extrapolation curve")
+    }
     return(p)
   }
 }

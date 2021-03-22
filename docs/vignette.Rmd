@@ -26,14 +26,14 @@ library(BNPvegan)
 
 ## Package description
 
-BNPvegan is an R package that implements the fundamental tools of the Bayesian nonparametric literature on Species Sampling models. The package has been designed for ecological applications. In this spirit, we borrowed the name to mimic and extend the existing `vegan` package [@vegan]. In this tutorial we provide both a mathematical overview of the main methods available in the `BNPvegan` package, and we describe in details how to use it an how to interpret its results.
+BNPvegan is an R package that implements the fundamental tools of the Bayesian nonparametric literature on Species Sampling models. The package has been designed for ecological applications. In this spirit, we named our package to mimic and extend the existing `vegan` package [@vegan]. In this tutorial we provide both a mathematical overview of the main methods available in the `BNPvegan` package, and we describe in details how to use it an how to interpret its results.
 
 The package is constructed on two building blocks, which are highly interrelated:
 
 * The **Species Sampling model** module -`ssm`- which runs the basic processes in the species sampling model literature [@pitman_1996], including the Dirichlet process [@Ferguson1973] and the Pitman-Yor process [@Perman_1992].  
 * The **Species Discovery model** module -`sdm`- which runs the species discovery model introduced in [@Zito_2020]. 
 
-Both functions are design to work with a standard `R` sintax, as they accept the classic methods  `summary`, `predict`, `coef` and `logLik`. Before dealing with the specifics of each block, we first describe the sample-based methods available in `BNPvegan`. 
+Both functions are design to work with a standard `R` syntax, as they accept the classic methods `summary`, `plot`, `coef` and `logLik`. Before dealing with the specifics of each block, we first describe the sample-based methods available in `BNPvegan`. 
 
 In both cases, the main input of the package is a vector of `frequencies` representing the species counts observed in a sample. The package is endowed with two example datasets:
 
@@ -106,7 +106,7 @@ Both the Dirichlet and the Pitman-Yor process generate a species distribution th
 with $\alpha >0$;
 * In the **Pitman-Yor process**: $$X_{n+1} \mid X_1, \ldots, X_n \sim \frac{\alpha - \sigma K_{n}}{\alpha + n}(\text{"new species"}) + \sum_{j=1}^{K_n} \frac{n_j - \sigma}{\alpha + n}\delta_{X_j^*}$$ with $\alpha >-\sigma$ and $\sigma \in [0, 1)$.
 
-The parameters `alpha` and `sigma` govern the allocation scheme. In particular, it is easy to see that the Pitman-Yor process degenerates to the Dirichlet process when $\sigma = 0$. The interpretation of both equations is rather simple: the species observed at time $n+1$ can either be of a new type or of a previously observed one. In particular, the probability of observing an "old" species is increasing in the number of times that species has been observed in the past. The package `BNPvegan` contains a random sampler for both processes. 
+The parameters `alpha` and `sigma` govern the allocation scheme. In particular, it is easy to see that the Pitman-Yor process degenerates to the Dirichlet process when $\sigma = 0$. The interpretation of both equations is rather simple: the species observed at time $n+1$ can either be of a new type or of a previously observed one. In particular, the probability of observing an "old" species is increasing in the number of times that species has been observed in the past. The package `BNPvegan` contains a random sampler for both processes, which returns a vector od species frequencies. 
 
 ```{r}
 set.seed(1)
@@ -129,8 +129,9 @@ $$
 To estimate the parameters $\alpha$ and $\sigma$, the `ssm` function adopts an empirical Bayes procedure and performs a simple off-theshelf numerical optimization of $\mathcal{L}(\alpha, \sigma \mid X_1, \ldots, X_n)$ via `nlminb`. The commands are the following.
 
 ```{r}
+# Estimate a Pitman-Yor model
 frequencies <- Lepidoptera
-fit <- ssm(frequencies, model = "PY")  # set model = "DP" for the Diririchlet process.
+fit <- ssm(frequencies, model = "PY")  # set model = "DP" for the Dirichlet process.
 summary(fit)  # Summarize the output.
 ```
 The `summary` function applied to an object of class `ssm` returns the following quantities:
@@ -186,6 +187,7 @@ $$
 $$
 where $(a)_n = \Gamma(a + n)/\Gamma(a)$ is the Pochhammer symbol. To obtain the estimate for the posteriro Gini index, run the `Gini` function.
 ```{r}
+# Model-based Gini inidex
 Gini(fit)
 ```
 **Note**: There exists a way to simulate from the posterior distribution of the Gini index. Such a function will be implemented in future versions of the package.
@@ -197,7 +199,7 @@ Moreover, the associated Bayesian estimate for the rarefaction curve is
 $$\mathbb{E}(K_n) = \frac{\alpha}{\sigma}\Big\{ \frac{(\alpha + \sigma)_n}{(\alpha)_n} - 1\Big\}$$
 To obtain such a curve and plot ir. just run 
 ```{r}
-# Obtain the rarefaction curve
+# Model-based rarefaction curve
 rar <- rarefaction(fit)
 head(rar)
 tail(rar)
@@ -205,7 +207,7 @@ tail(rar)
  
 ```{r, cache = TRUE}
 # Plot the rarefaction curve
-plot(fit, type = "rarefaction", verbose = FALSE)
+plot(fit, type = "rarefaction", verbose = FALSE, plot_sample = TRUE)
 ```
 
 
@@ -213,9 +215,9 @@ An additional convenient feature of the Pitman-Yor process is the fact that the 
 $$
 \mathbb{E}(K_m^{(n)} \mid K_n = k) = \Big(k + \frac{\alpha}{\sigma}\Big)\Big\{\frac{(\alpha + n + \sigma)_m}{(\alpha + n)_m} - 1\Big\}
 $$
-Such a quantity can be obtained by specifying the parameter $m$ in the `extrapolation` function. In particular:
+where $K_m^{(n)}$ is the number of new species observed under additional $m$ samples after $n$ individuals have been observed. The `extrapolation` function then computes the quantity $k + \mathbb{E}(K_m^{(n)} \mid K_n = k)$ for any given value of the parameter $m$. In particular:
 ```{r}
-# Obtain te extrapolation estimates for m additonal samples
+# Obtain the extrapolation estimates for m additional samples
 extr <- extrapolation(fit, m = c(1:1000))
 head(extr)
 tail(extr)
@@ -223,7 +225,7 @@ tail(extr)
 
 ```{r, cache = TRUE}
 # Plot the extrapolation curve
-plot(fit, type = "extrapolation", m = 3000)
+plot(fit, type = "extrapolation", m = 3000, plot_sample = TRUE, verbose = FALSE)
 ```
 
 
@@ -245,7 +247,7 @@ D_n = \begin{cases}
 0 & \text{if} \quad  X_n = ``\text{observed"}
 \end{cases}
 $$
-and trivially $D_n = 1$. Then, an accumulation curve $(K_n)_{n \geq 1}$ is defined as 
+and trivially $D_1 = 1$. Then, an accumulation curve $(K_n)_{n \geq 1}$ is defined as 
 $$
 K_n = \sum_{i = 1}^{n} D_i, \quad n \geq 1.
 $$
@@ -264,7 +266,7 @@ $$
 be the discovery probability and $\mathcal{S}(n;\theta)$ a survival function such that 
 
 * $S(0; \theta) = 1$ - the first observation is necessarily a new discovery,
-* $S(n; \theta) > S(n+1; \theta)$ - the discovery probabilities descrease over time,
+* $S(n; \theta) > S(n+1; \theta)$ - the discovery probabilities decrease over time,
 * $\lim_{n\to \infty}S(n;\theta) = 0$ - eventually, all species in the sample are discovered.
 
 Then, any functional form that supports the three assumptions can work as a Species discovery model. The package `BNPvegan` supports two type of kernel function: 
@@ -287,7 +289,7 @@ The `sdm` module runs the model described above on the sample-based rarefaction 
 $$\mathcal{L}(\theta\mid D_1, \ldots, D_n) = \prod_{i = 2}^n  \mathcal{S}(i-1;\theta)^{D_n}(1-\mathcal{S}(i-1;\theta))^{1-D_n}$$
 where the degenerate case $i= 1$ is trivially excluded. As already mentioned above, it is important to notice that often the sequence of species discovery is not available. In the sample based-methods, this problem is solved by computing the **rarefaction** curve from the vector of given `frequencies`, while in the `ssm` module the **exchangeability** assumption implies that the ordering is irrelevant. In the `sdm` case however, the order of the discoveries does matter. To solve this issue, the module maximizes the following likelihood:
 $$\mathcal{L}(\theta\mid \tilde{D}_1, \ldots, \tilde{D}_n) = \prod_{i = 2}^n  \mathcal{S}(i-1;\theta)^{\tilde{D}_n}(1-\mathcal{S}(i-1;\theta))^{1-\tilde{D}_n}$$
-where $\tilde{D}_i = \hat{K}_{i+1}- \hat{K}_i$ and $\hat{K}_i$ is derived from the average sample-based rarefaction curve. Thus, `sdm` works in three steps 
+where $\tilde{D}_i = \bar{K}_{i+1}- \bar{K}_i$ and $\bar{K}_i$ is derived from the average sample-based rarefaction curve. Thus, `sdm` works in three steps 
 
 1. Compute the  sample-based rarefaction curve $\hat{K}_i$ for $i = 1, \ldots, n$
 2. Compute the differences and $\tilde{D}_i = \hat{K}_{i+1}- \hat{K}_i$ with $\tilde{D}_i = 1$
@@ -297,7 +299,9 @@ In the case of `model = "LL3`, the maximization of the likelihood can be obtaine
 
 ```{r, cache = TRUE}
 # Fit the species discovery model. 
-frequencies <- fungalOTU
+# frequencies <- fungalOTU
+frequencies <- Lepidoptera
+
 # Note: verbose controls the state of the construction of the sample-based rarefaction, which is 
 #       the most demanding part
 fit_sdm <- sdm(frequencies, model = "LL3", verbose = TRUE)
@@ -362,14 +366,19 @@ The final feature of `sdm` is the fact that it provides an estimate for the asym
 $$\mathbb{E}(K_\infty \mid K_n = k) = k + \sum_{j = n}^\infty S(j; \theta) <\infty.$$
 Then, the **saturation** is the fraction of species discovered over the asymptotic estimate, namely
 $$S_n\mid K_n = k = \frac{k}{K_\infty}.$$
-As computing the expected value for this quantity can be demanding, `sdm` function simply computes $k/\mathbb{E}(K_\infty \mid K_n = k)$, which is a first approximation. To extract the quantities, just run:
+As computing the expected value for this quantity can be demanding, `sdm` gives the possibility to compute $k/\mathbb{E}(K_\infty \mid K_n = k)$, which is a first approximation. This can be achieved my specifying `method = "approximate"` (the default). Otherwise, if one wants to carry uncertainty quantification on the saturation level, set `method = "montecarlo"` and specify the number of samples `n_samples` to draw. This last option can be slow. See the following code:
 
-```{r}
+```{r, cache = TRUE}
 # Asymptotic richness estimators
 asym_richness(fit_sdm)
-# Saturation
-saturation(fit_sdm)
+# Approximate saturation
+saturation(fit_sdm, method = "approximate")
+# Samples from the posterior saturation
+post_sat <- saturation(fit_sdm, method = "montecarlo", n_samples = 500)
+hist(post_sat, main = "Posterior saturation")
 ```
 
 # References
+
+
 
