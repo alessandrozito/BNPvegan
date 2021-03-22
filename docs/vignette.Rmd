@@ -26,27 +26,27 @@ library(BNPvegan)
 
 ## Package description
 
-BNPvegan is an R package that implements the fundamental tools of the Bayesian nonparametric literature on Species Sampling models. The package has been designed for ecological applications. In this spirit, we named our package to mimic and extend the existing `vegan` package [@vegan]. In this tutorial we provide both a mathematical overview of the main methods available in the `BNPvegan` package, and we describe in details how to use it an how to interpret its results.
+BNPvegan is an R package that implements some fundamental tools of the Bayesian nonparametric literature on Species Sampling models. The package has been designed for ecological applications. In this spirit, we chose to name it to mimic and extend the existing `vegan` package [@vegan]. In this tutorial we provide both a mathematical overview of the main methods available in `BNPvegan`, and we describe in details how to use it and how to interpret its results.
 
 The package is constructed on two building blocks, which are highly interrelated:
 
-* The **Species Sampling model** module -`ssm`- which runs the basic processes in the species sampling model literature [@pitman_1996], including the Dirichlet process [@Ferguson1973] and the Pitman-Yor process [@Perman_1992].  
-* The **Species Discovery model** module -`sdm`- which runs the species discovery model introduced in [@Zito_2020]. 
+* The **Species Sampling model** module -`ssm`- which runs the basic processes in the species sampling model literature [@pitman_1996], namely the Dirichlet process [@Ferguson1973] and the Pitman-Yor process [@Perman_1992].  
+* The **Species Discovery model** module -`sdm`- which runs the species discovery model introduced in @Zito_2020. 
 
-Both functions are design to work with a standard `R` syntax, as they accept the classic methods `summary`, `plot`, `coef` and `logLik`. Before dealing with the specifics of each block, we first describe the sample-based methods available in `BNPvegan`. 
+Both functions are designed to work with a standard `R` syntax, as their output can be accessed via the classic methods `summary`, `plot`, `coef` and `logLik`. 
 
 In both cases, the main input of the package is a vector of `frequencies` representing the species counts observed in a sample. The package is endowed with two example datasets:
 
-1. `Lepidoptera`, which the dataset of butterfly counts in [@Fisher_1943]
+1. `Lepidoptera`, which is the dataset of butterfly counts in @Fisher_1943
 2. `fungalOTU`, which contains the counts for some fungal species recorded in a field experiment. 
 
-We will use both to show the basic functioning of `ssm` and `sdm`. As a preliminary step however, we demonstrate how to obtain some simple **sample-based quantities**.
+We will use both to show the basic functioning of `ssm` and `sdm`. As a preliminary step, however, we show how to obtain some simple **sample-based quantities**.
 
 # Sample-based quantities
 
-We hereby refer to **sample-based quantities** as those quantities which are not inherited from the the `ssm` or the `sdm` method, but can be directly derived from the vector of species `frequencies` without a specific model fit. These methods are the sample `coverage`, the `Gini` heterogeneity index and the `rarefaction` curve. 
+We hereby refer to **sample-based quantities** as those indicators which are not inherited from the the `ssm` or the `sdm` method, but can be directly derived from the vector of species `frequencies` without a specific model fit. These methods are the sample `coverage`, the `Gini` heterogeneity index and the `rarefaction` curve. 
 
-From a mathematical perspective, let $X_1, \ldots, X_n$ be a collection of "species" tags, with $X_i$ being the $i$th species observed in the sample. We call *abundance* the total number of species observed, $n$, and *richness* the number distinct species observed in the sample, $K$. Furthermore, let $n_1, \ldots, n_K$ the frequencies with which each species appears in the sample. The three *sample-based* methods offer a way to quickly summaries the feature of the samples based on these simple quantities. 
+From a mathematical perspective, let $X_1, \ldots, X_n$ be a collection of "species" tags, with $X_i$ being the $i$th species observed in the sample. We call *abundance* the total number of species observed, $n$, and *richness* the number distinct species observed in the sample, $K$. Furthermore, let $n_1, \ldots, n_K$ the frequencies with which each species appears in the sample. The three *sample-based* methods offer a way to quickly summarize vector of `frequencies`. We describe them in details one by one.
 
 ## The sample `coverage` 
 The **sample coverage** is the sum of the proportions of species that have been observed in the sample. Is is defined as 
@@ -60,45 +60,49 @@ $$
 with $m_1$ being the number of species observed only once. This estimator can be called in `R` with the function `coverage` as follows.
 
 ```{r}
+# Touring estimator of the sample coverage
 frequencies <- as.numeric(Lepidoptera)
 coverage(frequencies)
 ```
-A first analysis then tells that roughly 99.75% of the species in the population from which `Lepidoptera` was drawn have been discovered. 
+This tells that roughly 99.75% of the species in the population from which `Lepidoptera` was drawn have been discovered. 
 
 ## The `Gini` heterogeneity index
-The **Gini heterogeneity index** is a measure to quantify the amount of **biodiverity** present in the sample. In probabilistic terms, Gini index is the *probability that two species are different when taken at random from the population*:
+The **Gini heterogeneity index** is a measure to quantify the amount of **biodiverity** present in the sample. In probabilistic terms, the Gini index is the *probability that two species are different when taken at random from the population*:
 
 $$
-G = 1- \sum_{h = 1}^H f_h^2
+G = 1- \sum_{h = 1}^H f_h^2.
 $$
 An estimator for $G$ is 
 $$\hat{G} = 1 - \frac{1}{n^2}\sum_{j = 1}^K n_j^2,$$
 and can be obtained by running the `Gini` command:
 ```{r}
+# Sample-based Gini index
 Gini(frequencies)
 ```
 In other words, the probability that two species are equal when drawn at random from the population is 0.975. This result is in line with what found with the `coverage` method. 
 
 ## The `rarefaction` method
-While often ecologists deal with species frequencies, sometimes the species tags  $X_1, \ldots, X_n$, are observed sequentially. This allows to construct an **accumulation curve**, which plots the number of distinct species observed, $K_n$, as a function of the abundance, $n$. However, in the cases in which the data are not sequential, it is necessary to construct the so-called  **rarefaction curve**, ie. the *average accumulation curve*. This quantity is derived from a combinatorial argument and it is equal to
+While often ecologists deal with species frequencies, sometimes the species tags  $X_1, \ldots, X_n$, are observed sequentially. This allows to construct an **accumulation curve**, which plots the number of distinct species observed, $K_n$, as a function of the abundance, $n$. However, in the cases in which the data are not sequential, one can cope for the ordering issue by constructing the so-called  **rarefaction curve**, ie. the *average accumulation curve*. This quantity is derived from a combinatorial argument and it is equal to
 $$
-\bar{K}_i = K - \binom{n}{i}^{-1} \sum_{j = 1}^K \binom{n - n_j}{i}.
+\bar{K}_i = K - \binom{n}{i}^{-1} \sum_{j = 1}^K \binom{n - n_j}{i},
 $$
-The `rarefaction` function computes precisely this quantity. Notice that the function can be computationally demanding for large $n$ and large $K$. Thus, a `verbose` option is available if one wants to monitor the process. 
+for $i = 1, \ldots, n$. To compute it, it is sufficient to call the function `rarefaction` on a vector of `frequencies`. Notice that the function can be computationally demanding for large $n$ and large $K$. Thus, a `verbose` option is available if one wants to monitor the process. 
 ```{r, cache = TRUE}
 # Compute and plot the sample-based rarefaction curve
 rar <- rarefaction(frequencies, verbose = TRUE)
 plot(rar, type = "l", xlab = "Sample size", ylab = "Rarefaction")
 ```
 
-**Note:** the `rarefaction` method performs the same task as the `rarefy` function in the `vegan` package.  In the next sections, we show how the same methods are also available for the object of the class `ssm` and `sdm`.
+**Note:** the `rarefaction` method performs the same task as the `rarefy` function in the `vegan` package.  
+
+While being relatively quick and easy to interpret, the sample-based quantities are not the product of a model. As such, there is no way to include uncertainty quantification in their estimates. In the next sections, however, we show how the methods `ssm` and `sdm` can solve for this issue.
 
 
 # Species Sampling models
 
 ## Sequential allocation scheme
 
-Species sampling models [@pitman_1996] are a class of **generative models** for species distributions which belong to the Bayesian nonprametric literature. The most common species sampling models are the Dirichlet process, `"DP"` [@Ferguson1973] and the Pitman-Yor process, `"PY"` [@Perman_1992]. For the purpose of this guide, we will limit our discussion on how species sampling model works to the basics. For an extensive overview on how they work, see @DeBlasi_2015.
+Species sampling models [@pitman_1996] are a class of **generative models** for species distributions which belong to the Bayesian nonprametric literature. The most common species sampling models are the Dirichlet process, `"DP"` [@Ferguson1973] and the Pitman-Yor process, `"PY"` [@Perman_1992]. For the purpose of this guide, we will only briefly discuss the basic properties of both models. For an extensive overview on how species sampling model work, see @DeBlasi_2015.
 
 Both the Dirichlet and the Pitman-Yor process generate a species distribution through a sequential prediction scheme. Let $X_{1}, \ldots, X_{n}$ be a sequence of individuals observed, $K_n$ the total number of distinct species observed and  $X_{1}^*, \ldots, X_{K_n}^*$  the distinct species labels. In other words, $X_{j}^*$ is the $j$th species label observed in among the first $n$ observations. Then, the species of $X_{n+1}$ is determined by the following prediction rules:
 
@@ -106,7 +110,7 @@ Both the Dirichlet and the Pitman-Yor process generate a species distribution th
 with $\alpha >0$;
 * In the **Pitman-Yor process**: $$X_{n+1} \mid X_1, \ldots, X_n \sim \frac{\alpha - \sigma K_{n}}{\alpha + n}(\text{"new species"}) + \sum_{j=1}^{K_n} \frac{n_j - \sigma}{\alpha + n}\delta_{X_j^*}$$ with $\alpha >-\sigma$ and $\sigma \in [0, 1)$.
 
-The parameters `alpha` and `sigma` govern the allocation scheme. In particular, it is easy to see that the Pitman-Yor process degenerates to the Dirichlet process when $\sigma = 0$. The interpretation of both equations is rather simple: the species observed at time $n+1$ can either be of a new type or of a previously observed one. In particular, the probability of observing an "old" species is increasing in the number of times that species has been observed in the past. The package `BNPvegan` contains a random sampler for both processes, which returns a vector od species frequencies. 
+The parameters $\alpha$ and $\sigma$ govern the allocation scheme. In particular, it is easy to see that the Pitman-Yor process degenerates to the Dirichlet process when $\sigma = 0$. The interpretation of both equations is rather simple: the species observed at time $n+1$ can either be of a new type or of a previously observed one. In particular, the probability of observing an "old" species is increasing in the number of times that species has been observed in the past. The package `BNPvegan` contains a random sampler for both processes, which returns a vector of species frequencies. 
 
 ```{r}
 set.seed(1)
@@ -122,11 +126,11 @@ In the following subsection, we show how to perform inference on the parameters 
 ## The `ssm` module
 In what follows, we describe the functioning of the `ssm` module by estimating a Pitman-Yor on the `Lepidoptera` dataset. All the functions are equivalent for the Dirichlet process. 
 
-The likelihood function of the Pitman-Yor process is given by the following quantity (known as exchangeable partition probability function).
+The likelihood function of the Pitman-Yor process is given by the following quantity (known as exchangeable partition probability function):
 $$
-\mathcal{L}(\alpha, \sigma \mid X_1, \ldots, X_n) = \frac{\prod_{j=1}^{K_n-1}(\alpha + j\sigma)}{(\alpha + 1)_{n-1}}\prod_{j=1}^{K_n}(1-\sigma)_{n_j - 1}
+\mathcal{L}(\alpha, \sigma \mid X_1, \ldots, X_n) = \frac{\prod_{j=1}^{K_n-1}(\alpha + j\sigma)}{(\alpha + 1)_{n-1}}\prod_{j=1}^{K_n}(1-\sigma)_{n_j - 1}.
 $$
-To estimate the parameters $\alpha$ and $\sigma$, the `ssm` function adopts an empirical Bayes procedure and performs a simple off-theshelf numerical optimization of $\mathcal{L}(\alpha, \sigma \mid X_1, \ldots, X_n)$ via `nlminb`. The commands are the following.
+To estimate $\alpha$ and $\sigma$, the `ssm` function adopts an empirical Bayes procedure and performs a simple off-theshelf numerical optimization of $\mathcal{L}(\alpha, \sigma \mid X_1, \ldots, X_n)$ via `nlminb`. The commands are the following.
 
 ```{r}
 # Estimate a Pitman-Yor model
@@ -150,20 +154,21 @@ Notice that in this particular case, $\sigma$ is estimated to be 0 (ie. the Pitm
 # Frequency-of-frequencies plot
 plot(fit, type = "freq")
 ```
-Such a plot can be obtained by looking at the model-based frequency-of-frequencies plot, which is available in closed form for the Pitman-Yor process [@Favaro_2013]. In particular, it is equal to
+Such a plot can be obtained by looking at the model-based frequency-of-frequencies, which are available in closed form for the Pitman-Yor process [@Favaro_2013]. In particular, for a given $\m = 1, \ldots, n$, the number of species appearing $m$ times is is equal to
 
 $$
-\mathbb{E}(M_m) = \frac{\alpha}{(\alpha)_n}\binom{n}{m}(1-\sigma)_{m-1}(\alpha + \sigma)_{n-m}
+\mathbb{E}(M_m) = \frac{\alpha}{(\alpha)_n}\binom{n}{m}(1-\sigma)_{m-1}(\alpha + \sigma)_{n-m}.
 $$
-for $\m = 1, \ldots, n$, and can be accessed with the function
+To obtain it, just run the function
 ```{r}
-expected_m_py(m = 1, n = sum(frequencies), alpha = coef(fit)[1], sigma =coef(fit)[2])
+# Frequency-of-frequencies estimate under Pitman-Yor model
+expected_m_py(m = 1:10, n = sum(frequencies), alpha = coef(fit)[1], sigma =coef(fit)[2])
 ```
 
 The `ssm` module offers an alternative to the sample-based estimators described in the previous section. In particular, it is endowed with a **model-based** `coverage`, `Gini` diversity and `rarefaction` function. Moreover, due to the sequential urn scheme characteristic, it also allows to **extrapolate** the rarefaction curve via the command `extrapolation`, ie. predict the additional number of distinct species if additional samples where observed. Let's see the one by one.
 
 ### Model-based `coverage`
-In a Pitman-Yor model, the distribution of the sample coverage is 
+In a Pitman-Yor model, the distribution of the posterior sample coverage is 
 $$C_n \mid X_1, \ldots, X_n \sim Beta(n-\sigma K_n, \alpha + \sigma K_n)$$
 and the posterior mean is 
 $$\mathbb{E}(C_n \mid X_1, \ldots, X_n) = \mathbb{P}(X_{n+1} = \text{old species} \mid X_1, \ldots, X_n) = \frac{n-\sigma K_n}{\alpha + n}$$
@@ -171,13 +176,12 @@ The advantage of this result is that it allows to obtain **uncertainty quantific
 ```{r, cache = TRUE}
 # Estimate for the mean coverage under a Pitman-Yor model
 coverage(fit)
-# Draw random samples from the posterior distribution of the coverage
+# Random samples from the posterior distribution of the coverage
 coverage_samples <- rcoverage(fit) 
 head(coverage_samples)
 # Plot the posterior distribution of the coverage
 plot(fit, type = "coverage")
 ```
-Notice that the `plot` method can be applied to an object of class `ssm`.  
 
 ### Posterior `Gini` index
 The Pitman-Yor process admits a closed for estimator for the Gini index. In particular, the **a priori** Bayesian estimate for the Gini index is 
@@ -193,11 +197,11 @@ Gini(fit)
 **Note**: There exists a way to simulate from the posterior distribution of the Gini index. Such a function will be implemented in future versions of the package.
 
 ### Model-based `rarefaction` and `extrapolation`. 
-Both the Dirichlet and the Pitman-Yor process assume that the observations $X_1, \ldots, X_n$ are exchangeable. In other words, the order in which they appear does not matter. Moreover, we can show that the rarefaction curve in the Pitman-Yor process is a Markov process such that $K_1 = 1$ and 
+Both the Dirichlet and the Pitman-Yor process assume that the observations $X_1, \ldots, X_n$ are **exchangeable**. In other words, the order in which they appear does not matter. Moreover, we can show that the rarefaction curve in the Pitman-Yor process is a Markov process such that $K_1 = 1$ and 
 $$K_{n+1} \mid K_n = K_{n-1} + D_n, \quad (D_n \mid K_n)\sim Bernoulli\Big(\frac{\alpha + \sigma K_n}{\alpha + n}\Big)$$
 Moreover, the associated Bayesian estimate for the rarefaction curve is
 $$\mathbb{E}(K_n) = \frac{\alpha}{\sigma}\Big\{ \frac{(\alpha + \sigma)_n}{(\alpha)_n} - 1\Big\}$$
-To obtain such a curve and plot ir. just run 
+The numerical values and the associated plot for the rarefaction curve are obtained as follows.
 ```{r}
 # Model-based rarefaction curve
 rar <- rarefaction(fit)
@@ -211,7 +215,7 @@ plot(fit, type = "rarefaction", verbose = FALSE, plot_sample = TRUE)
 ```
 
 
-An additional convenient feature of the Pitman-Yor process is the fact that the prediction of additional number of distinct species if further samples where observed  is also available in closed form. In particular, following @Favaro_2009, we have that 
+A convenient property of the Pitman-Yor process is the fact that the prediction of additional number of distinct species if $m$ new samples where observed is available in closed form. In particular, following @Favaro_2009, we have that 
 $$
 \mathbb{E}(K_m^{(n)} \mid K_n = k) = \Big(k + \frac{\alpha}{\sigma}\Big)\Big\{\frac{(\alpha + n + \sigma)_m}{(\alpha + n)_m} - 1\Big\}
 $$
@@ -254,8 +258,8 @@ $$
 
 The goal of a Species Discovery model is threefold:
 
-1. **Rarefy**: obtain an in-sample estimator for the number of in-sample discoveries $\mathbb{E}(K_n)$. This is called model-based rarefaction, as it estimates a functional form for the rarefaction curve.
-2. **Extrapolate**: predict the extected additional number of new species to be observed if more samples where obtained, $\mathbb{E}(K_{n+m} \mid K_n = k)$ and $m \geq 1$.
+1. **Rarefy**: obtain an in-sample estimator for the number of in-sample discoveries $\mathbb{E}(K_n)$. This is a model-based rarefaction, as it estimates a functional form for the rarefaction curve.
+2. **Extrapolate**: predict the expected additional number of new species to be observed if more samples where obtained, $\mathbb{E}(K_{n+m} \mid K_n = k)$ and $m \geq 1$.
 3. **Saturate**: Estimate the *sample richness* $\mathbb{E}(K_\infty\mid K_n = k)$ and the sample *saturation* $\mathbb{E}(S_n\mid K_n = k)$, with $S_n = K_n/K_\infty$.
 
 All three goals are obtain by directly modelling the discovery probabilities linked to $D_1, \ldots, D_n$. In particular, we let $D_n \stackrel{iid}{\sim} Bernoulli(\pi_n)$, with 
@@ -269,7 +273,7 @@ be the discovery probability and $\mathcal{S}(n;\theta)$ a survival function suc
 * $S(n; \theta) > S(n+1; \theta)$ - the discovery probabilities decrease over time,
 * $\lim_{n\to \infty}S(n;\theta) = 0$ - eventually, all species in the sample are discovered.
 
-Then, any functional form that supports the three assumptions can work as a Species discovery model. The package `BNPvegan` supports two type of kernel function: 
+Then, any functional form that supports the three assumptions can work as a species discovery model. The package `BNPvegan` supports two types of survival functions: 
 
 * The three-parameter log-logistic model, `LL3` (the *deault*):
 $$
@@ -281,7 +285,9 @@ with $\alpha >0$, $\sigma <1$ and $\phi \in (0,1)$. Notice that for $\phi = 1$ a
 $$
 \mathbb{P}(D_{n+1} = 1) = \phi^{n^\lambda}
 $$
-with $\phi \in (0,1)$, $\lambda > 0$. Under both model, the value for $K_\infty = \lim_{n\to \infty} K_n$ is **guaranteed to converge**. In other words, the species discovery model will always ensure a finite saturation. 
+with $\phi \in (0,1)$, $\lambda > 0$. 
+
+Under both model, the value for $K_\infty = \lim_{n\to \infty} K_n$ is **guaranteed to converge**. In other words, the species discovery model will always ensure a finite saturation. 
 
 ## The `sdm` module
 
@@ -293,7 +299,7 @@ where $\tilde{D}_i = \bar{K}_{i+1}- \bar{K}_i$ and $\bar{K}_i$ is derived from t
 
 1. Compute the  sample-based rarefaction curve $\hat{K}_i$ for $i = 1, \ldots, n$
 2. Compute the differences and $\tilde{D}_i = \hat{K}_{i+1}- \hat{K}_i$ with $\tilde{D}_i = 1$
-3. Obtain the empirical Bayes estimates for $\theta$ via constrained maximization of the likelihood.
+3. Obtain the empirical Bayes estimates for $\theta$ via constrained maximization of the likelihood $\mathcal{L}(\theta\mid \tilde{D}_1, \ldots, \tilde{D}_n)$.
 
 In the case of `model = "LL3`, the maximization of the likelihood can be obtained with a simple constrained logistic regression (package `glmnet`). This is makes the `sdm` function particularly efficient
 
@@ -329,15 +335,15 @@ coef(fit_sdm)
 logLik(fit_sdm)
 ```
 
-## `rarefaction` and `extrapolation`
-Once the model is estimated, it is very easy to plot both the in-sample rarefaction and to obtain the out of sample prediction. In particular, the convenient property of the `sdm` model ensure that the `rarefaction` and `extrapolation` estimators are easily derived. Indeed, we can prove that under such a formulation the number of distinct species $K_n$ is distributed as a Poisson-binomial distribution,
+## A `rarefaction` and an `extrapolation` estimator
+The main advantage of the `sdm` framework is that it is naturally endowed with a  `rarefaction` and an `extrapolation` estimator. Indeed, we can prove that the number of distinct species $K_n$ is distributed as a Poisson-binomial distribution,
 $$K_n \sim PB\{1,\mathcal{S}(1, \theta), \ldots,\mathcal{S}(n-1, \theta)\},$$
 with mean
 $$\mathbb{E}(K_n) = \sum_{i =1}^n \mathcal{S}(i-1, \theta).$$
 The above quantity can be obtained by using the `rarefaction` method.
 
 ```{r, cache = TRUE}
-# Extract the model-based rarefaction curve
+# Extract the model-based rarefaction curve for sdm
 rar_sdm <- rarefaction(fit_sdm)
 head(rar_sdm)
 tail(rar_sdm)
@@ -352,12 +358,12 @@ $$
 
 Again, the method works in the same way as in the `ssm` module
 ```{r, cache = TRUE}
-# Extrapolate
+# Extrapolate in sdm
 extr_sdm <- extrapolation(fit_sdm, m = 1:1000)
 head(extr_sdm)
 tail(extr_sdm)
 
-# Plot
+# Plot in sdm
 plot(fit_sdm, type = "extrapolation", m = 10000)
 ```
 
