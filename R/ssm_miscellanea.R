@@ -12,19 +12,19 @@ expected_cl_py <- function(n, sigma, alpha) {
 expected_cl_py <- Vectorize(expected_cl_py, vectorize.args = "n")
 
 
-expected_m_dp <- function(m, n, alpha) {
-  out <- log(alpha) + lchoose(n, m) + lgamma(m) + lgamma(alpha + n - m) - lgamma(alpha + n)
+expected_m_dp <- function(r, n, alpha) {
+  out <- log(alpha) + lchoose(n, r) + lgamma(r) + lgamma(alpha + n - r) - lgamma(alpha + n)
   exp(out)
 }
-expected_m_dp <- Vectorize(expected_m_dp, vectorize.args = "m")
+expected_m_dp <- Vectorize(expected_m_dp, vectorize.args = "r")
 
-expected_m_py <- function(m, n, sigma, alpha) {
-  out <- log(alpha) + lchoose(n, m) + lgamma(m - sigma) - lgamma(1 - sigma) - lgamma(alpha + n) + lgamma(alpha) + lgamma(alpha + sigma + n - m) - lgamma(alpha + sigma)
+expected_m_py <- function(r, n, sigma, alpha) {
+  out <- log(alpha) + lchoose(n, r) + lgamma(r - sigma) - lgamma(1 - sigma) - lgamma(alpha + n) + lgamma(alpha) + lgamma(alpha + sigma + n - r) - lgamma(alpha + sigma)
   exp(out)
 }
 
 #' @export
-expected_m_py <- Vectorize(expected_m_py, vectorize.args = "m")
+expected_m_py <- Vectorize(expected_m_py, vectorize.args = "r")
 
 
 extrapolate_cl_py <- function(m, K, n, sigma, alpha) {

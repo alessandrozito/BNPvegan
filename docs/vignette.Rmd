@@ -15,6 +15,11 @@ library(tidyverse)
 library(BNPvegan)
 ```
 
+
+# Introduction  
+
+## Installation
+
 ```{r, eval = FALSE}
 # If the devtools R package is not already installed
 # install.packages("devtools")
@@ -22,7 +27,6 @@ devtools::install_github("alessandrozito/BNPvegan")
 library(BNPvegan)
 ```
 
-# Introduction  
 
 ## Package description
 
@@ -49,9 +53,10 @@ We hereby refer to **sample-based quantities** as those indicators which are not
 From a mathematical perspective, let $X_1, \ldots, X_n$ be a collection of "species" tags, with $X_i$ being the $i$th species observed in the sample. We call *abundance* the total number of species observed, $n$, and *richness* the number distinct species observed in the sample, $K$. Furthermore, let $n_1, \ldots, n_K$ the frequencies with which each species appears in the sample. The three *sample-based* methods offer a way to quickly summarize vector of `frequencies`. We describe them in details one by one.
 
 ## The sample `coverage` 
+
 The **sample coverage** is the sum of the proportions of species that have been observed in the sample. Is is defined as 
 $$
-C_n = \sum_{h \in \mathcal{H}} f_h, \quad \mathcal{H} = \{\text{Inexes of the species observed among the } n \text{ data}\}
+C_n = \sum_{h \in \mathcal{H}} f_h, \quad \mathcal{H} = \{\text{"Indexes of the species observed among the } n \text{ data"}\}
 $$
 where $\sum_{h=1}^H f_h = 1$ are the *species proportions* and $H$ is the total number of species in the population. Clearly, $K \leq H$, ie. the number of species discovered is less than the true number. The `BNPvegan` package offers a very simple first "estimator" for $C_n$, the old-timely Turing estimator [@Good_1953]:
 $$
@@ -139,6 +144,7 @@ frequencies <- Lepidoptera
 fit <- ssm(frequencies, model = "PY")  # set model = "DP" for the Dirichlet process
 summary(fit)  # Summarize the output
 ```
+
 The `summary` function applied to an object of class `ssm` returns the following quantities:
 
 1. `Abundance`: the number of observation in the sample. 
@@ -155,25 +161,29 @@ Notice that in this particular case, $\sigma$ is estimated to be 0 (ie. the Pitm
 # Frequency-of-frequencies plot
 plot(fit, type = "freq")
 ```
-Such a plot can be obtained by looking at the model-based frequency-of-frequencies, which are available in closed form for the Pitman-Yor process [@Favaro_2013]. In particular, for a given $\m = 1, \ldots, n$, the number of species appearing $m$ times is is equal to
+
+Such a plot can be obtained by looking at the model-based frequency-of-frequencies, which are available in closed form for the Pitman-Yor process [@Favaro_2013]. In particular, for a given $r = 1, \ldots, n$, the number of species appearing $m$ times is is equal to
 
 $$
-\mathbb{E}(M_m) = \frac{\alpha}{(\alpha)_n}\binom{n}{m}(1-\sigma)_{m-1}(\alpha + \sigma)_{n-m}.
+\mathbb{E}(M_r) = \frac{\alpha}{(\alpha)_n}\binom{n}{r}(1-\sigma)_{r-1}(\alpha + \sigma)_{n-r}.
 $$
 To obtain it, just run the function
+
 ```{r}
 # Frequency-of-frequencies estimate under Pitman-Yor model
-expected_m_py(m = 1:10, n = sum(frequencies), alpha = coef(fit)[1], sigma =coef(fit)[2])
+expected_m_py(r = 1:10, n = sum(frequencies), alpha = coef(fit)[1], sigma =coef(fit)[2])
 ```
 
 The `ssm` module offers an alternative to the sample-based estimators described in the previous section. In particular, it is endowed with a **model-based** `coverage`, `Gini` diversity and `rarefaction` function. Moreover, due to the sequential urn scheme characteristic, it also allows to **extrapolate** the rarefaction curve via the command `extrapolation`, ie. predict the additional number of distinct species if additional samples where observed. Let's see the one by one.
 
 ### Model-based `coverage`
+
 In a Pitman-Yor model, the distribution of the posterior sample coverage is 
 $$C_n \mid X_1, \ldots, X_n \sim Beta(n-\sigma K_n, \alpha + \sigma K_n)$$
 and the posterior mean is 
 $$\mathbb{E}(C_n \mid X_1, \ldots, X_n) = \mathbb{P}(X_{n+1} = \text{old species} \mid X_1, \ldots, X_n) = \frac{n-\sigma K_n}{\alpha + n}$$
 The advantage of this result is that it allows to obtain **uncertainty quantification on the coverage**.  To see this, just run the following commands:
+
 ```{r, cache = TRUE}
 # Estimate for the mean coverage under a Pitman-Yor model
 coverage(fit)
@@ -185,24 +195,32 @@ plot(fit, type = "coverage")
 ```
 
 ### Posterior `Gini` index
+
 The Pitman-Yor process admits a closed for estimator for the Gini index. In particular, the **a priori** Bayesian estimate for the Gini index is 
 $$\mathbb{E}(G) = \frac{\alpha + \sigma}{\alpha + 1},$$ while the **a posteriori** estimate is
 $$
 \mathbb{E}(G\mid X_1\ldots, X_n)  = 1- \frac{1}{(\alpha + n)_2}\Big\{(1 -\sigma)(\alpha + K_n\sigma) + \sum_{j=1}^K(n_j - \sigma)_2\Big\} 
 $$
 where $(a)_n = \Gamma(a + n)/\Gamma(a)$ is the Pochhammer symbol. To obtain the estimate for the posteriro Gini index, run the `Gini` function.
+
 ```{r}
 # Model-based Gini inidex
 Gini(fit)
 ```
+
 **Note**: There exists a way to simulate from the posterior distribution of the Gini index. Such a function will be implemented in future versions of the package.
 
 ### Model-based `rarefaction` and `extrapolation`. 
+
 Both the Dirichlet and the Pitman-Yor process assume that the observations $X_1, \ldots, X_n$ are **exchangeable**. In other words, the order in which they appear does not matter. Moreover, we can show that the rarefaction curve in the Pitman-Yor process is a Markov process such that $K_1 = 1$ and 
-$$K_{n+1} \mid K_n = K_{n-1} + D_n, \quad (D_n \mid K_n)\sim Bernoulli\Big(\frac{\alpha + \sigma K_n}{\alpha + n}\Big)$$
+$$
+K_{n+1} \mid K_n = K_{n-1} + D_n, \quad (D_n \mid K_n)\sim \text{Bern}\Big(\frac{\alpha + \sigma K_n}{\alpha + n}\Big)
+$$
+
 Moreover, the associated Bayesian estimate for the rarefaction curve is
 $$\mathbb{E}(K_n) = \frac{\alpha}{\sigma}\Big\{ \frac{(\alpha + \sigma)_n}{(\alpha)_n} - 1\Big\}$$
 The numerical values and the associated plot for the rarefaction curve are obtained as follows.
+
 ```{r}
 # Model-based rarefaction curve
 rar <- rarefaction(fit)
@@ -221,6 +239,7 @@ $$
 \mathbb{E}(K_m^{(n)} \mid K_n = k) = \Big(k + \frac{\alpha}{\sigma}\Big)\Big\{\frac{(\alpha + n + \sigma)_m}{(\alpha + n)_m} - 1\Big\}
 $$
 where $K_m^{(n)}$ is the number of new species observed under additional $m$ samples after $n$ individuals have been observed. The `extrapolation` function then computes the quantity $k + \mathbb{E}(K_m^{(n)} \mid K_n = k)$ for any given value of the parameter $m$. In particular:
+
 ```{r}
 # Obtain the extrapolation estimates for m additional samples
 extr <- extrapolation(fit, m = c(1:1000))
@@ -293,9 +312,13 @@ Under both model, the value for $K_\infty = \lim_{n\to \infty} K_n$ is **guarant
 ## The `sdm` module
 
 The `sdm` module runs the model described above on the sample-based rarefaction curve of the specified vector of `frequencies`. The available choice for `model` are `model = "LL3"` (default) and `model = "Weibull"`. Both models are estimated via empirical Bayes by maximizing the log-likelihood associated to the collection of independent Bernoulli random variables. This quantity is equal to 
-$$\mathcal{L}(\theta\mid D_1, \ldots, D_n) = \prod_{i = 2}^n  \mathcal{S}(i-1;\theta)^{D_n}(1-\mathcal{S}(i-1;\theta))^{1-D_n}$$
+$$
+\mathcal{L}(\theta\mid D_1, \ldots, D_n) = \prod_{i = 2}^n  \mathcal{S}(i-1;\theta)^{D_n}(1-\mathcal{S}(i-1;\theta))^{1-D_n}
+$$
 where the degenerate case $i= 1$ is trivially excluded. As already mentioned above, it is important to notice that often the sequence of species discovery is not available. In the sample based-methods, this problem is solved by computing the **rarefaction** curve from the vector of given `frequencies`, while in the `ssm` module the **exchangeability** assumption implies that the ordering is irrelevant. In the `sdm` case however, the order of the discoveries does matter. To solve this issue, the module maximizes the following likelihood:
-$$\mathcal{L}(\theta\mid \tilde{D}_1, \ldots, \tilde{D}_n) = \prod_{i = 2}^n  \mathcal{S}(i-1;\theta)^{\tilde{D}_n}(1-\mathcal{S}(i-1;\theta))^{1-\tilde{D}_n}$$
+$$
+\mathcal{L}(\theta\mid \tilde{D}_1, \ldots, \tilde{D}_n) = \prod_{i = 2}^n  \mathcal{S}(i-1;\theta)^{\tilde{D}_n}(1-\mathcal{S}(i-1;\theta))^{1-\tilde{D}_n}
+$$
 where $\tilde{D}_i = \bar{K}_{i+1}- \bar{K}_i$ and $\bar{K}_i$ is derived from the average sample-based rarefaction curve. Thus, `sdm` works in three steps 
 
 1. Compute the  sample-based rarefaction curve $\hat{K}_i$ for $i = 1, \ldots, n$
@@ -328,6 +351,7 @@ The quantities reported in the summary are:
 7. `Parameters` the empirical Bayes estimates for the parameters of the model.
 
 The parameters are easily extracted with the following commands
+
 ```{r}
 # Parameters
 coef(fit_sdm)
@@ -353,6 +377,7 @@ plot(fit_sdm, type ="rarefaction")
 ```
 
 As for extrapolation, it can be easily proved that for any $m\geq 1$, 
+
 $$
 \mathbb{E}(K_{n+m}\mid K_n = k) = k + \sum_{j = 0}^{n-m-1} \mathcal{S}(j, \theta).
 $$

@@ -144,8 +144,8 @@ plot.DP <- function(x, type = "rarefaction", plot_sample = TRUE, m = NULL, verbo
       scale_y_log10() +
       scale_x_log10() +
       theme_bw() +
-      xlab("m") +
-      ylab(expression(M[m]))+
+      xlab("r") +
+      ylab(expression(M[r]))+
       facet_wrap(~"Frequency-of-frequencies plot")
     return(p)
   } else if (type == "coverage") {
@@ -266,8 +266,8 @@ plot.PY <- function(x, type = "rarefaction", plot_sample = TRUE, m = NULL, verbo
       scale_y_log10() +
       scale_x_log10() +
       theme_bw() +
-      xlab("m") +
-      ylab(expression(M[m]))+
+      xlab("r") +
+      ylab(expression(M[r]))+
       facet_wrap(~"Frequency-of-frequencies plot")
     return(p)
   } else if (type == "coverage") {
