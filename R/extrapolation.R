@@ -30,7 +30,6 @@ extrapolation.sdm <- function(object, m, ...) {
 
 
 #' @export
-#'
 extrapolation.DP <- function(object, m, ...) {
   alpha <- object$param[1]
   freq <- object$frequencies
@@ -40,7 +39,6 @@ extrapolation.DP <- function(object, m, ...) {
 }
 
 #' @export
-#'
 extrapolation.PY <- function(object, m, ...) {
   alpha <- object$param[1]
   sigma <- object$param[2]
@@ -49,5 +47,3 @@ extrapolation.PY <- function(object, m, ...) {
   K <- length(freq)
   extrapolate_cl_py(m = m, n = n, K = K, sigma = sigma, alpha = alpha)
 }
-
-
