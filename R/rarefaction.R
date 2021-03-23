@@ -5,16 +5,19 @@
 ################################################
 
 #' @export
-rarefaction <- function(x, ...) {
-  UseMethod("rarefaction", x)
+rarefaction <- function(object, ...) {
+  UseMethod("rarefaction", object)
 }
 
 #' Sample-based rarefaction curve for a vector of species counts
+#' @param object  An vector of frequencies
+#' @param verbose If TRUE, the estimation process will be printed
+#' @param ... Additional parameters
 #' @export
-rarefaction.numeric <- function(frequencies, verbose = TRUE, ...){
+rarefaction.numeric <- function(object, verbose = TRUE, ...){
   # Filter out the 0 counts and make sure that we have integers
-  frequencies <- as.integer(frequencies)
-  freq <- frequencies[frequencies>0]
+  object <- as.integer(object)
+  freq <- object[object>0]
 
   # Call the C function
   c(rarefy_C(freq = freq, n =  sum(freq), K = length(freq), verbose = verbose))
@@ -23,6 +26,7 @@ rarefaction.numeric <- function(frequencies, verbose = TRUE, ...){
 #' Model-based rarefaction curve for a Sequential Discovery Model
 #' @param object  An object of class \code{\link[sdm]{sdm}}.
 #' @param ... Additional parameters
+#'
 #' @export
 rarefaction.sdm <- function(object, ...){
   predict(object)
@@ -30,6 +34,7 @@ rarefaction.sdm <- function(object, ...){
 
 #' Model-based rarefaction curve for a Dirichlet process model
 #' @param object An object of class \code{\link[sdm]{ssm}, \link[sdm]{DP}}
+#' @param ... Additional parameters
 #' @export
 rarefaction.DP <- function(object, ...) {
   n <- sum(object$frequencies)
@@ -38,6 +43,7 @@ rarefaction.DP <- function(object, ...) {
 
 #' Model-based rarefaction curve for a Dirichlet process model
 #' @param object An object of class \code{\link[sdm]{ssm}, \link[sdm]{PY}}
+#' @param ... Additional parameters
 #' @export
 rarefaction.PY <- function(object, ...) {
   n <- sum(object$frequencies)

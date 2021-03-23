@@ -1,11 +1,11 @@
 #' @export
-Gini <- function(x, ...) {
-  UseMethod("Gini", x)
+Gini <- function(object, ...) {
+  UseMethod("Gini", object)
 }
 
 #' @export
 Gini.numeric <- function(object, ...) {
-  freq_rel <- frequencies / sum(frequencies)
+  freq_rel <- object / sum(object)
   out <- 1 - sum(freq_rel^2)
   out
 }

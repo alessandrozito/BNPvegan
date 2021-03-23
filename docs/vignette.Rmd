@@ -26,7 +26,7 @@ library(BNPvegan)
 
 ## Package description
 
-BNPvegan is an R package that implements some fundamental tools of the Bayesian nonparametric literature on Species Sampling models. The package has been designed for ecological applications. In this spirit, we chose to name it to mimic and extend the existing `vegan` package [@vegan]. In this tutorial we provide both a mathematical overview of the main methods available in `BNPvegan`, and we describe in details how to use it and how to interpret its results.
+[`BNPvegan`](https://github.com/alessandrozito/BNPvegan) is an R package that implements some fundamental tools of the Bayesian nonparametric literature on Species Sampling models. The code is available in this [github repository](https://github.com/alessandrozito/BNPvegan) of the `BNPvegan` package. The package has been designed for ecological applications. In this spirit, we chose to name it to mimic and extend the existing `vegan` package [@vegan]. In this tutorial we provide both a mathematical overview of the main methods available in `BNPvegan`, and we describe in details how to use it and how to interpret its results.
 
 The package is constructed on two building blocks, which are highly interrelated:
 
@@ -60,14 +60,14 @@ $$
 with $m_1$ being the number of species observed only once. This estimator can be called in `R` with the function `coverage` as follows.
 
 ```{r}
-# Touring estimator of the sample coverage
+# Turing estimator of the sample coverage
 frequencies <- as.numeric(Lepidoptera)
 coverage(frequencies)
 ```
 This tells that roughly 99.75% of the species in the population from which `Lepidoptera` was drawn have been discovered. 
 
 ## The `Gini` heterogeneity index
-The **Gini heterogeneity index** is a measure to quantify the amount of **biodiverity** present in the sample. In probabilistic terms, the Gini index is the *probability that two species are different when taken at random from the population*:
+The **Gini heterogeneity index** is a measure to quantify the amount of **biodiversity** present in the sample. In probabilistic terms, the Gini index is the *probability that two species are different when taken at random from the population*:
 
 $$
 G = 1- \sum_{h = 1}^H f_h^2.
@@ -82,11 +82,13 @@ Gini(frequencies)
 In other words, the probability that two species are equal when drawn at random from the population is 0.975. This result is in line with what found with the `coverage` method. 
 
 ## The `rarefaction` method
+
 While often ecologists deal with species frequencies, sometimes the species tags  $X_1, \ldots, X_n$, are observed sequentially. This allows to construct an **accumulation curve**, which plots the number of distinct species observed, $K_n$, as a function of the abundance, $n$. However, in the cases in which the data are not sequential, one can cope for the ordering issue by constructing the so-called  **rarefaction curve**, ie. the *average accumulation curve*. This quantity is derived from a combinatorial argument and it is equal to
 $$
 \bar{K}_i = K - \binom{n}{i}^{-1} \sum_{j = 1}^K \binom{n - n_j}{i},
 $$
 for $i = 1, \ldots, n$. To compute it, it is sufficient to call the function `rarefaction` on a vector of `frequencies`. Notice that the function can be computationally demanding for large $n$ and large $K$. Thus, a `verbose` option is available if one wants to monitor the process. 
+
 ```{r, cache = TRUE}
 # Compute and plot the sample-based rarefaction curve
 rar <- rarefaction(frequencies, verbose = TRUE)
@@ -96,7 +98,6 @@ plot(rar, type = "l", xlab = "Sample size", ylab = "Rarefaction")
 **Note:** the `rarefaction` method performs the same task as the `rarefy` function in the `vegan` package.  
 
 While being relatively quick and easy to interpret, the sample-based quantities are not the product of a model. As such, there is no way to include uncertainty quantification in their estimates. In the next sections, however, we show how the methods `ssm` and `sdm` can solve for this issue.
-
 
 # Species Sampling models
 
@@ -135,8 +136,8 @@ To estimate $\alpha$ and $\sigma$, the `ssm` function adopts an empirical Bayes 
 ```{r}
 # Estimate a Pitman-Yor model
 frequencies <- Lepidoptera
-fit <- ssm(frequencies, model = "PY")  # set model = "DP" for the Dirichlet process.
-summary(fit)  # Summarize the output.
+fit <- ssm(frequencies, model = "PY")  # set model = "DP" for the Dirichlet process
+summary(fit)  # Summarize the output
 ```
 The `summary` function applied to an object of class `ssm` returns the following quantities:
 

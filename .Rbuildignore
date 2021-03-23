@@ -1,4 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 README.md
+additional_files
+docs
 #EXTRA #matching is case-insensitive: this drops R/extrapolation from the package

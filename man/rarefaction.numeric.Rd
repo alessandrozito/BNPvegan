@@ -4,7 +4,14 @@
 \alias{rarefaction.numeric}
 \title{Sample-based rarefaction curve for a vector of species counts}
 \usage{
-\method{rarefaction}{numeric}(frequencies, verbose = TRUE, ...)
+\method{rarefaction}{numeric}(object, verbose = TRUE, ...)
+}
+\arguments{
+\item{object}{An vector of frequencies}
+
+\item{verbose}{If TRUE, the estimation process will be printed}
+
+\item{...}{Additional parameters}
 }
 \description{
 Sample-based rarefaction curve for a vector of species counts

@@ -5,7 +5,7 @@
 \title{Plot for the DP model}
 \usage{
 \method{plot}{DP}(
-  object,
+  x,
   type = "rarefaction",
   plot_sample = TRUE,
   m = NULL,
@@ -15,7 +15,7 @@
 )
 }
 \arguments{
-\item{object}{An object of class \code{\link[ssm]{ssm}}.}
+\item{x}{An object of class \code{\link[ssm]{ssm}}.}
 
 \item{type}{Type of plot. Available options are:  \code{"rarefaction"},\code{"extrapolation"}, \code{"freq"} and \code{"coverage"}}
 

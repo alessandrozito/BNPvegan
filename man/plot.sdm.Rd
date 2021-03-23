@@ -4,10 +4,10 @@
 \alias{plot.sdm}
 \title{Plot the average rarefaction curve and the fitted one (in red)}
 \usage{
-\method{plot}{sdm}(object, n_points = 100, type = "rarefaction", m = NULL, ...)
+\method{plot}{sdm}(x, n_points = 100, type = "rarefaction", m = NULL, ...)
 }
 \arguments{
-\item{object}{An object of class \code{\link[sdm]{sdm}}.}
+\item{x}{An object of class \code{\link[sdm]{sdm}}.}
 
 \item{n_points}{Number of points to plot in the accumulation curve}
 

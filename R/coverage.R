@@ -1,12 +1,12 @@
 #' @export
-coverage <- function(x, ...) {
-  UseMethod("coverage", x)
+coverage <- function(object, ...) {
+  UseMethod("coverage", object)
 }
 
 #' @export
-coverage.numeric <- function(frequencies) {
-  n <- sum(frequencies)
-  m1 <- sum(frequencies == 1)
+coverage.numeric <- function(object, ...) {
+  n <- sum(object)
+  m1 <- sum(object == 1)
   1 - m1 / n
 }
 
@@ -33,8 +33,8 @@ coverage.PY <- function(object, ...) {
 
 
 #' @export
-rcoverage <- function(x, ...) {
-  UseMethod("rcoverage", x)
+rcoverage <- function(object, ...) {
+  UseMethod("rcoverage", object)
 }
 
 #' @export

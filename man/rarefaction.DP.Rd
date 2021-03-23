@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{object}{An object of class \code{\link[sdm]{ssm}, \link[sdm]{DP}}}
+
+\item{...}{Additional parameters}
 }
 \description{
 Model-based rarefaction curve for a Dirichlet process model

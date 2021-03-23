@@ -11,3 +11,9 @@ EXTRA/Raw_data/protu2name.txt
 EXTRA/Raw_data/samplenames.txt
 
 
+additional_files/Raw_data/samplenames.txt
+additional_files/.DS_Store
+additional_files/Fungal_analysis.R
+additional_files/Raw_data/dnadata.R
+additional_files/Raw_data/import_data.R
+additional_files/Raw_data/protu2name.txt

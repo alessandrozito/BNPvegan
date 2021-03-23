@@ -140,7 +140,7 @@ predict.sdm <- function(object, newdata = NULL, ...) {
 
 #' Plot the average rarefaction curve and the fitted one (in red)
 #'
-#' @param object An object of class \code{\link[sdm]{sdm}}.
+#' @param x An object of class \code{\link[sdm]{sdm}}.
 #' @param n_points Number of points to plot in the accumulation curve
 #' @param type Type of curve to plot. Available options are "rarefaction" and "extrapolation".
 #'             In the second case, one needs to provide the additional number of samples m up to which extrapolate.
@@ -148,11 +148,11 @@ predict.sdm <- function(object, newdata = NULL, ...) {
 #' @param ... additional parameters
 #'
 #' @export
-plot.sdm <- function(object, n_points = 100, type = "rarefaction", m = NULL, ...) {
+plot.sdm <- function(x, n_points = 100, type = "rarefaction", m = NULL, ...) {
   # Step 1 - Sample-based rarefaction curve
-  accum <- cumsum(object$discoveries)
+  accum <- cumsum(x$discoveries)
   # Rarefaction curve
-  rar <- rarefaction(object)
+  rar <- rarefaction(x)
 
   if (type == "rarefaction") {
 
@@ -179,7 +179,7 @@ plot.sdm <- function(object, n_points = 100, type = "rarefaction", m = NULL, ...
       m <- length(accum)
     }
 
-    ext <- extrapolation(object, m = 1:m)
+    ext <- extrapolation(x, m = 1:m)
     cutoff <- length(rar)
 
     df <- data.frame("n" = c(1:(length(rar) + length(ext))), "curve" = c(rar, ext), "accum" = c(accum, rep(NA, length(ext))))
