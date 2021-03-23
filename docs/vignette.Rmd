@@ -162,7 +162,7 @@ Notice that in this particular case, $\sigma$ is estimated to be 0 (ie. the Pitm
 plot(fit, type = "freq")
 ```
 
-Such a plot can be obtained by looking at the model-based frequency-of-frequencies, which are available in closed form for the Pitman-Yor process [@Favaro_2013]. In particular, for a given $r = 1, \ldots, n$, the number of species appearing $m$ times is is equal to
+Such a plot can be obtained by looking at the model-based frequency-of-frequencies, which are available in closed form for the Pitman-Yor process [@Favaro_2013]. In particular, for a given $r = 1, \ldots, n$, the number of species appearing $r$ times is is equal to
 
 $$
 \mathbb{E}(M_r) = \frac{\alpha}{(\alpha)_n}\binom{n}{r}(1-\sigma)_{r-1}(\alpha + \sigma)_{n-r}.
@@ -213,6 +213,7 @@ Gini(fit)
 ### Model-based `rarefaction` and `extrapolation`. 
 
 Both the Dirichlet and the Pitman-Yor process assume that the observations $X_1, \ldots, X_n$ are **exchangeable**. In other words, the order in which they appear does not matter. Moreover, we can show that the rarefaction curve in the Pitman-Yor process is a Markov process such that $K_1 = 1$ and 
+
 $$
 K_{n+1} \mid K_n = K_{n-1} + D_n, \quad (D_n \mid K_n)\sim \text{Bern}\Big(\frac{\alpha + \sigma K_n}{\alpha + n}\Big)
 $$
