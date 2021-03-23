@@ -114,7 +114,11 @@ Both the Dirichlet and the Pitman-Yor process generate a species distribution th
 
 * In the **Dirichlet process**: $$X_{n+1} \mid X_1, \ldots, X_n \sim \frac{\alpha}{\alpha + n}(\text{"new species"}) + \sum_{j=1}^{K_n} \frac{n_j}{\alpha + n}\delta_{X_j^*}$$
 with $\alpha >0$;
-* In the **Pitman-Yor process**: $$X_{n+1} \mid X_1, \ldots, X_n \sim \frac{\alpha - \sigma K_{n}}{\alpha + n}(\text{"new species"}) + \sum_{j=1}^{K_n} \frac{n_j - \sigma}{\alpha + n}\delta_{X_j^*}$$ with $\alpha >-\sigma$ and $\sigma \in [0, 1)$.
+* In the **Pitman-Yor process**: 
+$$
+X_{n+1} \mid X_1, \ldots, X_n \sim \frac{\alpha + \sigma K_{n}}{\alpha + n}(\text{"new species"}) + \sum_{j=1}^{K_n} \frac{n_j - \sigma}{\alpha + n}\delta_{X_j^*}
+$$ 
+with $\alpha >-\sigma$ and $\sigma \in [0, 1)$.
 
 The parameters $\alpha$ and $\sigma$ govern the allocation scheme. In particular, it is easy to see that the Pitman-Yor process degenerates to the Dirichlet process when $\sigma = 0$. The interpretation of both equations is rather simple: the species observed at time $n+1$ can either be of a new type or of a previously observed one. In particular, the probability of observing an "old" species is increasing in the number of times that species has been observed in the past. The package `BNPvegan` contains a random sampler for both processes, which returns a vector of species frequencies. 
 
