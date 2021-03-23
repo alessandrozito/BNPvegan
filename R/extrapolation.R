@@ -4,8 +4,8 @@
 ################################################
 
 #' @export
-extrapolation <- function(object, ...) {
-  UseMethod("extrapolation")
+extrapolation <- function(x, ...) {
+  UseMethod("extrapolation", x)
 }
 
 #' Extrapolation function for a species discovery model.
