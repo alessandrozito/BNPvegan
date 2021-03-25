@@ -15,7 +15,7 @@
 )
 }
 \arguments{
-\item{x}{An object of class \code{\link[ssm]{ssm}}.}
+\item{x}{An object of class \code{ssm}.}
 
 \item{type}{Type of plot. Available options are:  \code{"rarefaction"},\code{"extrapolation"}, \code{"freq"} and \code{"coverage"}}
 

@@ -1,10 +1,10 @@
 #' Saturation for a sequential discovery model
 #'
-#' @param object an object of class \code{\link[sdm]{sdm}}.
+#' @param object an object of class \code{sdm}.
 #' @param method method to obtain the saturation. Available options are \code{"approximate"} and \code{"montecarlo"}
 #' @param n_samples number of Monte Carlo samples from the posterior distribution of the saturation. Valid only for \code{method = "montecarlo"}
 #' @param tolerance tolerance parameter to determine the truncation point for simulating K_inf. Valid only for \code{method = "montecarlo"}
-#' @param ... Additional parameters
+#' @param ... Additional parameters.
 #'
 #' @export
 saturation <- function(object, method = "approximate", n_samples = 100, tolerance = 1e-7, ...){

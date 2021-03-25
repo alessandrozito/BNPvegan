@@ -6,6 +6,11 @@
 \usage{
 \method{coverage}{sdm}(object, ...)
 }
+\arguments{
+\item{object}{An object of class \code{sdm}}
+
+\item{...}{Additional parameters}
+}
 \description{
 Coverage estimator for a sequential discovery model
 }

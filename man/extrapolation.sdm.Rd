@@ -7,7 +7,7 @@
 \method{extrapolation}{sdm}(object, m, ...)
 }
 \arguments{
-\item{object}{An object of class \code{\link[sdm]{sdm}}.}
+\item{object}{An object of class \code{sdm}.}
 
 \item{m}{Additional number of samples to predict.}
 

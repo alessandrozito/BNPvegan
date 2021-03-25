@@ -74,7 +74,7 @@ sdm <- function(frequencies, model = "LL3", verbose = TRUE) {
 
 #' Summary for a species discovery model
 #'
-#' @param object An object of class \code{\link[sdm]{sdm}}.
+#' @param object An object of class \code{sdm}.
 #' @param ... additional parameters
 #'
 #' @details A function to print out a summary of a species discovery model on a given vector of frequencies.
@@ -126,7 +126,7 @@ summary.sdm <- function(object, ...) {
 
 #' Predict function for a species discovery model
 #'
-#' @param object object of class \code{\link[sdm]{sdm}}
+#' @param object object of class \code{sdm}
 #' @param newdata Indexes (or additional new samples) to predict
 #' @param ... additional values
 #'
@@ -155,7 +155,7 @@ predict.sdm <- function(object, newdata = NULL, ...) {
 
 #' Plot the average rarefaction curve and the fitted one (in red)
 #'
-#' @param x An object of class \code{\link[sdm]{sdm}}.
+#' @param x An object of class \code{sdm}.
 #' @param n_points Number of points to plot in the accumulation curve
 #' @param type Type of curve to plot. Available options are "rarefaction" and "extrapolation".
 #'             In the second case, one needs to provide the additional number of samples m up to which extrapolate.
@@ -177,15 +177,15 @@ plot.sdm <- function(x, n_points = 100, type = "rarefaction", m = NULL, ...) {
     if (nrow(df) > n_points) {
       seqX <- 1:nrow(df)
       seqY <- split(seqX, sort(seqX %% n_points))
-      df <- df[unlist(lapply(seqY, function(a) tail(a, 1))), ]
+      df <- df[unlist(lapply(seqY, function(a) utils::tail(a, 1))), ]
     }
 
-    p <- ggplot2::ggplot(df) +
-      ggplot2::geom_point(ggplot2::aes(x = n, y = accum), shape = 1) +
-      ggplot2::geom_line(ggplot2::aes(x = n, y = rar), color = "red", size = 0.9) +
-      ggplot2::theme_bw() +
-      ggplot2::facet_wrap(~"Rarefaction curve") +
-      ggplot2::ylab(expression(K[n]))
+    p <- ggplot(df) +
+      geom_point(aes_string(x = "n", y = "accum"), shape = 1) +
+      geom_line(aes_string(x = "n", y = "rar"), color = "red", size = 0.9) +
+      theme_bw() +
+      facet_wrap(~"Rarefaction curve") +
+      ylab(expression(K[n]))
 
     return(p)
   } else if (type == "extrapolation") {
@@ -201,16 +201,16 @@ plot.sdm <- function(x, n_points = 100, type = "rarefaction", m = NULL, ...) {
     if (nrow(df) > n_points) {
       seqX <- 1:nrow(df)
       seqY <- split(seqX, sort(seqX %% n_points))
-      df <- df[unlist(lapply(seqY, function(a) tail(a, 1))), ]
+      df <- df[unlist(lapply(seqY, function(a) utils::tail(a, 1))), ]
     }
 
-    p <- ggplot2::ggplot(df) +
-      ggplot2::geom_line(ggplot2::aes(x = n, y = curve), color = "red", size = 0.9) +
-      ggplot2::geom_point(ggplot2::aes(x = n, y = accum), shape = 1, na.rm=TRUE) +
-      ggplot2::theme_bw() +
-      ggplot2::facet_wrap(~"Rarefaction and extrapolation curve") +
-      ggplot2::geom_segment(x = cutoff, xend = cutoff, y = 0, yend = Inf, linetype = "dashed") +
-      ggplot2::ylab(expression(K[n]))
+    p <- ggplot(df) +
+      geom_line(aes_string(x = "n", y = "curve"), color = "red", size = 0.9) +
+      geom_point(aes_string(x = "n", y = "accum"), shape = 1, na.rm=TRUE) +
+      theme_bw() +
+      facet_wrap(~"Rarefaction and extrapolation curve") +
+      geom_segment(x = cutoff, xend = cutoff, y = 0, yend = Inf, linetype = "dashed") +
+      ylab(expression(K[n]))
     return(p)
   }
 }
@@ -218,7 +218,7 @@ plot.sdm <- function(x, n_points = 100, type = "rarefaction", m = NULL, ...) {
 
 #' Asymptotic species richness estimates for the species discovery model.
 #'
-#' @param object an object of class \code{\link[sdm]{sdm}}.
+#' @param object an object of class \code{sdm}.
 #' @param ... additional parameters
 #' @export
 asym_richness <- function(object, ...) {

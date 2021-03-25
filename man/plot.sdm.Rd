@@ -7,7 +7,7 @@
 \method{plot}{sdm}(x, n_points = 100, type = "rarefaction", m = NULL, ...)
 }
 \arguments{
-\item{x}{An object of class \code{\link[sdm]{sdm}}.}
+\item{x}{An object of class \code{sdm}.}
 
 \item{n_points}{Number of points to plot in the accumulation curve}
 

@@ -7,7 +7,7 @@
 asym_richness(object, ...)
 }
 \arguments{
-\item{object}{an object of class \code{\link[sdm]{sdm}}.}
+\item{object}{an object of class \code{sdm}.}
 
 \item{...}{additional parameters}
 }

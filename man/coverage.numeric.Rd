@@ -6,6 +6,11 @@
 \usage{
 \method{coverage}{numeric}(object, ...)
 }
+\arguments{
+\item{object}{An object of class \code{numeric}}
+
+\item{...}{Additional parameters}
+}
 \description{
 Sample-based coverage estimator
 }

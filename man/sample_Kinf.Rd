@@ -7,9 +7,9 @@
 sample_Kinf(object, n_samples = 100, tolerance = 1e-07, ...)
 }
 \arguments{
-\item{object}{An object of class \code{\link[sdm]{sdm}}}
+\item{object}{An object of class \code{sdm}.}
 
-\item{n_samples}{Number of random samples to draw}
+\item{n_samples}{Number of random samples to draw.}
 
 \item{tolerance}{Tolerance to determine the truncation point. Default \code{= 1e-7}.}
 

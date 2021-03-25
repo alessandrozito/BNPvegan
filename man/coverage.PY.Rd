@@ -6,6 +6,11 @@
 \usage{
 \method{coverage}{PY}(object, ...)
 }
+\arguments{
+\item{object}{An object of class \code{ssm, PY}}
+
+\item{...}{Additional parameters}
+}
 \description{
 Coverage estimator for a Pitman-Yor process
 }

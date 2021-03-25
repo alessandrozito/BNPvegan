@@ -3,13 +3,18 @@
 # Available only for model based types
 ################################################
 
+#' Model base extrapolation curve and prediction
+#'
+#' @param object An object of class \code{ssm} or \code{sdm}
+#' @param ... Additional parameters
+#'
 #' @export
 extrapolation <- function(object, ...) {
   UseMethod("extrapolation", object)
 }
 
 #' Extrapolation function for a species discovery model.
-#' @param object An object of class \code{\link[sdm]{sdm}}.
+#' @param object An object of class \code{sdm}.
 #' @param m Additional number of samples to predict.
 #' @param ... Additional parameters
 #' @export

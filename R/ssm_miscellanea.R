@@ -8,7 +8,7 @@ expected_cl_py <- function(n, sigma, alpha) {
 
   return(out)
 }
-#' @export
+
 expected_cl_py <- Vectorize(expected_cl_py, vectorize.args = "n")
 
 
@@ -23,7 +23,6 @@ expected_m_py <- function(r, n, sigma, alpha) {
   exp(out)
 }
 
-#' @export
 expected_m_py <- Vectorize(expected_m_py, vectorize.args = "r")
 
 
@@ -38,10 +37,10 @@ extrapolate_cl_py <- function(m, K, n, sigma, alpha) {
   return(out)
 }
 
-#' @export
+
 extrapolate_cl_py <- Vectorize(extrapolate_cl_py, vectorize.args = "m")
 
-#' #' @export
+
 #' freq_of_freq <- function(dataset, rel = FALSE, plot = FALSE) {
 #'   if (is.null(dim(dataset))) dataset <- matrix(dataset, nrow = 1)
 #'

@@ -13,7 +13,7 @@ saturation(
 )
 }
 \arguments{
-\item{object}{an object of class \code{\link[sdm]{sdm}}.}
+\item{object}{an object of class \code{sdm}.}
 
 \item{method}{method to obtain the saturation. Available options are \code{"approximate"} and \code{"montecarlo"}}
 
@@ -21,7 +21,7 @@ saturation(
 
 \item{tolerance}{tolerance parameter to determine the truncation point for simulating K_inf. Valid only for \code{method = "montecarlo"}}
 
-\item{...}{Additional parameters}
+\item{...}{Additional parameters.}
 }
 \description{
 Saturation for a sequential discovery model

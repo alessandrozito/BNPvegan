@@ -7,7 +7,7 @@
 \method{rarefaction}{sdm}(object, ...)
 }
 \arguments{
-\item{object}{An object of class \code{\link[sdm]{sdm}}.}
+\item{object}{An object of class \code{sdm}.}
 
 \item{...}{Additional parameters}
 }

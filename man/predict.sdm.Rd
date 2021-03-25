@@ -7,7 +7,7 @@
 \method{predict}{sdm}(object, newdata = NULL, ...)
 }
 \arguments{
-\item{object}{object of class \code{\link[sdm]{sdm}}}
+\item{object}{object of class \code{sdm}}
 
 \item{newdata}{Indexes (or additional new samples) to predict}
 

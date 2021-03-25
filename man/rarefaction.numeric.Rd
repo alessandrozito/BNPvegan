@@ -2,7 +2,7 @@
 % Please edit documentation in R/rarefaction.R
 \name{rarefaction.numeric}
 \alias{rarefaction.numeric}
-\title{Sample-based rarefaction curve for a vector of species counts}
+\title{Sample-based rarefaction curve for a vector of species abundances}
 \usage{
 \method{rarefaction}{numeric}(object, verbose = TRUE, ...)
 }
@@ -14,5 +14,5 @@
 \item{...}{Additional parameters}
 }
 \description{
-Sample-based rarefaction curve for a vector of species counts
+Sample-based rarefaction curve for a vector of species abundances
 }

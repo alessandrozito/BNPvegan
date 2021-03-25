@@ -1,7 +1,7 @@
 #' Sample from the posterior distribution of the asymptotic species richness in a species discovery model
 #'
-#' @param object An object of class \code{\link[sdm]{sdm}}
-#' @param n_samples Number of random samples to draw
+#' @param object An object of class \code{sdm}.
+#' @param n_samples Number of random samples to draw.
 #' @param tolerance Tolerance to determine the truncation point. Default \code{= 1e-7}.
 #' @param ... Additional model parameters
 #'

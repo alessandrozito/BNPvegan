@@ -1,8 +1,17 @@
+#' Sample-based or model-based Gini heterogeniety index
+#'
+#' @param object An object of class \code{numeric}, \code{ssm} or \code{sdm}
+#' @param ... Additional parameters
+#'
 #' @export
 Gini <- function(object, ...) {
   UseMethod("Gini", object)
 }
 
+#' Gini heterogeneity index for a vector pf species abundances
+#' @param object An object of class \code{numeric}
+#' @param ... Additional parameters
+#'
 #' @export
 Gini.numeric <- function(object, ...) {
   freq_rel <- object / sum(object)
@@ -10,8 +19,11 @@ Gini.numeric <- function(object, ...) {
   out
 }
 
-#' @export
+#' Posterior Gini heterogeneity index for the Dirichlet process.
+#' @param object An object of class \code{ssm, DP}.
+#' @param ... Additional parameters
 #'
+#' @export
 Gini.DP <- function(object, ...) {
   Poch2 <- function(x) x * (x + 1)
 
@@ -22,8 +34,11 @@ Gini.DP <- function(object, ...) {
   out
 }
 
-#' @export
+#' Posterior Gini heterogeneity index for the Pitman-Yor process
+#' @param object An object of class \code{ssm, PY}
+#' @param ... Additional parameters
 #'
+#' @export
 Gini.PY <- function(object, ...) {
   Poch2 <- function(x) x * (x + 1)
 

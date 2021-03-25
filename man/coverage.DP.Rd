@@ -6,6 +6,11 @@
 \usage{
 \method{coverage}{DP}(object, ...)
 }
+\arguments{
+\item{object}{An object of class \code{ssm, DP}}
+
+\item{...}{Additional parameters}
+}
 \description{
 Coverage estimator for a Dirichlet process
 }

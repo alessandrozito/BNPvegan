@@ -7,7 +7,7 @@
 \method{rarefaction}{PY}(object, ...)
 }
 \arguments{
-\item{object}{An object of class \code{\link[sdm]{ssm}, \link[sdm]{PY}}}
+\item{object}{An object of class \code{ssm, PY}}
 
 \item{...}{Additional parameters}
 }
