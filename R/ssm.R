@@ -99,14 +99,18 @@ summary.PY <- function(object, ...) {
   colnames(out) <- c("alpha", "sigma", "loglik")
 
   cat("Model:",
-    "\t Pitman-Yor process",
+    "\t Pitman-Yor process (PY)",
     "\nQuantities:",
     paste0("\t Abundance: ", n),
     paste0("\t Richness: ", K),
     paste0("\t Estimated sample coverage: ", round(coverage(object), 4)),
+    paste0("\t Posterior Gini diversity: ", round(Gini, 4)),
+    "\nExtrapolations:",
     paste0("\t Expected species after additional ", n, " samples: ", Expected + K),
     paste0("\t New expected species after additional ", n, " samples: ", Expected),
-    paste0("\t Posterior Gini diversity: ", round(Gini, 4)),
+    "\nAsymptotics:",
+    paste0("\t Expected species at infinity: Infinite"),
+    paste0("\t Standard deviation at infinity: NA"),
     "\nParameters:",
     paste0("\t ", knitr::kable(out, "simple")),
     sep = "\n"

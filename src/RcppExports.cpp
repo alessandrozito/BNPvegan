@@ -33,10 +33,105 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// prob_LL3_Cpp
+double prob_LL3_Cpp(double n, double alpha, double sigma, double phi);
+RcppExport SEXP _BNPvegan_prob_LL3_Cpp(SEXP nSEXP, SEXP alphaSEXP, SEXP sigmaSEXP, SEXP phiSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type phi(phiSEXP);
+    rcpp_result_gen = Rcpp::wrap(prob_LL3_Cpp(n, alpha, sigma, phi));
+    return rcpp_result_gen;
+END_RCPP
+}
+// prob_Weibull_Cpp
+double prob_Weibull_Cpp(double n, double phi, double lambda);
+RcppExport SEXP _BNPvegan_prob_Weibull_Cpp(SEXP nSEXP, SEXP phiSEXP, SEXP lambdaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    rcpp_result_gen = Rcpp::wrap(prob_Weibull_Cpp(n, phi, lambda));
+    return rcpp_result_gen;
+END_RCPP
+}
+// truncationpoint_LL3_Cpp
+double truncationpoint_LL3_Cpp(double n, double alpha, double sigma, double phi, double tolerance);
+RcppExport SEXP _BNPvegan_truncationpoint_LL3_Cpp(SEXP nSEXP, SEXP alphaSEXP, SEXP sigmaSEXP, SEXP phiSEXP, SEXP toleranceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
+    rcpp_result_gen = Rcpp::wrap(truncationpoint_LL3_Cpp(n, alpha, sigma, phi, tolerance));
+    return rcpp_result_gen;
+END_RCPP
+}
+// truncationpoint_Weibull_Cpp
+double truncationpoint_Weibull_Cpp(double n, double phi, double lambda, double tolerance);
+RcppExport SEXP _BNPvegan_truncationpoint_Weibull_Cpp(SEXP nSEXP, SEXP phiSEXP, SEXP lambdaSEXP, SEXP toleranceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
+    rcpp_result_gen = Rcpp::wrap(truncationpoint_Weibull_Cpp(n, phi, lambda, tolerance));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sample_Kinf_LL3_Cpp
+arma::vec sample_Kinf_LL3_Cpp(int n_samples, double n, double k, double alpha, double sigma, double phi, double tolerance);
+RcppExport SEXP _BNPvegan_sample_Kinf_LL3_Cpp(SEXP n_samplesSEXP, SEXP nSEXP, SEXP kSEXP, SEXP alphaSEXP, SEXP sigmaSEXP, SEXP phiSEXP, SEXP toleranceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n_samples(n_samplesSEXP);
+    Rcpp::traits::input_parameter< double >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
+    rcpp_result_gen = Rcpp::wrap(sample_Kinf_LL3_Cpp(n_samples, n, k, alpha, sigma, phi, tolerance));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sample_Kinf_Weibull_Cpp
+arma::vec sample_Kinf_Weibull_Cpp(int n_samples, double n, double k, double phi, double lambda, double tolerance);
+RcppExport SEXP _BNPvegan_sample_Kinf_Weibull_Cpp(SEXP n_samplesSEXP, SEXP nSEXP, SEXP kSEXP, SEXP phiSEXP, SEXP lambdaSEXP, SEXP toleranceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n_samples(n_samplesSEXP);
+    Rcpp::traits::input_parameter< double >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
+    rcpp_result_gen = Rcpp::wrap(sample_Kinf_Weibull_Cpp(n_samples, n, k, phi, lambda, tolerance));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BNPvegan_cluster_py_C", (DL_FUNC) &_BNPvegan_cluster_py_C, 3},
     {"_BNPvegan_rarefy_C", (DL_FUNC) &_BNPvegan_rarefy_C, 4},
+    {"_BNPvegan_prob_LL3_Cpp", (DL_FUNC) &_BNPvegan_prob_LL3_Cpp, 4},
+    {"_BNPvegan_prob_Weibull_Cpp", (DL_FUNC) &_BNPvegan_prob_Weibull_Cpp, 3},
+    {"_BNPvegan_truncationpoint_LL3_Cpp", (DL_FUNC) &_BNPvegan_truncationpoint_LL3_Cpp, 5},
+    {"_BNPvegan_truncationpoint_Weibull_Cpp", (DL_FUNC) &_BNPvegan_truncationpoint_Weibull_Cpp, 4},
+    {"_BNPvegan_sample_Kinf_LL3_Cpp", (DL_FUNC) &_BNPvegan_sample_Kinf_LL3_Cpp, 7},
+    {"_BNPvegan_sample_Kinf_Weibull_Cpp", (DL_FUNC) &_BNPvegan_sample_Kinf_Weibull_Cpp, 6},
     {NULL, NULL, 0}
 };
 

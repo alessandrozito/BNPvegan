@@ -1,0 +1,32 @@
+---
+title: "Short tutorial"
+author: "Alessandro Zito"
+date: "24/3/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(BNPvegan)
+```
+
+```{r}
+object <- sdm(Lepidoptera)
+BNPvegan::coverage.sdm(fit)
+fitpy <- ssm(Lepidoptera, model = "PY")
+
+summary(fitpy)
+summary(fit)
+
+
+extrapolation(fit, m = 10000)
+
+plot(fit, type = "extrapolation", m = 10000)
+
+extrapolation(fitpy, m = c(10, 20))
+```
+```{r}
+a = sample_Kinf(object, n_samples = 100)
+
+```
+

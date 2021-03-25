@@ -15,7 +15,6 @@ extrapolation <- function(object, ...) {
 #' @export
 extrapolation.sdm <- function(object, m, ...) {
   m_max <- max(m)
-  index_to_store <- c(1:length(m))
 
   n <- length(object$discoveries)
   k <- sum(object$discoveries)
@@ -25,7 +24,7 @@ extrapolation.sdm <- function(object, m, ...) {
     extr <- k + cumsum(prob_Weibull(c(n:(n + m_max - 1)), phi = object$par[1], lambda = object$par[2]))
   }
 
-  return(extr[index_to_store])
+  return(extr[m])
 }
 
 

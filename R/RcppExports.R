@@ -9,3 +9,27 @@ rarefy_C <- function(freq, n, K, verbose) {
     .Call('_BNPvegan_rarefy_C', PACKAGE = 'BNPvegan', freq, n, K, verbose)
 }
 
+prob_LL3_Cpp <- function(n, alpha, sigma, phi) {
+    .Call('_BNPvegan_prob_LL3_Cpp', PACKAGE = 'BNPvegan', n, alpha, sigma, phi)
+}
+
+prob_Weibull_Cpp <- function(n, phi, lambda) {
+    .Call('_BNPvegan_prob_Weibull_Cpp', PACKAGE = 'BNPvegan', n, phi, lambda)
+}
+
+truncationpoint_LL3_Cpp <- function(n, alpha, sigma, phi, tolerance) {
+    .Call('_BNPvegan_truncationpoint_LL3_Cpp', PACKAGE = 'BNPvegan', n, alpha, sigma, phi, tolerance)
+}
+
+truncationpoint_Weibull_Cpp <- function(n, phi, lambda, tolerance) {
+    .Call('_BNPvegan_truncationpoint_Weibull_Cpp', PACKAGE = 'BNPvegan', n, phi, lambda, tolerance)
+}
+
+sample_Kinf_LL3_Cpp <- function(n_samples, n, k, alpha, sigma, phi, tolerance) {
+    .Call('_BNPvegan_sample_Kinf_LL3_Cpp', PACKAGE = 'BNPvegan', n_samples, n, k, alpha, sigma, phi, tolerance)
+}
+
+sample_Kinf_Weibull_Cpp <- function(n_samples, n, k, phi, lambda, tolerance) {
+    .Call('_BNPvegan_sample_Kinf_Weibull_Cpp', PACKAGE = 'BNPvegan', n_samples, n, k, phi, lambda, tolerance)
+}
+

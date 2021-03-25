@@ -84,13 +84,23 @@ summary.sdm <- function(object, ...) {
   # Sample abundance and richness
   abundance <- sum(object$frequencies)
   richness <- length(object$frequencies)
+
+  # Sample saturation and asymptotic richness
   saturation <- object$saturation
   asy_rich <- unname(round(object$Asymp_moments, 2))
+
+  # Sample coverage
+  cov <- coverage(object)
+
+  # Extrapolation at m = n
+  additional_species <- round(extrapolation(object, m = abundance))
+
   if (object$model == "LL3") {
     mod_print <- "\t Three-parameter log-logistic (LL3)"
   } else if (object$model == "Weibull") {
     mod_print <- "\t Weibull"
   }
+
   mod_str <-
     # Summary
     # Print the summary
@@ -99,10 +109,15 @@ summary.sdm <- function(object, ...) {
       "\nQuantities:",
       paste0("\t Abundance: ", abundance),
       paste0("\t Richness: ", richness),
+      paste0("\t Estimated sample coverage: ", round(cov, 4)),
+      "\nExtrapolations:",
+      paste0("\t Expected species after ",abundance, " additional samples: ",  additional_species),
+      paste0("\t Expected new species after ",abundance, " additional samples: ", additional_species - richness),
+      "\nAsymptotics:",
       paste0("\t Expected species at infinity: ", asy_rich[1]),
       paste0("\t Standard deviation at infinity: ", asy_rich[2]),
       paste0("\t Expected new species to discover: ", asy_rich[1] - richness),
-      paste0("\t Sample saturation: ", round(saturation, 4)),
+      paste0("\t Estimated saturation: ", round(saturation, 4)),
       "\nParameters:",
       paste0("\t ", knitr::kable(t(c(object$par, "logLik" = object$loglik)), "simple")),
       sep = "\n"
