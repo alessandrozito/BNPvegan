@@ -4,7 +4,7 @@
 #' @param alpha Centrality parameter
 #' @param sigma Discount parameter
 #'
-#' @return  A vector of frequencies
+#' @return  A vector of abundances
 #' @export
 #'
 rPY <- function(size, alpha, sigma){
@@ -36,7 +36,7 @@ rPY <- function(size, alpha, sigma){
 #' @param size Number of observations to draw
 #' @param alpha Centrality parameter
 #'
-#' @return A vector of frequencies
+#' @return A vector of abundances
 #' @export
 rDP <- function(size, alpha){
   return(rPY(size = size, alpha = alpha, sigma = 0))

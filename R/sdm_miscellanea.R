@@ -9,16 +9,16 @@ extract_discoveries <- function(sequence) {
 
 #' Build a random sequence of observed species form a vector of counts
 #'
-#' @param frequencies Vector of counts of the species observed
+#' @param abundances Vector of counts of the species observed
 #'
 #' @return vector
-sample_sequence <- function(frequencies) {
+sample_sequence <- function(abundances) {
 
   # Extract the crude sequence
-  sequence <- rep(1:length(frequencies), times = frequencies)
+  sequence <- rep(1:length(abundances), times = abundances)
 
   # Randomize it
-  sequence <- sample(sequence, size = sum(frequencies), replace = FALSE)
+  sequence <- sample(sequence, size = sum(abundances), replace = FALSE)
 
   return(sequence)
 }
@@ -37,5 +37,5 @@ rLL3 <- function(L, alpha, sigma, phi) {
       species <- c(species, sample(species, 1, replace = TRUE))
     }
   }
-  return(list("d" = D, "frequencies" = unname(table(species))))
+  return(list("d" = D, "abundances" = unname(table(species))))
 }

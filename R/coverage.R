@@ -34,7 +34,7 @@ coverage.numeric <- function(object, ...) {
 #' @details Compute the posterior coverage estimator for the Dirichlet process.
 coverage.DP <- function(object, ...) {
   alpha <- object$param[1]
-  freq <- object$frequencies
+  freq <- object$abundances
   n <- sum(freq)
   K <- length(freq)
 
@@ -51,7 +51,7 @@ coverage.DP <- function(object, ...) {
 coverage.PY <- function(object, ...) {
   alpha <- object$param[1]
   sigma <- object$param[2]
-  freq <- object$frequencies
+  freq <- object$abundances
   n <- sum(freq)
   K <- length(freq)
 
@@ -94,7 +94,7 @@ rcoverage <- function(object, ...) {
 #' @export
 rcoverage.DP <- function(object, n_samples = 1000, ...) {
   alpha <- object$param[1]
-  freq <- object$frequencies
+  freq <- object$abundances
   n <- sum(freq)
 
   rbeta(n_samples, n, alpha)
@@ -109,7 +109,7 @@ rcoverage.DP <- function(object, n_samples = 1000, ...) {
 rcoverage.PY <- function(object, n_samples = 1000, ...) {
   alpha <- object$param[1]
   sigma <- object$param[2]
-  freq <- object$frequencies
+  freq <- object$abundances
   n <- sum(freq)
   K <- length(freq)
 

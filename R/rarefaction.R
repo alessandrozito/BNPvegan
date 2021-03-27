@@ -16,7 +16,7 @@ rarefaction <- function(object, ...) {
 }
 
 #' Sample-based rarefaction curve for a vector of species abundances
-#' @param object  An vector of frequencies
+#' @param object  An vector of abundances
 #' @param verbose If TRUE, the estimation process will be printed
 #' @param ... Additional parameters
 #' @export
@@ -43,7 +43,7 @@ rarefaction.sdm <- function(object, ...){
 #' @param ... Additional parameters
 #' @export
 rarefaction.DP <- function(object, ...) {
-  n <- sum(object$frequencies)
+  n <- sum(object$abundances)
   expected_cl_py(1:n, sigma = 0, alpha = object$param)
 }
 
@@ -52,7 +52,7 @@ rarefaction.DP <- function(object, ...) {
 #' @param ... Additional parameters
 #' @export
 rarefaction.PY <- function(object, ...) {
-  n <- sum(object$frequencies)
+  n <- sum(object$abundances)
   expected_cl_py(1:n, sigma = object$param[2], alpha = object$param[1])
 }
 

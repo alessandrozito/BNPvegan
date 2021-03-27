@@ -49,10 +49,10 @@ extrapolate_cl_py <- Vectorize(extrapolate_cl_py, vectorize.args = "m")
 #'   rownames(tab) <- rownames(dataset)
 #'   colnames(tab) <- 1:K
 #'   for (i in 1:nrow(dataset)) {
-#'     frequencies <- dataset[i, ]
-#'     frequencies <- factor(frequencies[frequencies > 0], levels = 1:K)
-#'     tab[i, ] <- as.numeric(table(frequencies))
-#'     if (rel) tab[i, ] <- tab[i, ] / length(frequencies)
+#'     abundances <- dataset[i, ]
+#'     abundances <- factor(abundances[abundances > 0], levels = 1:K)
+#'     tab[i, ] <- as.numeric(table(abundances))
+#'     if (rel) tab[i, ] <- tab[i, ] / length(abundances)
 #'   }
 #'   tab <- t(tab)
 #'
@@ -68,7 +68,7 @@ extrapolate_cl_py <- Vectorize(extrapolate_cl_py, vectorize.args = "m")
 #'       scale_x_log10() +
 #'       theme_bw() +
 #'       xlab("Frequency") +
-#'       ylab("Frequency of frequencies")
+#'       ylab("Frequency of abundances")
 #'     return(p)
 #'   }
 #'   c(tab)

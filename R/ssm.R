@@ -1,23 +1,23 @@
 #' Species sampling model
 #'
-#' @param frequencies A \code{K}-dimensional vector of frequencies
+#' @param abundances A \code{K}-dimensional vector of abundances
 #' @param model Model to fit. Available models are \code{DP} (Dirichlet Process) and \code{PY} (Pitman-Yor process)
 #'
 #' @return An object of class \code{ssm}
 #'
 #' @export
-ssm <- function(frequencies, model) {
-  frequencies <- frequencies[frequencies > 0]
+ssm <- function(abundances, model) {
+  abundances <- abundances[abundances > 0]
   if (model == "DP") {
-    fit <- max_EPPF_DP(frequencies)
-    out <- list(frequencies = frequencies, param = fit$par, logLik = -fit$objective)
+    fit <- max_EPPF_DP(abundances)
+    out <- list(abundances = abundances, param = fit$par, logLik = -fit$objective)
     class(out) <- c("ssm", "DP")
     return(out)
   }
 
   if (model == "PY") {
-    fit <- max_EPPF_PY(frequencies)
-    out <- list(frequencies = frequencies, param = fit$par, logLik = -fit$objective)
+    fit <- max_EPPF_PY(abundances)
+    out <- list(abundances = abundances, param = fit$par, logLik = -fit$objective)
     class(out) <- c("ssm", "PY")
     return(out)
   }
@@ -38,7 +38,7 @@ logLik.ssm <- function(object, ...) {
 #'
 predict.DP <- function(object, m, ...) {
   alpha <- object$param[1]
-  freq <- object$frequencies
+  freq <- object$abundances
   n <- sum(freq)
   K <- length(freq)
   extrapolate_cl_py(m = m, n = n, K = K, sigma = 0, alpha = alpha)
@@ -49,7 +49,7 @@ predict.DP <- function(object, m, ...) {
 predict.PY <- function(object, m, ...) {
   alpha <- object$param[1]
   sigma <- object$param[2]
-  freq <- object$frequencies
+  freq <- object$abundances
   n <- sum(freq)
   K <- length(freq)
   extrapolate_cl_py(m = m, n = n, K = K, sigma = sigma, alpha = alpha)
@@ -59,7 +59,7 @@ predict.PY <- function(object, m, ...) {
 #'
 summary.DP <- function(object, ...) {
   alpha <- object$param[1]
-  freq <- object$frequencies
+  freq <- object$abundances
   n <- sum(freq)
   K <- length(freq)
   Expected <- round(extrapolate_cl_py(m = n, n = n, K = K, sigma = 0, alpha = alpha)) - K
@@ -89,7 +89,7 @@ summary.DP <- function(object, ...) {
 summary.PY <- function(object, ...) {
   alpha <- object$param[1]
   sigma <- object$param[2]
-  freq <- object$frequencies
+  freq <- object$abundances
   n <- sum(freq)
   K <- length(freq)
   Expected <- round(extrapolate_cl_py(m = n, n = n, K = K, sigma = sigma, alpha = alpha)) - K
@@ -133,12 +133,12 @@ summary.PY <- function(object, ...) {
 #' @export
 #'
 plot.DP <- function(x, type = "rarefaction", plot_sample = TRUE, m = NULL, verbose = TRUE, n_points = 100, ...) {
-  n <- sum(x$frequencies)
+  n <- sum(x$abundances)
   alpha <- x$param[1]
-  K <- length(x$frequencies)
+  K <- length(x$abundances)
 
   if (type == "freq") {
-    M_l <- as.numeric(table(factor(x$frequencies, levels = 1:n)))
+    M_l <- as.numeric(table(factor(x$abundances, levels = 1:n)))
     # P_l <- M_l / sum(M_l)
     idx <- 1:(which.min(M_l) - 1) # which(P_l > 0)
     data_plot <- data.frame("Size" = idx, "M_l" = M_l[idx], "Theoretical" = expected_m_py(idx, n = n, sigma = 0, alpha = alpha))
@@ -150,7 +150,7 @@ plot.DP <- function(x, type = "rarefaction", plot_sample = TRUE, m = NULL, verbo
       theme_bw() +
       xlab("r") +
       ylab(expression(M[r]))+
-      facet_wrap(~"Frequency-of-frequencies plot")
+      facet_wrap(~"Frequency-of-abundances plot")
     return(p)
   } else if (type == "coverage") {
     p <- ggplot() +
@@ -165,7 +165,7 @@ plot.DP <- function(x, type = "rarefaction", plot_sample = TRUE, m = NULL, verbo
     if(plot_sample == TRUE){
       # Model-based rarefaction
       rar <- rarefaction(x)
-      accum <- rarefaction(as.integer(x$frequencies), verbose = verbose)
+      accum <- rarefaction(as.integer(x$abundances), verbose = verbose)
       df <- data.frame("n" = 1:n, "rar" = rar, "accum" = accum)
 
       if (nrow(df) > n_points) {
@@ -203,7 +203,7 @@ plot.DP <- function(x, type = "rarefaction", plot_sample = TRUE, m = NULL, verbo
     if(plot_sample == TRUE){
       # Model-based rarefaction
       rar <- rarefaction(x)
-      accum <- rarefaction(as.integer(x$frequencies), verbose = verbose)
+      accum <- rarefaction(as.integer(x$abundances), verbose = verbose)
       ext <- extrapolation(x, 1:m)
       df <- data.frame("n" = 1:(n+m), "curve" = c(rar,ext) , "accum" = c(accum, rep(NA, length(ext))))
 
@@ -253,13 +253,13 @@ plot.DP <- function(x, type = "rarefaction", plot_sample = TRUE, m = NULL, verbo
 #' @export
 #'
 plot.PY <- function(x, type = "rarefaction", plot_sample = TRUE, m = NULL, verbose = TRUE, n_points = 100, ...) {
-  n <- sum(x$frequencies)
-  K <- length(x$frequencies)
+  n <- sum(x$abundances)
+  K <- length(x$abundances)
   alpha <- x$param[1]
   sigma <- x$param[2]
 
   if (type == "freq") {
-    M_l <- as.numeric(table(factor(x$frequencies, levels = 1:n)))
+    M_l <- as.numeric(table(factor(x$abundances, levels = 1:n)))
     # P_l <- M_l / sum(M_l)
     idx <- 1:(which.min(M_l) - 1) # which(P_l > 0)
     data_plot <- data.frame("Size" = idx, "M_l" = M_l[idx],
@@ -272,7 +272,7 @@ plot.PY <- function(x, type = "rarefaction", plot_sample = TRUE, m = NULL, verbo
       theme_bw() +
       xlab("r") +
       ylab(expression(M[r]))+
-      facet_wrap(~"Frequency-of-frequencies plot")
+      facet_wrap(~"Frequency-of-abundances plot")
     return(p)
   } else if (type == "coverage") {
     p <- ggplot() +
@@ -286,7 +286,7 @@ plot.PY <- function(x, type = "rarefaction", plot_sample = TRUE, m = NULL, verbo
     if(plot_sample == TRUE){
       # Model-based rarefaction
       rar <- rarefaction(x)
-      accum <- rarefaction(as.integer(x$frequencies), verbose = verbose)
+      accum <- rarefaction(as.integer(x$abundances), verbose = verbose)
       df <- data.frame("n" = 1:n, "rar" = rar, "accum" = accum)
 
       if (nrow(df) > n_points) {
@@ -323,7 +323,7 @@ plot.PY <- function(x, type = "rarefaction", plot_sample = TRUE, m = NULL, verbo
     if(plot_sample == TRUE){
       # Model-based rarefaction
       rar <- rarefaction(x)
-      accum <- rarefaction(as.integer(x$frequencies), verbose = verbose)
+      accum <- rarefaction(as.integer(x$abundances), verbose = verbose)
       ext <- extrapolation(x, 1:m)
       df <- data.frame("n" = 1:(n+m), "curve" = c(rar,ext) , "accum" = c(accum, rep(NA, length(ext))))
 

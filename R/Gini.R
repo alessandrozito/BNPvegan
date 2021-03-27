@@ -28,7 +28,7 @@ Gini.DP <- function(object, ...) {
   Poch2 <- function(x) x * (x + 1)
 
   alpha <- object$param[1]
-  freq <- object$frequencies
+  freq <- object$abundances
   n <- sum(freq)
   out <- 1 - 1 / Poch2(alpha + n) * (alpha + sum(Poch2(freq)))
   out
@@ -44,7 +44,7 @@ Gini.PY <- function(object, ...) {
 
   alpha <- object$param[1]
   sigma <- object$param[2]
-  freq <- object$frequencies
+  freq <- object$abundances
   n <- sum(freq)
   K <- length(freq)
 

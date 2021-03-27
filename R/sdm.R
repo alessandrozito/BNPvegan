@@ -1,29 +1,29 @@
 #' Sequential discovery model as in Zito et al. (2020+)
 #'
-#' @param frequencies Vector of frequencies of the observed species
+#' @param abundances Vector of abundances of the observed species
 #' @param model Model to fit. Options are "LL3" and "Weibull"
 #' @param verbose if TRUE, monitor the construction of the average rarefaction curve.
 #'
-#' @details This function fits the sequential discovery model is Zito et al. (2020+) on the average rarefaction curve obtained from a vector of species frequencies.
+#' @details This function fits the sequential discovery model is Zito et al. (2020+) on the average rarefaction curve obtained from a vector of species abundances.
 #'          The models available are "LL3" and "Weibull".
 #'
 #' @export
 #' @examples # Fit the model
-#' frequencies <- fungalOTU
-#' fit <- sdm(frequencies, model = "LL3")
+#' abundances <- fungalOTU
+#' fit <- sdm(abundances, model = "LL3")
 #' summary(fit)
 #'
-sdm <- function(frequencies, model = "LL3", verbose = TRUE) {
-  # Step 0 - filter out the frequencies equal to 0
-  frequencies <- frequencies[frequencies > 0]
+sdm <- function(abundances, model = "LL3", verbose = TRUE) {
+  # Step 0 - filter out the abundances equal to 0
+  abundances <- abundances[abundances > 0]
 
   # Extract the rarefaction curves
-  d <- c(1, diff(rarefy_C(frequencies, sum(frequencies), length(frequencies), verbose)))
+  d <- c(1, diff(rarefy_C(abundances, sum(abundances), length(abundances), verbose)))
 
   # Initialize an empty matrix for the parameters
   if (model == "LL3") {
     # Initialize the matrix of predictors
-    n <- sum(frequencies) - 1
+    n <- sum(abundances) - 1
     X <- cbind(1, log(1:n), c(1:n))
   }
 
@@ -60,7 +60,7 @@ sdm <- function(frequencies, model = "LL3", verbose = TRUE) {
   # Return the output
   out <- list(
     model = model,
-    frequencies = frequencies,
+    abundances = abundances,
     discoveries = d,
     par = par,
     loglik = loglik,
@@ -77,13 +77,13 @@ sdm <- function(frequencies, model = "LL3", verbose = TRUE) {
 #' @param object An object of class \code{sdm}.
 #' @param ... additional parameters
 #'
-#' @details A function to print out a summary of a species discovery model on a given vector of frequencies.
+#' @details A function to print out a summary of a species discovery model on a given vector of abundances.
 #' @export
 summary.sdm <- function(object, ...) {
 
   # Sample abundance and richness
-  abundance <- sum(object$frequencies)
-  richness <- length(object$frequencies)
+  abundance <- sum(object$abundances)
+  richness <- length(object$abundances)
 
   # Sample saturation and asymptotic richness
   saturation <- object$saturation
