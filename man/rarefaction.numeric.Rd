@@ -7,7 +7,7 @@
 \method{rarefaction}{numeric}(object, verbose = TRUE, ...)
 }
 \arguments{
-\item{object}{An vector of frequencies}
+\item{object}{An vector of abundances}
 
 \item{verbose}{If TRUE, the estimation process will be printed}
 

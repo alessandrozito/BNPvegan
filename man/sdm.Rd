@@ -4,10 +4,10 @@
 \alias{sdm}
 \title{Sequential discovery model as in Zito et al. (2020+)}
 \usage{
-sdm(frequencies, model = "LL3", verbose = TRUE)
+sdm(abundances, model = "LL3", verbose = TRUE)
 }
 \arguments{
-\item{frequencies}{Vector of frequencies of the observed species}
+\item{abundances}{Vector of abundances of the observed species}
 
 \item{model}{Model to fit. Options are "LL3" and "Weibull"}
 
@@ -17,13 +17,13 @@ sdm(frequencies, model = "LL3", verbose = TRUE)
 Sequential discovery model as in Zito et al. (2020+)
 }
 \details{
-This function fits the sequential discovery model is Zito et al. (2020+) on the average rarefaction curve obtained from a vector of species frequencies.
+This function fits the sequential discovery model is Zito et al. (2020+) on the average rarefaction curve obtained from a vector of species abundances.
          The models available are "LL3" and "Weibull".
 }
 \examples{
 # Fit the model
-frequencies <- fungalOTU
-fit <- sdm(frequencies, model = "LL3")
+abundances <- fungalOTU
+fit <- sdm(abundances, model = "LL3")
 summary(fit)
 
 }

@@ -122,6 +122,39 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_n_target_saturation_LL3
+double get_n_target_saturation_LL3(double n, double k, double alpha, double sigma, double phi, double Kinf, double target);
+RcppExport SEXP _BNPvegan_get_n_target_saturation_LL3(SEXP nSEXP, SEXP kSEXP, SEXP alphaSEXP, SEXP sigmaSEXP, SEXP phiSEXP, SEXP KinfSEXP, SEXP targetSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< double >::type Kinf(KinfSEXP);
+    Rcpp::traits::input_parameter< double >::type target(targetSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_n_target_saturation_LL3(n, k, alpha, sigma, phi, Kinf, target));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_n_target_saturation_Weibull
+double get_n_target_saturation_Weibull(double n, double k, double phi, double lambda, double Kinf, double target);
+RcppExport SEXP _BNPvegan_get_n_target_saturation_Weibull(SEXP nSEXP, SEXP kSEXP, SEXP phiSEXP, SEXP lambdaSEXP, SEXP KinfSEXP, SEXP targetSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type phi(phiSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< double >::type Kinf(KinfSEXP);
+    Rcpp::traits::input_parameter< double >::type target(targetSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_n_target_saturation_Weibull(n, k, phi, lambda, Kinf, target));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BNPvegan_cluster_py_C", (DL_FUNC) &_BNPvegan_cluster_py_C, 3},
@@ -132,6 +165,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BNPvegan_truncationpoint_Weibull_Cpp", (DL_FUNC) &_BNPvegan_truncationpoint_Weibull_Cpp, 4},
     {"_BNPvegan_sample_Kinf_LL3_Cpp", (DL_FUNC) &_BNPvegan_sample_Kinf_LL3_Cpp, 7},
     {"_BNPvegan_sample_Kinf_Weibull_Cpp", (DL_FUNC) &_BNPvegan_sample_Kinf_Weibull_Cpp, 6},
+    {"_BNPvegan_get_n_target_saturation_LL3", (DL_FUNC) &_BNPvegan_get_n_target_saturation_LL3, 7},
+    {"_BNPvegan_get_n_target_saturation_Weibull", (DL_FUNC) &_BNPvegan_get_n_target_saturation_Weibull, 6},
     {NULL, NULL, 0}
 };
 

@@ -69,17 +69,21 @@ summary.DP <- function(object, ...) {
   colnames(out) <- c("alpha", "loglik")
 
   cat("Model:",
-    "\t Dirichlet process",
-    "\nQuantities:",
-    paste0("\t Abundance: ", n),
-    paste0("\t Richness: ", K),
-    paste0("\t Estimated sample coverage: ", round(coverage(object), 4)),
-    paste0("\t Expected species after additional ", n, " samples: ", Expected + K),
-    paste0("\t New expected species after additional ", n, " samples: ", Expected),
-    paste0("\t Posterior Gini diversity: ", round(Gini, 4)),
-    "\nParameters:",
-    paste0("\t ", knitr::kable(out, "simple")),
-    sep = "\n"
+      "\t Dirichlet process (DP)",
+      "\nQuantities:",
+      paste0("\t Abundance: ", n),
+      paste0("\t Richness: ", K),
+      paste0("\t Estimated sample coverage: ", round(coverage(object), 4)),
+      paste0("\t Posterior Gini diversity: ", round(Gini, 4)),
+      "\nExtrapolations:",
+      paste0("\t Expected species after additional ", n, " samples: ", Expected + K),
+      paste0("\t New expected species after additional ", n, " samples: ", Expected),
+      "\nAsymptotics:",
+      paste0("\t Expected species at infinity: Infinite"),
+      paste0("\t Standard deviation at infinity: NA"),
+      "\nParameters:",
+      paste0("\t ", knitr::kable(out, "simple")),
+      sep = "\n"
   )
 }
 
@@ -158,7 +162,8 @@ plot.DP <- function(x, type = "rarefaction", plot_sample = TRUE, m = NULL, verbo
       geom_function(fun = function(x) dbeta(x, n, alpha)) +
       theme_bw() +
       xlab("Sample coverage") +
-      ylab("Density")
+      ylab("Density")+
+      facet_grid(~"Posterior sample coverage")
     return(p)
   } else if (type == "rarefaction") {
 
@@ -280,7 +285,8 @@ plot.PY <- function(x, type = "rarefaction", plot_sample = TRUE, m = NULL, verbo
       geom_function(fun = function(x) dbeta(x, n - sigma * K, alpha + sigma * K)) +
       theme_bw() +
       xlab("Sample coverage") +
-      ylab("Density")
+      ylab("Density")+
+      facet_grid(~"Posterior sample coverage")
     return(p)
   } else if (type == "rarefaction") {
     if(plot_sample == TRUE){

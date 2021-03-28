@@ -91,3 +91,26 @@ arma::vec sample_Kinf_Weibull_Cpp(int n_samples, double n, double k, double phi,
   return Kinf;
 }
 
+
+
+// [[Rcpp::export]]
+double get_n_target_saturation_LL3(double n, double k, double alpha, double sigma, double phi, double Kinf, double target){
+  double m = 0;
+  while(k/Kinf < target){
+    m = m + 1;
+    k = k + prob_LL3_Cpp(n+m,alpha, sigma, phi);
+  }
+  return m;
+}
+
+// [[Rcpp::export]]
+double get_n_target_saturation_Weibull(double n, double k, double phi, double lambda, double Kinf, double target){
+  double m = 0;
+  while(k/Kinf < target){
+    m = m + 1;
+    k = k + prob_Weibull_Cpp(n+m, phi,lambda);
+  }
+  return m;
+}
+
+

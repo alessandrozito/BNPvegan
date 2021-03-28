@@ -15,5 +15,5 @@
 Summary for a species discovery model
 }
 \details{
-A function to print out a summary of a species discovery model on a given vector of frequencies.
+A function to print out a summary of a species discovery model on a given vector of abundances.
 }

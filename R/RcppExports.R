@@ -33,3 +33,11 @@ sample_Kinf_Weibull_Cpp <- function(n_samples, n, k, phi, lambda, tolerance) {
     .Call('_BNPvegan_sample_Kinf_Weibull_Cpp', PACKAGE = 'BNPvegan', n_samples, n, k, phi, lambda, tolerance)
 }
 
+get_n_target_saturation_LL3 <- function(n, k, alpha, sigma, phi, Kinf, target) {
+    .Call('_BNPvegan_get_n_target_saturation_LL3', PACKAGE = 'BNPvegan', n, k, alpha, sigma, phi, Kinf, target)
+}
+
+get_n_target_saturation_Weibull <- function(n, k, phi, lambda, Kinf, target) {
+    .Call('_BNPvegan_get_n_target_saturation_Weibull', PACKAGE = 'BNPvegan', n, k, phi, lambda, Kinf, target)
+}
+

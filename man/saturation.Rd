@@ -8,6 +8,7 @@ saturation(
   object,
   method = "approximate",
   n_samples = 100,
+  target = NULL,
   tolerance = 1e-07,
   ...
 )
@@ -15,9 +16,11 @@ saturation(
 \arguments{
 \item{object}{an object of class \code{sdm}.}
 
-\item{method}{method to obtain the saturation. Available options are \code{"approximate"} and \code{"montecarlo"}}
+\item{method}{method to obtain the saturation. Available options are \code{"approximate"}, \code{"montecarlo"} and \code{"target"}}
 
 \item{n_samples}{number of Monte Carlo samples from the posterior distribution of the saturation. Valid only for \code{method = "montecarlo"}}
+
+\item{target}{Desired level of saturation to reach. Valid only for \code{"target"}}
 
 \item{tolerance}{tolerance parameter to determine the truncation point for simulating K_inf. Valid only for \code{method = "montecarlo"}}
 

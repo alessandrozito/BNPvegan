@@ -4,10 +4,10 @@
 \alias{sample_sequence}
 \title{Build a random sequence of observed species form a vector of counts}
 \usage{
-sample_sequence(frequencies)
+sample_sequence(abundances)
 }
 \arguments{
-\item{frequencies}{Vector of counts of the species observed}
+\item{abundances}{Vector of counts of the species observed}
 }
 \value{
 vector

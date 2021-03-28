@@ -4,10 +4,10 @@
 \alias{ssm}
 \title{Species sampling model}
 \usage{
-ssm(frequencies, model)
+ssm(abundances, model)
 }
 \arguments{
-\item{frequencies}{A \code{K}-dimensional vector of frequencies}
+\item{abundances}{A \code{K}-dimensional vector of abundances}
 
 \item{model}{Model to fit. Available models are \code{DP} (Dirichlet Process) and \code{PY} (Pitman-Yor process)}
 }

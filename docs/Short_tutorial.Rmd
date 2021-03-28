@@ -8,30 +8,135 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(BNPvegan)
+library(vegan)
 ```
 
 ## SAMPLE-BASED quantities
 ```{r}
-
+abundances <- fungalOTU
+table(abundances)
 ```
 
 ```{r}
-object <- sdm(Lepidoptera)
-BNPvegan::coverage.sdm(fit)
-fitpy <- ssm(Lepidoptera, model = "PY")
+##### Sample-based quantities. No modelling assumptions. 
 
-summary(fitpy)
-summary(fit)
+# Coverage method  --> fraction of species observed in the whole population
+coverage(abundances)
+
+# Gini heterogeneity  ---> prob. that two randomly drawn species from the pop. are equal.
+Gini(abundances)
+
+# Rarefaction ---> average accumulation curve
+rar <- rarefaction(abundances, verbose = FALSE) 
+plot(rar, type = "l")
+
+# In the vegan package, this is called by running rarecurve
+rar_vegan <- rarecurve(data.frame(t(as.matrix(abundances))), step = 1)[[1]]
+
+head(rar, 10)
+head(unname(rar_vegan), 10)
+```
+
+## Species sampling models
+```{r}
+# Random quantities generation
+counts <- rPY(size = 1000, alpha = 1, sigma = 0.2)
+print(counts)
+```
 
 
-extrapolation(fit, m = 10000)
+```{r}
+# Species sampling models
 
-plot(fit, type = "extrapolation", m = 10000)
+# Dirichlet 
+fitDP <- ssm(abundances, model = "DP")
+summary(fitDP)
 
-extrapolation(fitpy, m = c(10, 20))
+# Pitman-Yor
+fitPY <- ssm(abundances, model = "PY")
+summary(fitPY)
+
+# Compare the loglikelihood 
+logLik(fitDP)
+logLik(fitPY)
+```
+
+```{r}
+# Summarize the quantities in the Pitman-Yor
+
+# Under r = 1 means that you are finding the expected number of singletons in the model
+freq_abundance(abundances, r = 1:10)
+freq_abundance(fitPY, r = 1:10)
+plot(fitPY, type = "freq")
+```
+
+```{r}
+## Model-based coverage
+coverage(fitPY)
+plot(fitPY, type = "coverage")
+rcoverage(fitPY, n_samples = 10)
+```
+
+```{r}
+# Gini diversity for the Pitman-Yor
+Gini(fitPY)
+Gini(abundances)  # Can be sampled from. Need a stick breaking procedure. 
+```
+
+```{r}
+# Model-based rarefaction 
+plot(fitPY, type = "rarefaction", plot_sample = TRUE, verbose = FALSE)
+plot(fitDP, type = "rarefaction", plot_sample = TRUE, verbose = FALSE)
+rarPY <- rarefaction(fitPY)
+head(rarPY)
 ```
 ```{r}
-a = sample_Kinf(object, n_samples = 100)
+# Model-based extrapolation
+extrapolation(fitPY, m = 1000)
+plot(fitPY, type = "extrapolation", m = 10000, verbose = FALSE, plot_sample = TRUE)
+```
 
+## Species discovery models
+```{r}
+## Run a species discovery model on the same dataset
+fit_sdm <- sdm(abundances, model = "LL3", verbose = FALSE)
+summary(fit_sdm)
+logLik(fit_sdm)
+coef(fit_sdm)
+```
+
+```{r}
+# Usual model-based quantities
+coverage(fit_sdm)
+
+# rarefaction
+rar_sdm <- rarefaction(fit_sdm)
+head(rar_sdm)
+plot(fit_sdm, type = "rarefaction")
+
+# Extrapolation
+extrapolation(fit_sdm, m = 1000)
+plot(fit_sdm, type = "extrapolation", m = 10000)
+
+# Asymptotic richness
+asym_richness(fit_sdm)
+```
+
+```{r}
+# The posterior species richness is actually a random variable!
+postR <- sample_Kinf(fit_sdm, n_samples = 1000)
+hist(postR)
+```
+```{r}
+# Saturation
+saturation(fit_sdm, method = "approximate")
+
+# Random samples from the saturation
+sat <- saturation(fit_sdm, method = "montecarlo", n_samples = 1000)
+hist(sat, breaks = 20)
+```
+
+```{r}
+saturation(fit_sdm, method = "target", target = 0.95)
 ```
 

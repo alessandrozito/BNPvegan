@@ -30,7 +30,7 @@ library(BNPvegan)
 
 ## Package description
 
-[`BNPvegan`](https://github.com/alessandrozito/BNPvegan) is an R package that implements some fundamental tools of the Bayesian nonparametric literature on Species Sampling models. The code is available in this [github repository](https://github.com/alessandrozito/BNPvegan) of the `BNPvegan` package. The package has been designed for ecological applications. In this spirit, we chose to name it to mimic and extend the existing `vegan` package [@vegan]. In this tutorial we provide both a mathematical overview of the main methods available in `BNPvegan`, and we describe in details how to use it and how to interpret its results.
+[`BNPvegan`](https://github.com/alessandrozito/BNPvegan) is an R package that implements some fundamental tools of the Bayesian nonparametric literature on Species Sampling models. The code is available at this [github repository](https://github.com/alessandrozito/BNPvegan). The package has been designed for ecological applications. In this spirit, we chose to name it to mimic and extend the existing `vegan` package [@vegan]. In this tutorial we provide both a mathematical overview of the main methods available in `BNPvegan`, and we describe in details how to use it and how to interpret its results.
 
 The package is constructed on two building blocks, which are highly interrelated:
 
@@ -39,7 +39,7 @@ The package is constructed on two building blocks, which are highly interrelated
 
 Both functions are designed to work with a standard `R` syntax, as their output can be accessed via the classic methods `summary`, `plot`, `coef` and `logLik`. 
 
-In both cases, the main input of the package is a vector of `frequencies` representing the species counts observed in a sample. The package is endowed with two example datasets:
+In both cases, the main input of the package is a vector of `abundances` representing the species counts observed in a sample. The package is endowed with two example datasets:
 
 1. `Lepidoptera`, which is the dataset of butterfly counts in @Fisher_1943
 2. `fungalOTU`, which contains the counts for some fungal species recorded in a field experiment. 
@@ -48,9 +48,9 @@ We will use both to show the basic functioning of `ssm` and `sdm`. As a prelimin
 
 # Sample-based quantities
 
-We hereby refer to **sample-based quantities** as those indicators which are not inherited from the the `ssm` or the `sdm` method, but can be directly derived from the vector of species `frequencies` without a specific model fit. These methods are the sample `coverage`, the `Gini` heterogeneity index and the `rarefaction` curve. 
+We hereby refer to **sample-based quantities** as those indicators which are not inherited from the the `ssm` or the `sdm` method, but can be directly derived from the vector of species `abundances` without a specific model fit. These methods are the sample `coverage`, the `Gini` heterogeneity index and the `rarefaction` curve. 
 
-From a mathematical perspective, let $X_1, \ldots, X_n$ be a collection of "species" tags, with $X_i$ being the $i$th species observed in the sample. We call *abundance* the total number of species observed, $n$, and *richness* the number distinct species observed in the sample, $K$. Furthermore, let $n_1, \ldots, n_K$ the frequencies with which each species appears in the sample. The three *sample-based* methods offer a way to quickly summarize vector of `frequencies`. We describe them in details one by one.
+From a mathematical perspective, let $X_1, \ldots, X_n$ be a collection of "species" tags, with $X_i$ being the $i$th species observed in the sample. We call *abundance* the total number of species observed, $n$, and *richness* the number distinct species observed in the sample, $K$. Furthermore, let $n_1, \ldots, n_K$ the abundances with which each species appears in the sample. The three *sample-based* methods offer a way to quickly summarize vector of `abundances`. We describe them in details one by one.
 
 ## The sample `coverage` 
 
@@ -66,8 +66,8 @@ with $m_1$ being the number of species observed only once. This estimator can be
 
 ```{r}
 # Turing estimator of the sample coverage
-frequencies <- as.numeric(Lepidoptera)
-coverage(frequencies)
+abundances <- as.numeric(Lepidoptera)
+coverage(abundances)
 ```
 This tells that roughly 99.75% of the species in the population from which `Lepidoptera` was drawn have been discovered. 
 
@@ -82,7 +82,7 @@ $$\hat{G} = 1 - \frac{1}{n^2}\sum_{j = 1}^K n_j^2,$$
 and can be obtained by running the `Gini` command:
 ```{r}
 # Sample-based Gini index
-Gini(frequencies)
+Gini(abundances)
 ```
 In other words, the probability that two species are equal when drawn at random from the population is 0.975. This result is in line with what found with the `coverage` method. 
 
@@ -96,11 +96,11 @@ for $i = 1, \ldots, n$. To compute it, it is sufficient to call the function `ra
 
 ```{r, cache = TRUE}
 # Compute and plot the sample-based rarefaction curve
-rar <- rarefaction(frequencies, verbose = TRUE)
+rar <- rarefaction(abundances, verbose = TRUE)
 plot(rar, type = "l", xlab = "Sample size", ylab = "Rarefaction")
 ```
 
-**Note:** the `rarefaction` method performs the same task as the `rarefy` function in the `vegan` package.  
+**Note:** the `rarefaction` method performs the same task as the `rarecurve` function in the `vegan` package.  
 
 While being relatively quick and easy to interpret, the sample-based quantities are not the product of a model. As such, there is no way to include uncertainty quantification in their estimates. In the next sections, however, we show how the methods `ssm` and `sdm` can solve for this issue.
 
@@ -108,9 +108,9 @@ While being relatively quick and easy to interpret, the sample-based quantities 
 
 ## Sequential allocation scheme
 
-Species sampling models [@pitman_1996] are a class of **generative models** for species distributions which belong to the Bayesian nonprametric literature. The most common species sampling models are the Dirichlet process, `"DP"` [@Ferguson1973] and the Pitman-Yor process, `"PY"` [@Perman_1992]. For the purpose of this guide, we will only briefly discuss the basic properties of both models. For an extensive overview on how species sampling model work, see @DeBlasi_2015.
+Species sampling models [@pitman_1996] are a class of **generative models** for species abundances which belong to the Bayesian nonprametric literature. The most common species sampling models are the Dirichlet process, `"DP"` [@Ferguson1973] and the Pitman-Yor process, `"PY"` [@Perman_1992]. For the purpose of this guide, we will only provide an overview of the basic properties of both models. For an extensive overview on how species sampling model work, see @DeBlasi_2015.
 
-Both the Dirichlet and the Pitman-Yor process generate a species distribution through a sequential prediction scheme. Let $X_{1}, \ldots, X_{n}$ be a sequence of individuals observed, $K_n$ the total number of distinct species observed and  $X_{1}^*, \ldots, X_{K_n}^*$  the distinct species labels. In other words, $X_{j}^*$ is the $j$th species label observed in among the first $n$ observations. Then, the species of $X_{n+1}$ is determined by the following prediction rules:
+Both the Dirichlet and the Pitman-Yor process generate species abundances through a sequential prediction scheme. Let $X_{1}, \ldots, X_{n}$ be a sequence of individuals observed, $K_n$ the total number of distinct species observed and  $X_{1}^*, \ldots, X_{K_n}^*$  the distinct species labels. In other words, $X_{j}^*$ is the $j$th species label observed in among the first $n$ observations. Then, the species of $X_{n+1}$ is determined by the following prediction rules:
 
 * In the **Dirichlet process**: $$X_{n+1} \mid X_1, \ldots, X_n \sim \frac{\alpha}{\alpha + n}(\text{"new species"}) + \sum_{j=1}^{K_n} \frac{n_j}{\alpha + n}\delta_{X_j^*}$$
 with $\alpha >0$;
@@ -120,7 +120,7 @@ X_{n+1} \mid X_1, \ldots, X_n \sim \frac{\alpha + \sigma K_{n}}{\alpha + n}(\tex
 $$ 
 with $\alpha >-\sigma$ and $\sigma \in [0, 1)$.
 
-The parameters $\alpha$ and $\sigma$ govern the allocation scheme. In particular, it is easy to see that the Pitman-Yor process degenerates to the Dirichlet process when $\sigma = 0$. The interpretation of both equations is rather simple: the species observed at time $n+1$ can either be of a new type or of a previously observed one. In particular, the probability of observing an "old" species is increasing in the number of times that species has been observed in the past. The package `BNPvegan` contains a random sampler for both processes, which returns a vector of species frequencies. 
+The parameters $\alpha$ and $\sigma$ govern the allocation scheme. In particular, it is easy to see that the Pitman-Yor process degenerates to the Dirichlet process when $\sigma = 0$. The interpretation of both equations is rather simple: the species observed at time $n+1$ can either be of a new type or of a previously observed one. In particular, the probability of observing an "old" species is increasing in the abundance of that particular species. The package `BNPvegan` contains a random sampler for both processes, which returns a vector of species abundances. 
 
 ```{r}
 set.seed(1)
@@ -144,8 +144,8 @@ To estimate $\alpha$ and $\sigma$, the `ssm` function adopts an empirical Bayes 
 
 ```{r}
 # Estimate a Pitman-Yor model
-frequencies <- Lepidoptera
-fit <- ssm(frequencies, model = "PY")  # set model = "DP" for the Dirichlet process
+abundances <- as.numeric(Lepidoptera)
+fit <- ssm(abundances, model = "PY")  # set model = "DP" for the Dirichlet process
 summary(fit)  # Summarize the output
 ```
 
@@ -154,28 +154,36 @@ The `summary` function applied to an object of class `ssm` returns the following
 1. `Abundance`: the number of observation in the sample. 
 2. `Richness`: the number of distinct species in the sample
 3. `Estimated sample coverage`: model-based sample coverage
+4. `Posterior Gini diversity`: model-based Gini diversity
 4. `Expected species after additional xx samples`: model-based extrapolation
 5. `New expected species after additional xxx samples:`: the difference between `Expected species after additional xx samples` and `Richness`
-6. `Posterior Gini diversity`: model-based Gini diversity
+6. `Expected species at infinity`: aysymptotic species richness under the model
 7. `Parameters` the empirical Bayes estimates for the parameters of the model.
 
-Notice that in this particular case, $\sigma$ is estimated to be 0 (ie. the Pitman-Yor degenerates to the Dirichlet process). To assess the goodness-of-fit of the `ssm` function, we plot the observed frequency-of-frequencies against the model-based ones.
+To access the parameters and the loglikelihood, do
+```{r}
+coef(fit)
+logLik(fit)
+```
+
+Notice that in this particular case, $\sigma$ is estimated to be 0 (ie. the Pitman-Yor degenerates to the Dirichlet process). To assess the goodness-of-fit of the `ssm` function, we plot the observed frequency-of-abundances against the model-based ones.
 
 ```{r}
 # Frequency-of-frequencies plot
 plot(fit, type = "freq")
 ```
 
-Such a plot can be obtained by looking at the model-based frequency-of-frequencies, which are available in closed form for the Pitman-Yor process [@Favaro_2013]. In particular, for a given $r = 1, \ldots, n$, the number of species appearing $r$ times is is equal to
+Such a plot can be obtained by looking at the model-based frequency-of-abundances, which are available in closed form for the Pitman-Yor process [@Favaro_2013]. In particular, for a given $r = 1, \ldots, n$, the number of species appearing $r$ times is is equal to
 
 $$
 \mathbb{E}(M_r) = \frac{\alpha}{(\alpha)_n}\binom{n}{r}(1-\sigma)_{r-1}(\alpha + \sigma)_{n-r}.
 $$
-To obtain it, just run the function
+To obtain it, just use the following method
 
 ```{r}
-# Frequency-of-frequencies estimate under Pitman-Yor model
-expected_m_py(r = 1:10, n = sum(frequencies), alpha = coef(fit)[1], sigma =coef(fit)[2])
+# Frequency-of-abundances estimate under Pitman-Yor model
+freq_abundance(abundances, r = 1:10)
+freq_abundance(fit, r = 1:10)
 ```
 
 The `ssm` module offers an alternative to the sample-based estimators described in the previous section. In particular, it is endowed with a **model-based** `coverage`, `Gini` diversity and `rarefaction` function. Moreover, due to the sequential urn scheme characteristic, it also allows to **extrapolate** the rarefaction curve via the command `extrapolation`, ie. predict the additional number of distinct species if additional samples where observed. Let's see the one by one.
@@ -264,9 +272,9 @@ plot(fit, type = "extrapolation", m = 3000, plot_sample = TRUE, verbose = FALSE)
 
 ## Background 
 
-- Species discovery models focus directly on the discovery of new species. Unlike Species Sampling models, they are *not* a generative model for a species distribution. 
+- Species discovery models focus directly on the discovery of new species. Unlike Species Sampling models, they are *not* a generative model for a species abundances. 
 - Species discovery models are designed to fit and predict any accumulation curve, potentially assessing its saturation level, ie. how close the curve is to convergence.
-- Their formualtion involves a **direct** modelling of the accumulation curve obtained from the sample. 
+- Their formulation involves a **direct** modelling of the accumulation curve obtained from the sample. 
 
 Let $(D_n)_{n \geq 1}$ be a sequence of *discovery indicators*, such that 
 
@@ -300,7 +308,7 @@ be the discovery probability and $\mathcal{S}(n;\theta)$ a survival function suc
 
 Then, any functional form that supports the three assumptions can work as a species discovery model. The package `BNPvegan` supports two types of survival functions: 
 
-* The three-parameter log-logistic model, `LL3` (the *deault*):
+* The three-parameter log-logistic model, `LL3` (the *default*):
 $$
 \mathbb{P}(D_{n+1} = 1) = \frac{\alpha\phi^n}{\alpha\phi^n + n^{1-\sigma} }
 $$
@@ -334,12 +342,12 @@ In the case of `model = "LL3`, the maximization of the likelihood can be obtaine
 
 ```{r, cache = TRUE}
 # Fit the species discovery model. 
-# frequencies <- fungalOTU
-frequencies <- Lepidoptera
+# abundances <- fungalOTU
+abundances <- Lepidoptera
 
 # Note: verbose controls the state of the construction of the sample-based rarefaction, which is 
 #       the most demanding part
-fit_sdm <- sdm(frequencies, model = "LL3", verbose = TRUE)
+fit_sdm <- sdm(abundances, model = "LL3", verbose = FALSE)
 
 # Summarise the output
 summary(fit_sdm)
@@ -349,11 +357,14 @@ The quantities reported in the summary are:
 
 1. `Abundance`: the number of observation in the sample. 
 2. `Richness`: the number of distinct species in the sample
-3. `Expected species at infinity`: the asymptotic posterior species richness, ie. $\mathbb{E}(K_\infty\mid K_n = k)$
-4. `Standard deviation at infinity`: the asymptotic standard deviation ie. $\{Var(K_\infty\mid K_n = k)\}^{1/2}$
-5. `Expected new species to discover`: the difference between `Expected species at infinity` and `Richness`
-6. `Sample saturation`: the ratio between `Richness` and `Expected species at infinity`.
-7. `Parameters` the empirical Bayes estimates for the parameters of the model.
+3. `Estimated sample coverage`: model-based sample coverage
+4. `Expected species after xx additional samples`: model-based rarefaction
+5. `Expected new species after xx additional samples`: difference between `Expected species after xx additional samples` and `Richness`
+6. `Expected species at infinity`: the asymptotic posterior species richness, ie. $\mathbb{E}(K_\infty\mid K_n = k)$
+7. `Standard deviation at infinity`: the asymptotic standard deviation ie. $\{Var(K_\infty\mid K_n = k)\}^{1/2}$
+8. `Expected new species to discover`: the difference between `Expected species at infinity` and `Richness`
+9. `Sample saturation`: the ratio between `Richness` and `Expected species at infinity`.
+10. `Parameters` the empirical Bayes estimates for the parameters of the model.
 
 The parameters are easily extracted with the following commands
 
@@ -401,7 +412,14 @@ plot(fit_sdm, type = "extrapolation", m = 10000)
 ## Saturation and asymptotic richness methods
 The final feature of `sdm` is the fact that it provides an estimate for the asymptotic species richness, which is the total number of distinct species present in the population. The estimator is equal to 
 $$\mathbb{E}(K_\infty \mid K_n = k) = k + \sum_{j = n}^\infty S(j; \theta) <\infty.$$
-Then, the **saturation** is the fraction of species discovered over the asymptotic estimate, namely
+Moreover, $K_\inf\mid K_n = k$ is a random variable. To simulate from it, run
+```{r, cache = TRUE}
+### Simulate from the posterior distribution of the species richness
+set.seed(1)
+Kinf <- sample_Kinf(fit_sdm, size = 1000)
+plot(density(Kinf), main = "Posterior species richness")
+```
+By sampling from the posterior species richness we can also assess the **saturation** level, which is the fraction of species discovered over the asymptotic estimate, namely
 $$S_n\mid K_n = k = \frac{k}{K_\infty}.$$
 As computing the expected value for this quantity can be demanding, `sdm` gives the possibility to compute $k/\mathbb{E}(K_\infty \mid K_n = k)$, which is a first approximation. This can be achieved my specifying `method = "approximate"` (the default). Otherwise, if one wants to carry uncertainty quantification on the saturation level, set `method = "montecarlo"` and specify the number of samples `n_samples` to draw. This last option can be slow. See the following code:
 
@@ -411,8 +429,16 @@ asym_richness(fit_sdm)
 # Approximate saturation
 saturation(fit_sdm, method = "approximate")
 # Samples from the posterior saturation
+set.seed(1)
 post_sat <- saturation(fit_sdm, method = "montecarlo", n_samples = 500)
-hist(post_sat, main = "Posterior saturation")
+plot(density(post_sat), main = "Posterior saturation")
+```
+
+Finally, we can compute the approximate number of additional samples to draw to reach a desired level of saturation. Can be obtained by specifying `method = "target"` and a desired `target`. Note that `target` has to be between 0 and 0.999 for stability reasons.
+```{r}
+# Additional samples to reach a desired level of saturation
+saturation(fit_sdm, method = "target", target = 0.9)
+saturation(fit_sdm, method = "target", target = 0.99)
 ```
 
 # References

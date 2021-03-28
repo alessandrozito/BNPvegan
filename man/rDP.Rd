@@ -12,7 +12,7 @@ rDP(size, alpha)
 \item{alpha}{Centrality parameter}
 }
 \value{
-A vector of frequencies
+A vector of abundances
 }
 \description{
 Random samples from a Pitman-Yor process
