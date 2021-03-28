@@ -81,6 +81,8 @@ rcoverage(fitPY, n_samples = 10)
 # Gini diversity for the Pitman-Yor
 Gini(fitPY)
 Gini(abundances)  # Can be sampled from. Need a stick breaking procedure. 
+
+hist(rGini(fitPY, n_samples = 500))
 ```
 
 ```{r}

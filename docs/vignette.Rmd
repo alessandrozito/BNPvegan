@@ -213,14 +213,20 @@ $$\mathbb{E}(G) = \frac{\alpha + \sigma}{\alpha + 1},$$ while the **a posteriori
 $$
 \mathbb{E}(G\mid X_1\ldots, X_n)  = 1- \frac{1}{(\alpha + n)_2}\Big\{(1 -\sigma)(\alpha + K_n\sigma) + \sum_{j=1}^K(n_j - \sigma)_2\Big\} 
 $$
-where $(a)_n = \Gamma(a + n)/\Gamma(a)$ is the Pochhammer symbol. To obtain the estimate for the posteriro Gini index, run the `Gini` function.
+where $(a)_n = \Gamma(a + n)/\Gamma(a)$ is the Pochhammer symbol. To obtain the estimate for the expected posterior Gini index, run the `Gini` function.
 
 ```{r}
-# Model-based Gini inidex
+# Expected nodel-based Gini inidex
 Gini(fit)
 ```
+Like in the `coverage` method, we can also obtain posterior samples for the Gini index. This might be computationally slow, as obtaining such samples requires running a stick breaking construction. 
+```{r}
+# Random samplers for the Gini coefficient
+set.seed(1)
+Gini_samples <- rGini(fit, n_samples = 500)
+hist(Gini_samples, main = "Posterior Gini index")
+```
 
-**Note**: There exists a way to simulate from the posterior distribution of the Gini index. Such a function will be implemented in future versions of the package.
 
 ### Model-based `rarefaction` and `extrapolation`. 
 
