@@ -447,6 +447,9 @@ saturation(fit_sdm, method = "target", target = 0.9)
 saturation(fit_sdm, method = "target", target = 0.99)
 ```
 
+# Acknowledgements
+The build up of this package and the research have been funded by the [LIFEPLAN project](https://www2.helsinki.fi/en/projects/lifeplan) (European Union’s Horizon 2020 research and innovation program - grant agreement No 856506).
+
 # References
 
 

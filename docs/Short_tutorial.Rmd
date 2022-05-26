@@ -9,9 +9,73 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(BNPvegan)
 library(vegan)
+library(tidyverse)
 ```
 
+### PRELIMINARY STEP - Code up the multinomial model rarefaction and extraoplations
+```{r}
+rarefy_multinomial <- function(abundances, m){
+  S_obs <- length(abundances)
+  freq <- freq_abundance(abundances, r = 1:sum(abundances))
+  n <- sum(abundances)
+  alpha_km <- c(exp(lchoose(n - 1:(n-m), m) - lchoose(n, m)), rep(0, m))
+  return(S_obs - sum(alpha_km * freq))
+}
+rarefy_multinomial <- Vectorize(rarefy_multinomial, vectorize.args = "m")
+
+rarefy_multinomial(abundances, m = 1:10)
+c(rarefy(abundances, sample = 1:10))
+rarefaction(abundances, verbose = FALSE)[1:10]
+```
+
+Shen et al (2004) extrapolation estimator:
+$$
+\tilde{S}_{ind}(n + m) = K + \hat{f}_0\Bigg[1- \exp \bigg(-\frac{m}{n}\frac{f_1}{\hat{f}_0}\bigg)\Bigg]
+$$
+where $\hat{f}_0$ is the asymptotic number of undiscovered species estimator and $f_1$ is the number of singletons in the abundances vector.
+ 
+```{r}
+# Extrapolation estimator based in Shen et al 2004
+extrapolate_ShenChao <- function(abundances, f0, m){
+  f1 <- sum(abundances == 1)
+  S_obs <- length(abundances)
+  return(S_obs + f0*(1- exp(- m/n * f1/f0)))
+}
+
+extrapolate_ShenChao <- Vectorize(extrapolate_ShenChao, vectorize.args = "m")
+rich <- estimateR(abundances)
+f0 <- unname(rich[4] - rich[1])
+extrapolate_ShenChao(abundances, f0, m = 500:505)
+```
+
+Chao et al (2009) additional samples estimators
+$$
+m_g = \frac{nf_1}{2f_2}\log\Bigg[\frac{\hat{f}_0}{(1-g)S_{est}} \Bigg], \quad S_{obs}/S_{est} < g<1
+$$
+what if there are no doubletons?
+```{r}
+targetSat_Chao <- function(abundances, g, f0){
+  f1 <- sum(abundances == 1)
+  f2 <- sum(abundances == 2)
+  n <- sum(abundances)
+  S_obs <- length(abundances)
+  S_est <- f0 + S_obs
+  if(S_obs/S_est < g ){
+    return(n*f1/(2*f2) *log(f0/((1-g)*S_est)))
+  } else{
+    cat("g too low. Saturation is", S_obs/S_est, "\n")
+  }
+}
+```
+
+
+
 ## SAMPLE-BASED quantities
+```{r}
+abundances <- as.numeric(Lepidoptera)
+```
+
+
 ```{r}
 abundances <- fungalOTU
 table(abundances)
@@ -27,7 +91,7 @@ coverage(abundances)
 Gini(abundances)
 
 # Rarefaction ---> average accumulation curve
-rar <- rarefaction(abundances, verbose = FALSE) 
+rar <- rarefaction(abundances, verbose = TRUE) 
 plot(rar, type = "l")
 
 # In the vegan package, this is called by running rarecurve
@@ -40,8 +104,10 @@ head(unname(rar_vegan), 10)
 ## Species sampling models
 ```{r}
 # Random quantities generation
-counts <- rPY(size = 1000, alpha = 1, sigma = 0.2)
+counts <- rPY(size = 1000, alpha = 1, sigma = 0.1)
 print(counts)
+
+rDP(size = 1000, alpha = 1)
 ```
 
 
@@ -58,6 +124,11 @@ summary(fitPY)
 
 # Compare the loglikelihood 
 logLik(fitDP)
+logLik(fitPY)
+```
+
+```{r}
+coef(fitPY)
 logLik(fitPY)
 ```
 
@@ -94,13 +165,14 @@ head(rarPY)
 ```
 ```{r}
 # Model-based extrapolation
-extrapolation(fitPY, m = 1000)
-plot(fitPY, type = "extrapolation", m = 10000, verbose = FALSE, plot_sample = TRUE)
+extrapolation(fitPY, m = 10000)
+plot(fitPY, type = "extrapolation", m = 1000, verbose = FALSE, plot_sample = TRUE)
 ```
 
 ## Species discovery models
 ```{r}
 ## Run a species discovery model on the same dataset
+abundances = Lepidoptera
 fit_sdm <- sdm(abundances, model = "LL3", verbose = FALSE)
 summary(fit_sdm)
 logLik(fit_sdm)
@@ -139,6 +211,84 @@ hist(sat, breaks = 20)
 ```
 
 ```{r}
+# Target method to acheive a given level of saturation
+saturation(fit_sdm)
 saturation(fit_sdm, method = "target", target = 0.95)
 ```
+ 
+Compared to Chao et al 2009: 
+```{r}
+rich <- estimateR(abundances)
+# Under ACE
+f0 <- unname(rich[4]-rich[1])
+targetSat_Chao(abundances, g = 0.95, f0)
+
+# Under Chao1
+f0 <- unname(rich[2]-rich[1])
+targetSat_Chao(abundances, g = 0.95, f0)
+```
+
+
+```{r}
+# Comparison of extrapolation methods
+abundances <- as.numeric(fungalOTU)
+m <- sum(abundances)
+
+# Individual based rarefaction
+rar <- rarefaction(abundances, verbose = FALSE)
+
+# Dirichlet process
+fit_DP <- ssm(abundances, model = "DP")
+rar_DP <- rarefaction(fit_DP)
+extr_DP <- extrapolation(fit_DP, 1:m)
+
+# Pitman-Yor process
+fit_PY <- ssm(abundances, model = "PY")
+rar_PY <- rarefaction(fit_PY)
+extr_PY <- extrapolation(fit_PY, 1:m)
+
+# LL3 sdm
+fit_sdm <- sdm(abundances, verbose = FALSE)
+rar_sdm <- rarefaction(fit_sdm)
+extr_sdm <- extrapolation(fit_sdm, 1:m)
+
+# Chao extrapolation
+rich <- estimateR(abundances)
+f0 <- unname(rich[4]-rich[1])  # use the ACE estimator
+extr_chao <- extrapolate_ShenChao(abundances, f0, m = 1:m)
+```
+
+
+```{r}
+# Everything in a dataframe
+cutoff <- sum(abundances)
+df <- data.frame( "n" = c(1:(cutoff + m)),
+                 "rar"= c(rar, rep(NA, m)),
+                 "DP" = c(rar_DP, extr_DP),
+                 "PY" = c(rar_PY, extr_PY), 
+                 "sdm" = c(rar_sdm, extr_sdm), 
+                 "Chao" = c(rep(NA, cutoff), extr_chao))
+
+n_points = 200
+if (nrow(df) > n_points) {
+  seqX <- 1:nrow(df)
+  seqY <- split(seqX, sort(seqX %% n_points))
+  df <- df[unlist(lapply(seqY, function(a) utils::tail(a, 1))), ]
+}
+
+ggplot(data = df[df$n>1000,])+
+  
+  geom_line(aes(x = n, y = DP, color = "DP"), na.rm = TRUE, size = 1) +
+  geom_line(aes(x = n, y = PY, color = "PY"), na.rm = TRUE, size = 1, linetype = "dashed") +
+  geom_line(aes(x = n, y = sdm, color = "SDM"), na.rm = TRUE, size = 1) +
+  geom_line(aes(x = n, y = Chao, color = "Chao"), na.rm = TRUE, size = 1, linetype = "dotdash") +
+  geom_segment(x = cutoff, xend = cutoff, y = 0, yend = Inf, linetype = "dashed")+
+  geom_point(aes(x = n, y = rar), na.rm = TRUE, size = 1, shape = 1) +
+  theme_bw()
+```
+```{r}
+fit_PY <- ssm(fungalOTU, model = "PY")
+```
+
+
 

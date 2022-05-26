@@ -14,11 +14,12 @@
 #' summary(fit)
 #'
 sdm <- function(abundances, model = "LL3", verbose = TRUE) {
+
   # Step 0 - filter out the abundances equal to 0
   abundances <- abundances[abundances > 0]
-
   # Extract the rarefaction curves
   d <- c(1, diff(rarefy_C(abundances, sum(abundances), length(abundances), verbose)))
+
 
   # Initialize an empty matrix for the parameters
   if (model == "LL3") {

@@ -25,7 +25,6 @@ expected_m_py <- function(r, n, sigma, alpha) {
 
 expected_m_py <- Vectorize(expected_m_py, vectorize.args = "r")
 
-
 extrapolate_cl_py <- function(m, K, n, sigma, alpha) {
   n <- as.integer(n)
   if (sigma < 1e-6) {
