@@ -1,4 +1,4 @@
-# The `BNPvegan` R package - :warning: Under development
+# The `BNPvegan` R package 
 
 This **R** package is an implementation of various Bayesian nonparametric models for the analysis of ecological data. The **R** package is currently under development. The package consists of two main methods: **species sampling models** (`ssm`) and  **species discovery models** (`sdm`).
 
